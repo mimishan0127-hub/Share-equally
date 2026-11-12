@@ -2,20 +2,195 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="color-scheme" content="light">
   <title>雲端多人旅遊分帳</title>
 
-  <!-- PWA & 行動裝置沉浸式設定 -->
+  <!-- PWA & 行動裝置原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="旅遊分帳">
   <meta name="theme-color" content="#4F46E5">
 
+  <!-- 雙平台動態高解析圖標掛載點 -->
+  <link id="apple-icon" rel="apple-touch-icon" sizes="180x180">
+  <link id="favicon" rel="icon" type="image/png" sizes="180x180">
+
+  <!-- PWA Canvas 原生繪製引擎：自動生成專屬旅遊分帳 Icon 並綁定雙平台 Manifest -->
+  <script>
+    (function() {
+      function drawAppIcon() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 180;
+        canvas.height = 180;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // 輔助函式：圓角矩形 (相容舊版瀏覽器)
+        function roundRect(x, y, w, h, r) {
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          ctx.lineTo(x + r, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.closePath();
+        }
+
+        // 1. 底底色：Fintech 質感靛紫漸層圓角 Squircle
+        const grad = ctx.createLinearGradient(0, 0, 180, 180);
+        grad.addColorStop(0, '#6366F1');
+        grad.addColorStop(0.5, '#4F46E5');
+        grad.addColorStop(1, '#3730A3');
+        roundRect(0, 0, 180, 180, 42);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 柔和微光內框
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.stroke();
+
+        // 2. 帳單卡片（微傾斜 -5 度呈現現代層次感）
+        ctx.save();
+        ctx.translate(72, 95);
+        ctx.rotate(-0.08);
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.22)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 6;
+        roundRect(-42, -58, 84, 116, 12);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.restore();
+
+        // 帳單明細條紋與撕紙虛線
+        ctx.save();
+        ctx.translate(72, 95);
+        ctx.rotate(-0.08);
+        ctx.fillStyle = '#EEF2FF';
+        roundRect(-30, -46, 60, 10, 4);
+        ctx.fill();
+
+        ctx.fillStyle = '#E0E7FF';
+        roundRect(-30, -28, 36, 6, 3); ctx.fill();
+        roundRect(-30, -16, 44, 6, 3); ctx.fill();
+        roundRect(-30, -4, 28, 6, 3); ctx.fill();
+
+        // 虛線
+        ctx.strokeStyle = '#C7D2FE';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(-32, 14);
+        ctx.lineTo(32, 14);
+        ctx.stroke();
+
+        // 底部團員分帳頭像 (粉紅、天藍、薄荷綠 3 色標記)
+        ctx.fillStyle = '#FB7185';
+        ctx.beginPath(); ctx.arc(-20, 34, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#38BDF8';
+        ctx.beginPath(); ctx.arc(0, 34, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#34D399';
+        ctx.beginPath(); ctx.arc(20, 34, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+
+        // 3. 立體金幣 (右下角重疊)
+        ctx.save();
+        ctx.translate(125, 126);
+        ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 5;
+        ctx.fillStyle = '#F59E0B';
+        ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#FBBF24';
+        ctx.beginPath(); ctx.arc(0, 0, 26, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#FEF08A';
+        ctx.beginPath(); ctx.arc(0, 0, 21, 0, Math.PI * 2); ctx.fill();
+        // 貨幣符號
+        ctx.fillStyle = '#D97706';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$', 0, 2);
+        ctx.restore();
+
+        // 4. 起飛的旅遊紙飛機 (右上角)
+        ctx.save();
+        ctx.translate(130, 48);
+        ctx.shadowColor = 'rgba(15, 23, 42, 0.3)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 5;
+        // 右翼
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.moveTo(25, -20); ctx.lineTo(2, 22); ctx.lineTo(-6, 2);
+        ctx.closePath(); ctx.fill();
+        // 左翼
+        ctx.fillStyle = '#E0E7FF';
+        ctx.beginPath();
+        ctx.moveTo(25, -20); ctx.lineTo(-26, 4); ctx.lineTo(-6, 2);
+        ctx.closePath(); ctx.fill();
+        // 摺角陰影
+        ctx.fillStyle = '#C7D2FE';
+        ctx.beginPath();
+        ctx.moveTo(25, -20); ctx.lineTo(-6, 2); ctx.lineTo(0, 10);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+
+        // 航行虛線軌跡
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([3, 4]);
+        ctx.beginPath();
+        ctx.moveTo(40, 120);
+        ctx.quadraticCurveTo(70, 70, 115, 52);
+        ctx.stroke();
+        ctx.restore();
+
+        const dataUrl = canvas.toDataURL('image/png');
+        window.__TRAVEL_APP_ICON__ = dataUrl;
+
+        // 綁定至 iOS 與 Android 標籤
+        const appleIconEl = document.getElementById('apple-icon');
+        if (appleIconEl) appleIconEl.href = dataUrl;
+        const faviconEl = document.getElementById('favicon');
+        if (faviconEl) faviconEl.href = dataUrl;
+
+        // 生成相容 Android 的 Web Manifest
+        const manifest = {
+          name: "雲端多人旅遊分帳",
+          short_name: "旅遊分帳",
+          start_url: "./index.html",
+          display: "standalone",
+          background_color: "#F8FAFC",
+          theme_color: "#4F46E5",
+          icons: [{ src: dataUrl, sizes: "180x180", type: "image/png" }]
+        };
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+        document.head.appendChild(manifestLink);
+      }
+      drawAppIcon();
+    })();
+  </script>
+
+  <!-- 穩定 CDN 載入 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
+    [v-cloak] { display: none; }
     body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
@@ -43,25 +218,25 @@
     }
   </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-800 antialiased font-sans selection:bg-indigo-500 selection:text-white min-h-screen">
-<div id="app" class="max-w-md mx-auto min-h-screen bg-[#FDFDFE] relative flex flex-col shadow-2xl shadow-slate-200/60 overflow-hidden pb-28 border-x border-slate-100">
+<body class="selection:bg-indigo-500 selection:text-white min-h-screen">
+<div id="app" v-cloak class="max-w-md mx-auto min-h-screen bg-[#FDFDFE] relative flex flex-col shadow-2xl shadow-slate-200/60 overflow-hidden pb-28 border-x border-slate-100 select-none">
 
   <!-- 離線與同步指示列 -->
   <div v-if="!isOnline" class="bg-amber-500 text-white text-[11px] font-bold px-4 py-1.5 text-center sticky top-0 z-50 flex items-center justify-center gap-1.5 shadow-sm">
     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-12.728-12.728m12.728 12.728L3 3m5.464 12.536a5 5 0 01-7.072-7.072"/></svg>
-    離線狀態：帳目已暫存本機，連線後自動同步雲端
+    離線模式：花費已暫存手機，連線後自動回傳
   </div>
   <div v-else-if="offlineQueueCount > 0" class="bg-indigo-600 text-white text-[11px] font-bold px-4 py-1.5 text-center sticky top-0 z-50 flex items-center justify-center gap-1.5 shadow-sm">
     <svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-    正自動同步 {{ offlineQueueCount }} 筆離線紀錄...
+    正同步 {{ offlineQueueCount }} 筆離線紀錄...
   </div>
 
   <!-- ================= 登入 / 註冊畫面 ================= -->
   <div v-if="!session" class="flex-1 flex flex-col justify-center px-6 py-12 bg-white">
     <div class="text-center mb-8">
-      <div class="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3.5 border-2 border-indigo-100 overflow-hidden bg-indigo-50">
-        <!-- 採用可愛分帳吉祥物封面圖 -->
-        <img src="Gemini_Generated_Image_ffkpm0ffkpm0ffkp.jpg" alt="旅遊分帳" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'text-4xl\'>✈️</div>'">
+      <div class="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3.5 border border-indigo-100 overflow-hidden bg-indigo-50">
+        <!-- 登入頁直接載入生成的真向量分帳圖標 -->
+        <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
       </div>
       <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
       <p class="text-xs font-semibold text-slate-400 mt-1">獨立身分綁定・自訂姓名・隱私隔離・即時雲端記帳</p>
@@ -77,7 +252,7 @@
     <form v-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*必填</span></label>
-        <input v-model="authEmail" type="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authEmail" type="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
 
       <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-100 space-y-3">
@@ -86,7 +261,7 @@
         </div>
         <div>
           <label class="text-[11px] font-bold text-slate-600">方式 A：原設定密碼</label>
-          <input v-model="authPassword" type="password" placeholder="輸入登入密碼" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input v-model="authPassword" type="password" placeholder="輸入登入密碼" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div class="relative flex py-1 items-center">
           <div class="flex-grow border-t border-slate-200"></div>
@@ -96,13 +271,13 @@
         <div>
           <div class="flex justify-between items-center">
             <label class="text-[11px] font-bold text-slate-600">方式 B：手機後 5 碼</label>
-            <span class="text-[10px] text-slate-400 font-medium">防連續暴力破解</span>
+            <span class="text-[10px] text-slate-400 font-medium">免記密碼</span>
           </div>
-          <input v-model="authPhoneLast5" type="text" maxlength="5" placeholder="例如：12345" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input v-model="authPhoneLast5" type="text" maxlength="5" placeholder="例如：12345" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
       </div>
 
-      <button type="submit" :disabled="authLoading" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 transition disabled:opacity-50">
+      <button type="submit" :disabled="authLoading" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 transition disabled:opacity-50 min-h-[44px]">
         {{ authLoading ? '驗證中...' : '立即登入' }}
       </button>
     </form>
@@ -111,17 +286,17 @@
     <form v-else @submit.prevent="handleRegister" class="space-y-4">
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*必填</span></label>
-        <input v-model="authEmail" type="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authEmail" type="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">登入密碼 <span class="text-rose-500">*必填</span></label>
-        <input v-model="authPassword" type="password" required minlength="6" placeholder="至少 6 位數" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authPassword" type="password" required minlength="6" placeholder="至少 6 位數" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div>
-        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">*必填・免記密碼憑證</span></label>
-        <input v-model="authPhone" type="tel" required placeholder="例如：0912345678" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">*必填・憑證防呆</span></label>
+        <input v-model="authPhone" type="tel" required placeholder="例如：0912345678" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
-      <button type="submit" :disabled="authLoading" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 transition disabled:opacity-50">
+      <button type="submit" :disabled="authLoading" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 transition disabled:opacity-50 min-h-[44px]">
         {{ authLoading ? '建立中...' : '建立帳號並登入' }}
       </button>
     </form>
@@ -129,27 +304,27 @@
 
   <!-- ================= 主應用畫面 ================= -->
   <div v-else class="flex-1 flex flex-col">
-    <!-- 頂部導航列 -->
+    <!-- 頂部導航列 (毛玻璃質感) -->
     <header class="px-5 pt-8 pb-3 bg-white/85 backdrop-blur-xl sticky top-0 z-30 border-b border-slate-100 flex items-center justify-between">
       <div class="relative">
-        <select v-model="currentTripId" @change="fetchTripDetails" class="appearance-none font-black text-lg text-slate-900 bg-transparent pr-6 cursor-pointer focus:outline-none">
+        <select v-model="currentTripId" @change="fetchTripDetails" class="appearance-none font-black text-base text-slate-900 bg-transparent pr-6 cursor-pointer focus:outline-none">
           <option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
         </select>
         <svg class="w-4 h-4 text-slate-400 absolute right-0 top-1.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </div>
 
       <div class="flex items-center gap-2">
-        <button @click="showLogModal = true" class="p-2 bg-slate-100/90 hover:bg-slate-200 text-slate-700 rounded-full transition active:scale-95" title="操作歷史紀錄">
+        <button @click="showLogModal = true" class="p-2 bg-slate-100/90 hover:bg-slate-200 text-slate-700 rounded-full transition active:scale-95 min-h-[44px] min-w-[44px] flex items-center justify-center" title="操作歷程">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </button>
         
-        <!-- 角色標籤（點擊可快速編輯自己的姓名） -->
+        <!-- 角色標籤（點擊可修改自己的姓名） -->
         <button 
           v-if="currentMember"
           @click="openEditMemberNameModal(currentMember)"
-          class="text-xs font-black rounded-full px-3 py-1.5 flex items-center gap-1.5 transition active:scale-95 shadow-sm"
+          class="text-xs font-black rounded-full px-3 py-1.5 flex items-center gap-1.5 transition active:scale-95 shadow-sm min-h-[36px]"
           :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100' : 'bg-indigo-50/90 text-indigo-700 border border-indigo-100/80 hover:bg-indigo-100'"
-          title="點擊可修改自己的顯示姓名"
+          title="點擊修改顯示名稱"
         >
           <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500"></span>
           <svg v-else class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -157,7 +332,7 @@
           <svg class="w-3 h-3 opacity-60 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
         </button>
         <div v-else class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full">
-          未選定身分
+          未認領身分
         </div>
       </div>
     </header>
@@ -168,7 +343,7 @@
         <p class="text-xs font-black text-amber-900">尚未認領您的角色！</p>
         <p class="text-[11px] text-amber-700 font-medium mt-0.5">請從建立者建立的名單中綁定自己的身分</p>
       </div>
-      <button @click="showClaimModal = true" class="text-xs font-black text-white bg-amber-600 px-3 py-1.5 rounded-xl shadow-sm active:scale-95 transition">
+      <button @click="showClaimModal = true" class="text-xs font-black text-white bg-amber-600 px-3 py-1.5 rounded-xl shadow-sm active:scale-95 transition min-h-[36px]">
         立即認領
       </button>
     </div>
@@ -179,26 +354,26 @@
         <span class="text-xs font-bold text-slate-500">旅程代碼:</span>
         <span class="font-mono font-black text-indigo-700 tracking-wider text-sm bg-white px-2 py-0.5 rounded-lg border border-slate-200">{{ currentTrip.invite_code }}</span>
       </div>
-      <button @click="copyInviteCode" class="text-[11px] font-bold text-indigo-600 bg-white hover:bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 shadow-sm active:scale-95 transition">
+      <button @click="copyInviteCode" class="text-[11px] font-bold text-indigo-600 bg-white hover:bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 shadow-sm active:scale-95 transition min-h-[32px]">
         複製分享
       </button>
     </div>
 
     <!-- Tab 1: 支出明細 -->
     <main v-if="activeTab === 'expenses'" class="flex-1 p-5 space-y-4">
-      <!-- 總額卡片 -->
+      <!-- 總額雙色卡片 -->
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-gradient-to-br from-indigo-50/90 to-blue-50/60 border border-indigo-100/70 p-4 rounded-3xl shadow-sm">
           <p class="text-xs font-black text-indigo-600 uppercase tracking-wide">團體分攤總額</p>
-          <p class="text-2xl font-black text-slate-900 mt-1 num-font">{{ currentTripBaseCurrency }} ${{ totalGroupExpense.toLocaleString() }}</p>
+          <p class="text-2xl font-black text-slate-900 mt-1 font-mono tabular-nums">{{ currentTripBaseCurrency }} ${{ totalGroupExpense.toLocaleString() }}</p>
         </div>
         <div class="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 border border-emerald-100/70 p-4 rounded-3xl shadow-sm">
           <p class="text-xs font-black text-emerald-700 uppercase tracking-wide">您的個人總支出</p>
-          <p class="text-2xl font-black text-slate-900 mt-1 num-font">{{ currentTripBaseCurrency }} ${{ currentMemberTotalCost.toLocaleString() }}</p>
+          <p class="text-2xl font-black text-slate-900 mt-1 font-mono tabular-nums">{{ currentTripBaseCurrency }} ${{ currentMemberTotalCost.toLocaleString() }}</p>
         </div>
       </div>
 
-      <!-- 類別開銷統計視覺條 (僅以使用者有權查閱的帳務為準) -->
+      <!-- 類別開銷統計視覺條 (只統計個人有權檢視的帳目) -->
       <div v-if="categoryStats.length > 0" class="p-4 bg-slate-50/80 border border-slate-100 rounded-3xl space-y-2.5">
         <div class="flex justify-between items-center">
           <span class="text-xs font-black text-slate-700">可見支出佔比</span>
@@ -217,12 +392,12 @@
 
       <!-- 篩選列 -->
       <div class="flex gap-2">
-        <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95">全部可見</button>
-        <button @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95">團體平攤</button>
-        <button @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95">我的私物</button>
+        <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95 min-h-[36px]">全部可見</button>
+        <button @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95 min-h-[36px]">團體平攤</button>
+        <button @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-100' : 'bg-slate-100/90 text-slate-500 font-bold'" class="px-4 py-1.5 rounded-full text-xs transition active:scale-95 min-h-[36px]">我的私物</button>
       </div>
 
-      <!-- 記帳清單：透過安全過濾後的清單 -->
+      <!-- 記帳清單 -->
       <div class="space-y-2.5 pb-8">
         <div v-for="item in filteredExpenses" :key="item.id" @click="openEditExpenseModal(item)" class="bg-white p-4 rounded-2xl border border-slate-100/80 hover:border-indigo-200 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex items-center justify-between cursor-pointer active:scale-[0.98] transition duration-150">
           <div class="flex items-center gap-3">
@@ -244,8 +419,8 @@
             </div>
           </div>
           <div class="flex items-center gap-2.5">
-            <span class="font-black text-slate-900 num-font text-base">${{ Number(item.amount).toLocaleString() }}</span>
-            <button v-if="canEditOrDeleteExpense(item)" @click.stop="deleteExpense(item)" class="text-slate-300 hover:text-rose-500 transition p-1.5 active:scale-95" title="刪除">
+            <span class="font-black text-slate-900 font-mono tabular-nums text-base">${{ Number(item.amount).toLocaleString() }}</span>
+            <button v-if="canEditOrDeleteExpense(item)" @click.stop="deleteExpense(item)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-95 min-h-[36px] min-w-[36px] flex items-center justify-center" title="刪除">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
@@ -258,28 +433,28 @@
     <main v-if="activeTab === 'settle'" class="flex-1 p-5 space-y-5">
       <div class="bg-gradient-to-br from-indigo-50 via-sky-50 to-indigo-100/50 border border-indigo-200/60 p-6 rounded-3xl shadow-sm">
         <p class="text-xs font-black text-indigo-700">當前角色：{{ currentMemberName }}（{{ currentTripBaseCurrency }}）</p>
-        <p class="text-3xl font-black mt-2 tracking-tight text-slate-900 num-font">
+        <p class="text-3xl font-black mt-2 tracking-tight text-slate-900 font-mono tabular-nums">
           {{ myNetBalance >= 0 ? `應收回 $${myNetBalance.toLocaleString()}` : `需補付 $${Math.abs(myNetBalance).toLocaleString()}` }}
         </p>
         <div class="mt-4 pt-4 border-t border-indigo-200/40 grid grid-cols-2 text-xs gap-4">
           <div>
             <span class="text-slate-500 font-bold">個人私物花費</span>
-            <p class="text-lg font-black text-slate-800 mt-0.5 num-font">${{ myPersonalCost.toLocaleString() }}</p>
+            <p class="text-lg font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ myPersonalCost.toLocaleString() }}</p>
           </div>
           <div>
             <span class="text-slate-500 font-bold">團體代墊款項</span>
-            <p class="text-lg font-black text-slate-800 mt-0.5 num-font">${{ myPaidGroupCost.toLocaleString() }}</p>
+            <p class="text-lg font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ myPaidGroupCost.toLocaleString() }}</p>
           </div>
         </div>
       </div>
 
-      <!-- LINE 一鍵分帳按鈕 (僅建立者可發布全團公款清單) -->
-      <button v-if="isTripCreator" @click="copyLineSettlement" class="w-full py-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-800 font-black rounded-2xl flex items-center justify-center gap-2 text-xs transition active:scale-95 shadow-sm">
+      <!-- LINE 一鍵分帳按鈕 (主揪限定發布全團公款，保密私人購物) -->
+      <button v-if="isTripCreator" @click="copyLineSettlement" class="w-full py-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-800 font-black rounded-2xl flex items-center justify-center gap-2 text-xs transition active:scale-95 shadow-sm min-h-[44px]">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
         [建立者限定] 一鍵複製公帳結算明細到 LINE
       </button>
 
-      <!-- 所有成員公帳收支結算（只計算公款，不洩漏私物） -->
+      <!-- 所有成員公帳收支結算（只算公款，隱藏私人開銷） -->
       <div>
         <h3 class="text-xs font-black text-slate-400 mb-2.5 tracking-wider uppercase">公帳收支狀況 (不含私人物品)</h3>
         <div class="space-y-2">
@@ -292,7 +467,7 @@
               <p class="text-[11px] text-slate-400 mt-0.5 font-medium">代墊公款 ${{ m.paid.toLocaleString() }}・應攤公款 ${{ m.share.toLocaleString() }}</p>
             </div>
             <div class="text-right">
-              <span class="text-xs font-black px-2.5 py-1 rounded-xl num-font" :class="m.net >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'">
+              <span class="text-xs font-black px-2.5 py-1 rounded-xl font-mono tabular-nums" :class="m.net >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'">
                 {{ m.net >= 0 ? `+${m.net}` : m.net }}
               </span>
             </div>
@@ -300,7 +475,7 @@
         </div>
       </div>
 
-      <!-- 最簡還款途徑：一般成員僅見自己相關，建立者可見全部 -->
+      <!-- 最簡還款途徑：一般成員僅見自己相關，主揪可見全部 -->
       <div>
         <h3 class="text-xs font-black text-slate-400 mb-2.5 tracking-wider uppercase">最簡還款途徑</h3>
         <div class="space-y-2">
@@ -311,7 +486,7 @@
               <span class="bg-emerald-100/80 text-emerald-900 px-2.5 py-1 rounded-lg">{{ debt.to }}</span>
             </div>
             <div class="text-right">
-              <span class="text-base font-black text-slate-900 num-font">${{ debt.amount.toLocaleString() }}</span>
+              <span class="text-base font-black text-slate-900 font-mono tabular-nums">${{ debt.amount.toLocaleString() }}</span>
               <span class="text-[10px] text-slate-400 ml-1 font-bold">{{ currentTripBaseCurrency }}</span>
             </div>
           </div>
@@ -323,8 +498,8 @@
     <!-- Tab 3: 類別管理 -->
     <main v-if="activeTab === 'categories'" class="flex-1 p-5 space-y-4">
       <div v-if="isTripCreator" class="flex gap-2">
-        <input v-model="newCategoryName" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <button @click="addCategory" class="px-5 py-2.5 bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-bold shadow-md shadow-indigo-100 transition">新增</button>
+        <input v-model="newCategoryName" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <button @click="addCategory" class="px-5 py-2.5 bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-bold shadow-md shadow-indigo-100 transition min-h-[44px]">新增</button>
       </div>
       <div class="space-y-2">
         <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm">
@@ -332,7 +507,7 @@
             <span class="text-lg">{{ getCategoryEmoji(c.id) }}</span>
             <span class="font-black text-sm text-slate-800">{{ c.name }}</span>
           </div>
-          <button v-if="isTripCreator" @click="deleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-1 active:scale-95">
+          <button v-if="isTripCreator" @click="deleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-95 min-h-[36px] min-w-[36px] flex items-center justify-center">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
           </button>
         </div>
@@ -347,29 +522,29 @@
           <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider">備份與差旅報帳</h3>
           <p class="text-[11px] text-emerald-700 font-medium mt-0.5">僅匯出您有權檢視的明細項目</p>
         </div>
-        <button @click="exportToCSV" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 active:scale-95 transition">
+        <button @click="exportToCSV" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 active:scale-95 transition min-h-[44px]">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           匯出 CSV
         </button>
       </div>
 
-      <!-- 加入朋友記帳本 -->
+      <!-- 加入同行記帳本 -->
       <div class="bg-indigo-50/70 border border-indigo-100 p-4 rounded-3xl">
         <h3 class="text-xs font-black text-indigo-950 mb-1 tracking-wider uppercase">加入同行帳本</h3>
         <p class="text-[11px] text-indigo-600 mb-2.5 font-medium">輸入主揪提供的 6 位數邀請碼即可加入</p>
         <div class="flex gap-2">
-          <input v-model="joinCodeInput" placeholder="輸入 6 位數邀請碼" class="flex-1 px-4 py-2 rounded-2xl bg-white border border-indigo-200 text-sm font-mono tracking-wider focus:outline-none">
-          <button @click="joinTripByCode" class="px-4 py-2 bg-indigo-600 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition">加入</button>
+          <input v-model="joinCodeInput" placeholder="輸入 6 位數邀請碼" class="flex-1 px-4 py-2 rounded-2xl bg-white border border-indigo-200 text-base font-mono tracking-wider focus:outline-none">
+          <button @click="joinTripByCode" class="px-4 py-2 bg-indigo-600 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition min-h-[44px]">加入</button>
         </div>
       </div>
 
-      <!-- 建立旅程帳本 -->
+      <!-- 建立新旅程帳本 -->
       <div>
         <h3 class="text-xs font-black text-slate-400 mb-2 tracking-wider uppercase">建立新旅程帳本</h3>
         <div class="space-y-2 mb-3">
           <div class="flex gap-2">
-            <input v-model="newTripName" placeholder="新旅程名稱（如：2026 北海道）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:outline-none">
-            <select v-model="newTripCurrency" class="px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none">
+            <input v-model="newTripName" placeholder="新旅程名稱（如：2026 北海道）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none">
+            <select v-model="newTripCurrency" class="px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
               <option value="TWD">台幣 TWD</option>
               <option value="JPY">日幣 JPY</option>
               <option value="KRW">韓元 KRW</option>
@@ -377,7 +552,7 @@
               <option value="EUR">歐元 EUR</option>
             </select>
           </div>
-          <button @click="createTrip" class="w-full py-2.5 bg-slate-800 text-white rounded-2xl text-xs font-bold active:scale-95 transition">建立旅程</button>
+          <button @click="createTrip" class="w-full py-2.5 bg-slate-800 text-white rounded-2xl text-xs font-bold active:scale-95 transition min-h-[44px]">建立旅程</button>
         </div>
 
         <div class="space-y-2">
@@ -388,10 +563,10 @@
               <span v-if="t.user_id === session.user.id" class="text-[10px] text-amber-700 font-bold ml-1">(建立者)</span>
             </span>
             <div>
-              <button v-if="t.user_id === session.user.id" @click="deleteTrip(t)" class="text-slate-300 hover:text-rose-500 transition p-1 active:scale-95" title="刪除此帳本">
+              <button v-if="t.user_id === session.user.id" @click="deleteTrip(t)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-95 min-h-[36px] min-w-[36px] flex items-center justify-center" title="刪除此帳本">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
-              <button v-else @click="leaveTrip(t)" class="text-xs text-rose-500 font-bold hover:underline p-1">退出帳本</button>
+              <button v-else @click="leaveTrip(t)" class="text-xs text-rose-500 font-bold hover:underline p-2">退出帳本</button>
             </div>
           </div>
         </div>
@@ -400,14 +575,14 @@
       <!-- 成員管理：主揪可新增成員、主揪與各角色皆可自己編輯姓名 -->
       <div>
         <div class="flex items-center justify-between mb-2">
-          <h3 class="text-xs font-black text-slate-400 tracking-wider uppercase">同行成員名單 (點擊筆圖示可改名)</h3>
+          <h3 class="text-xs font-black text-slate-400 tracking-wider uppercase">同行成員名單 (點筆修改姓名)</h3>
           <span v-if="!isTripCreator" class="text-[10px] text-slate-400 font-bold">可編輯自己的姓名</span>
         </div>
 
         <!-- 建立者限定新增框 -->
         <div v-if="isTripCreator" class="flex gap-2 mb-3">
-          <input v-model="newMemberName" placeholder="夥伴姓名（如：小明、Amy）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:outline-none">
-          <button @click="addMember" class="px-4 py-2.5 bg-slate-800 text-white rounded-2xl text-xs font-bold active:scale-95 transition">新增成員</button>
+          <input v-model="newMemberName" placeholder="夥伴姓名（如：小明、Amy）" class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none">
+          <button @click="addMember" class="px-4 py-2.5 bg-slate-800 text-white rounded-2xl text-xs font-bold active:scale-95 transition min-h-[44px]">新增成員</button>
         </div>
 
         <div class="space-y-2">
@@ -420,21 +595,21 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-              <!-- 編輯姓名按鈕：如果是自己，或是主揪編輯未綁定角色/自己的角色 -->
+              <!-- 編輯姓名按鈕：自己改自己，或主揪改未認領者 -->
               <button 
                 v-if="canEditMemberName(m)" 
                 @click="openEditMemberNameModal(m)" 
-                class="p-1.5 text-slate-400 hover:text-indigo-600 transition active:scale-95" 
+                class="p-2 text-slate-400 hover:text-indigo-600 transition active:scale-95 min-h-[36px] min-w-[36px] flex items-center justify-center" 
                 title="修改姓名"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
 
-              <!-- 只有建立者可以刪除成員 -->
+              <!-- 只有主揪可以刪除成員 -->
               <button 
                 v-if="isTripCreator && members.length > 1" 
                 @click="deleteMember(m)" 
-                class="text-slate-300 hover:text-rose-500 transition p-1.5 active:scale-95" 
+                class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-95 min-h-[36px] min-w-[36px] flex items-center justify-center" 
                 title="刪除成員"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -445,41 +620,41 @@
       </div>
 
       <div class="pt-2 border-t border-slate-100">
-        <button @click="handleSignOut" class="w-full py-3 bg-rose-50 border border-rose-100 text-rose-600 font-black text-xs rounded-2xl hover:bg-rose-100 active:scale-95 transition">登出帳號</button>
+        <button @click="handleSignOut" class="w-full py-3 bg-rose-50 border border-rose-100 text-rose-600 font-black text-xs rounded-2xl hover:bg-rose-100 active:scale-95 transition min-h-[44px]">登出帳號</button>
       </div>
     </main>
 
     <!-- 懸浮記帳按鈕 (+) -->
-    <button v-if="activeTab === 'expenses'" @click="openNewExpenseModal" class="fixed right-6 bottom-24 w-14 h-14 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-300/80 active:scale-90 transition transform z-40">
+    <button v-if="activeTab === 'expenses'" @click="openNewExpenseModal" class="fixed right-6 bottom-24 w-14 h-14 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-300/80 active:scale-90 transition transform z-40 min-h-[56px] min-w-[56px]">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
     </button>
 
     <!-- 底部導航欄 -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/85 backdrop-blur-xl border-t border-slate-200/60 py-2.5 px-6 flex justify-between z-30">
-      <button @click="activeTab = 'expenses'" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95">
+      <button @click="activeTab = 'expenses'" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[44px] justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
         明細
       </button>
-      <button @click="activeTab = 'settle'" :class="activeTab === 'settle' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95">
+      <button @click="activeTab = 'settle'" :class="activeTab === 'settle' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[44px] justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
         結算
       </button>
-      <button @click="activeTab = 'categories'" :class="activeTab === 'categories' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95">
+      <button @click="activeTab = 'categories'" :class="activeTab === 'categories' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[44px] justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
         類別
       </button>
-      <button @click="activeTab = 'settings'" :class="activeTab === 'settings' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95">
+      <button @click="activeTab = 'settings'" :class="activeTab === 'settings' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[44px] justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
         成員設定
       </button>
     </nav>
 
-    <!-- 編輯成員姓名彈窗 (主揪和各角色自己皆可修改) -->
+    <!-- 編輯姓名彈窗 -->
     <div v-if="showEditNameModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-5 animate-fade-in">
       <div class="bg-white w-full max-w-sm rounded-[28px] p-6 space-y-4 shadow-2xl border border-slate-100 animate-slide-up">
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
           <h2 class="font-black text-base text-slate-800">修改成員姓名</h2>
-          <button @click="showEditNameModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+          <button @click="showEditNameModal = false" class="text-slate-400 hover:text-slate-600 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -490,19 +665,19 @@
             v-model="editMemberNameInput" 
             type="text" 
             placeholder="請輸入新姓名" 
-            class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+            class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
           >
           <p class="text-[11px] text-slate-400 mt-1.5">修改後將同步更新帳本內的所有分攤與結算紀錄。</p>
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button @click="showEditNameModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs active:scale-95 transition">取消</button>
-          <button @click="saveMemberName" class="flex-1 py-3 bg-indigo-600 text-white font-black rounded-2xl text-xs shadow-md shadow-indigo-100 active:scale-95 transition">儲存修改</button>
+          <button @click="showEditNameModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs active:scale-95 transition min-h-[44px]">取消</button>
+          <button @click="saveMemberName" class="flex-1 py-3 bg-indigo-600 text-white font-black rounded-2xl text-xs shadow-md shadow-indigo-100 active:scale-95 transition min-h-[44px]">儲存修改</button>
         </div>
       </div>
     </div>
 
-    <!-- 角色認領彈窗 (受邀加入後未綁定時顯示) -->
+    <!-- 角色認領彈窗 -->
     <div v-if="showClaimModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-5 animate-fade-in">
       <div class="bg-white w-full max-w-sm rounded-[28px] p-6 space-y-4 shadow-2xl border border-slate-100">
         <div>
@@ -517,7 +692,7 @@
               v-for="m in unassignedMembers" 
               :key="m.id" 
               @click="claimMemberRole(m.id)"
-              class="w-full p-3 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-slate-200/70 rounded-2xl text-left font-black text-sm text-slate-800 flex items-center justify-between transition"
+              class="w-full p-3 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-slate-200/70 rounded-2xl text-left font-black text-sm text-slate-800 flex items-center justify-between transition min-h-[44px]"
             >
               <span>{{ m.name }}</span>
               <span class="text-xs text-indigo-600 font-bold">點擊綁定 ➜</span>
@@ -528,7 +703,7 @@
           </div>
         </div>
 
-        <button @click="showClaimModal = false" class="w-full py-2.5 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs">
+        <button @click="showClaimModal = false" class="w-full py-2.5 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs min-h-[44px]">
           稍後再說
         </button>
       </div>
@@ -540,24 +715,24 @@
         <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-1"></div>
         <div class="flex items-center justify-between pb-2 border-b border-slate-100">
           <h2 class="font-black text-lg text-slate-800">{{ isEditingExpense ? '編輯花費紀錄' : '新增花費' }}</h2>
-          <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+          <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
         <div class="bg-slate-100 p-1.5 rounded-2xl flex">
-          <button @click="form.expense_type = 'group'" :class="form.expense_type === 'group' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2 text-xs rounded-xl transition">團體平攤</button>
-          <button @click="form.expense_type = 'personal'" :class="form.expense_type === 'personal' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2 text-xs rounded-xl transition">個人私物（僅自己可見）</button>
+          <button @click="form.expense_type = 'group'" :class="form.expense_type === 'group' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2 text-xs rounded-xl transition min-h-[36px]">團體平攤</button>
+          <button @click="form.expense_type = 'personal'" :class="form.expense_type === 'personal' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2 text-xs rounded-xl transition min-h-[36px]">個人私物（僅自己可見）</button>
         </div>
 
         <!-- 幣別與自訂匯率 -->
         <div class="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
           <div>
             <label class="text-[10px] font-black text-slate-400 uppercase">消費貨幣</label>
-            <select v-model="form.currency" @change="onCurrencyChange" class="w-full mt-1 px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-bold focus:outline-none">
+            <select v-model="form.currency" @change="onCurrencyChange" class="w-full mt-1 px-3 py-2 bg-white rounded-xl border border-slate-200 text-base font-bold focus:outline-none">
               <option value="TWD">TWD 台幣</option>
               <option value="JPY">JPY 日幣</option>
-              <option value="KRW">韓元 KRW</option>
+              <option value="KRW">KRW 韓元</option>
               <option value="USD">美金 USD</option>
               <option value="EUR">歐元 EUR</option>
               <option value="THB">THB 泰銖</option>
@@ -565,37 +740,36 @@
           </div>
           <div>
             <label class="text-[10px] font-black text-slate-400 uppercase">對主幣別 ({{ currentTripBaseCurrency }}) 匯率</label>
-            <input v-model.number="form.exchange_rate" type="number" step="0.0001" class="w-full mt-1 px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-mono font-bold focus:outline-none">
+            <input v-model.number="form.exchange_rate" type="number" step="0.0001" class="w-full mt-1 px-3 py-2 bg-white rounded-xl border border-slate-200 text-base font-mono font-bold focus:outline-none">
           </div>
         </div>
 
         <div>
           <div class="flex justify-between items-center">
             <label class="text-[11px] font-black text-slate-400 uppercase">原始金額 ({{ form.currency }})</label>
-            <span v-if="form.currency !== currentTripBaseCurrency" class="text-xs font-black text-indigo-600">折合主幣別約 ${{ calculatedConvertedAmount.toLocaleString() }} {{ currentTripBaseCurrency }}</span>
+            <span v-if="form.currency !== currentTripBaseCurrency" class="text-xs font-black text-indigo-600 font-mono tabular-nums">折合約 ${{ calculatedConvertedAmount.toLocaleString() }} {{ currentTripBaseCurrency }}</span>
           </div>
-          <input v-model.number="form.original_amount" type="number" placeholder="0" required class="w-full text-3xl font-black text-slate-900 border-b border-slate-200 pb-2 focus:outline-none focus:border-indigo-600 num-font transition">
+          <input v-model.number="form.original_amount" type="number" placeholder="0" required class="w-full text-3xl font-black text-slate-900 border-b border-slate-200 pb-2 focus:outline-none focus:border-indigo-600 font-mono tabular-nums transition">
         </div>
 
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase">項目名稱</label>
-          <input v-model="form.title" type="text" placeholder="如：居酒屋晚餐、藥妝私物" required class="w-full mt-1 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:bg-white transition">
+          <input v-model="form.title" type="text" placeholder="如：居酒屋晚餐、藥妝私物" required class="w-full mt-1 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white transition">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-[11px] font-black text-slate-400 uppercase">類別</label>
-            <select v-model="form.category_id" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none">
+            <select v-model="form.category_id" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
               <option v-for="c in categories" :key="c.id" :value="c.id">{{ getCategoryEmoji(c.id) }} {{ c.name }}</option>
             </select>
           </div>
           <div>
             <label class="text-[11px] font-black text-slate-400 uppercase">付款人</label>
-            <!-- 一般受邀者付款人固定為自己，建立者可代填 -->
-            <select v-if="isTripCreator" v-model="form.payer_id" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none">
+            <select v-if="isTripCreator" v-model="form.payer_id" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none">
               <option v-for="m in members" :key="m.id" :value="m.id">{{ m.name }}</option>
             </select>
-            <div v-else class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">
+            <div v-else class="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-base font-bold text-slate-700">
               {{ currentMemberName }}
             </div>
           </div>
@@ -604,16 +778,16 @@
         <div v-if="form.expense_type === 'group'">
           <div class="flex items-center justify-between mb-2">
             <label class="text-[11px] font-black text-slate-400 uppercase">分攤成員</label>
-            <button @click="toggleSelectAllMembers" type="button" class="text-[10px] text-indigo-600 font-black">全選 / 取消全選</button>
+            <button @click="toggleSelectAllMembers" type="button" class="text-[10px] text-indigo-600 font-black min-h-[30px]">全選 / 取消全選</button>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button v-for="m in members" :key="m.id" type="button" @click="toggleMemberSplit(m.id)" :class="form.split_members.includes(m.id) ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-slate-100 text-slate-500 font-bold'" class="px-3.5 py-1.5 rounded-full text-xs transition active:scale-95">
+            <button v-for="m in members" :key="m.id" type="button" @click="toggleMemberSplit(m.id)" :class="form.split_members.includes(m.id) ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-slate-100 text-slate-500 font-bold'" class="px-3.5 py-1.5 rounded-full text-xs transition active:scale-95 min-h-[36px]">
               {{ m.name }}
             </button>
           </div>
         </div>
 
-        <button @click="saveExpense" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-black rounded-2xl shadow-lg shadow-indigo-100 transition">
+        <button @click="saveExpense" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black rounded-2xl shadow-lg shadow-indigo-100 transition min-h-[48px]">
           {{ isEditingExpense ? '儲存變更' : '儲存紀錄' }}
         </button>
       </div>
@@ -627,7 +801,7 @@
             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <h2 class="font-black text-base text-slate-800">操作歷程紀錄</h2>
           </div>
-          <button @click="showLogModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+          <button @click="showLogModal = false" class="text-slate-400 hover:text-slate-600 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -665,6 +839,8 @@
         authPhoneLast5: '',
         authLoading: false,
 
+        appIconSrc: window.__TRAVEL_APP_ICON__ || '',
+
         isOnline: navigator.onLine,
         offlineQueueCount: 0,
 
@@ -681,8 +857,6 @@
 
         showLogModal: false,
         showClaimModal: false,
-        
-        // 編輯成員姓名彈窗狀態
         showEditNameModal: false,
         editingMemberTarget: null,
         editMemberNameInput: '',
@@ -761,11 +935,9 @@
       unassignedMembers() {
         return this.members.filter(m => !m.user_id);
       },
-      // 隱私隔離：一般成員只能看「團體平攤」或「屬於自己的個人私物」
       visibleExpenses() {
         return this.expenses.filter(e => {
           if (e.expense_type === 'group') return true;
-          // 個人私物：只有建立者或該私物擁有者(payer)才可看見
           return this.isTripCreator || e.payer_id === this.currentMemberId;
         });
       },
@@ -882,7 +1054,6 @@
         }
         return transactions;
       },
-      // 一般成員只能看到跟自己有關的收付路徑
       myRelatedDebts() {
         if (this.isTripCreator) return this.settlementDebts;
         return this.settlementDebts.filter(d => d.fromId === this.currentMemberId || d.toId === this.currentMemberId);
@@ -926,12 +1097,9 @@
         if (this.isTripCreator) return true;
         return item.payer_id === this.currentMemberId;
       },
-      // 判斷當前使用者是否能編輯某成員的姓名
       canEditMemberName(member) {
         if (!this.session?.user) return false;
-        // 1. 如果此成員綁定的是自己，自己永遠可以改自己的名字
         if (member.user_id === this.session.user.id) return true;
-        // 2. 如果自己是主揪建立者，可以編輯尚未被認領的成員姓名
         if (this.isTripCreator && !member.user_id) return true;
         return false;
       },
@@ -964,7 +1132,7 @@
         } else {
           this.editingMemberTarget.name = newName;
           this.showEditNameModal = false;
-          await this.addLog(`將成員「${oldName}」姓名更新為「${newName}」`);
+          await this.addLog(`將成員「${oldName}」更新為「${newName}」`);
           await this.fetchTripDetails();
         }
       },
@@ -1073,13 +1241,11 @@
         this.expenses = [];
       },
       async fetchTrips() {
-        // 1. 查詢自己建立的旅程
         const { data: ownTrips } = await supabaseClient
           .from('trips')
           .select('*')
           .order('created_at', { ascending: false });
 
-        // 2. 查詢受邀協作的旅程 (trip_collaborators)
         const { data: collabRows } = await supabaseClient
           .from('trip_collaborators')
           .select('trip_id')
@@ -1095,7 +1261,6 @@
           collabTrips = cData || [];
         }
 
-        // 3. 合併去重
         const tripMap = new Map();
         [...(ownTrips || []), ...collabTrips].forEach(t => tripMap.set(t.id, t));
         this.trips = Array.from(tripMap.values());
@@ -1120,12 +1285,10 @@
         this.expenses = expRes.data || [];
         this.activityLogs = logRes.data || [];
 
-        // 自動定位本人的角色：若有已綁定 user_id 的成員，強制鎖定該成員
         const myBoundMember = this.members.find(m => m.user_id === this.session?.user?.id);
         if (myBoundMember) {
           this.currentMemberId = myBoundMember.id;
         } else if (this.isTripCreator) {
-          // 建立者若第一筆未填 user_id 則自動補充綁定
           if (this.members.length > 0) {
             this.currentMemberId = this.members[0].id;
             if (!this.members[0].user_id) {
@@ -1134,7 +1297,6 @@
             }
           }
         } else {
-          // 受邀夥伴且尚未認領角色，觸發認領彈窗
           this.currentMemberId = null;
           this.showClaimModal = true;
         }
@@ -1251,7 +1413,7 @@
           payer_id: this.form.payer_id,
           expense_type: this.form.expense_type,
           split_members: this.form.expense_type === 'group' ? this.form.split_members : [this.form.payer_id],
-          date: new Date().toISOString().split('T')[0] // 確保 date 符合 NOT NULL
+          date: new Date().toISOString().split('T')[0]
         };
 
         if (!this.isOnline) {
@@ -1376,7 +1538,6 @@
 
         if (error) return alert(error.message);
         if (trip) {
-          // 建立者自動作為該帳本第一個已綁定的成員
           await supabaseClient.from('members').insert([{ 
             trip_id: trip.id, 
             name: '主揪(我)', 
@@ -1415,7 +1576,6 @@
       async leaveTrip(trip) {
         if (!confirm(`確定要退出「${trip.name}」這本帳本嗎？退出後您將無法再檢視該旅程。`)) return;
         await supabaseClient.from('trip_collaborators').delete().match({ trip_id: trip.id, user_id: this.session.user.id });
-        // 同時解綁該成員角色
         await supabaseClient.from('members').update({ user_id: null }).match({ trip_id: trip.id, user_id: this.session.user.id });
         alert(`已退出「${trip.name}」！`);
         this.currentTripId = null;
