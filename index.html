@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="color-scheme" content="light">
-  <title>雲端多人旅遊分帳</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>雲端多人旅遊分帳 v3.1</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -139,6 +142,7 @@
 
   <style>
     [v-cloak] { display: none !important; }
+    *, *::before, *::after { box-sizing: border-box; }
     :root {
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
@@ -164,6 +168,8 @@
       appearance: none;
       -webkit-user-select: text;
       user-select: text;
+      min-width: 0;
+      max-width: 100%;
     }
     input[type="date"] {
       display: flex;
@@ -189,7 +195,7 @@
   </style>
 </head>
 <body class="selection:bg-indigo-500 selection:text-white">
-<div id="app" v-cloak class="max-w-md mx-auto h-[100dvh] bg-[#F8FAFC] relative flex flex-col overflow-hidden shadow-[0_0_60px_-15px_rgba(15,23,42,0.12)] sm:border-x sm:border-slate-200/80 select-none">
+<div id="app" v-cloak class="w-full max-w-md mx-auto h-[100dvh] bg-[#F8FAFC] relative flex flex-col overflow-hidden shadow-[0_0_60px_-15px_rgba(15,23,42,0.12)] sm:border-x sm:border-slate-200/80 select-none">
 
   <!-- 動態島級 Toast 懸浮通知 -->
   <transition enter-active-class="transition duration-300 ease-out" enter-from-class="transform -translate-y-6 opacity-0 scale-95" enter-to-class="transform translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="transform translate-y-0 opacity-100 scale-100" leave-to-class="transform -translate-y-6 opacity-0 scale-95">
@@ -211,10 +217,14 @@
   </div>
 
   <!-- ================= 入口畫面 (免註冊訪客 / 登入 / 註冊) ================= -->
-  <div v-if="!session" class="flex-1 overflow-y-auto no-scrollbar flex flex-col justify-center px-5 sm:px-7 py-8 bg-white safe-pt safe-pb">
+  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-center px-5 sm:px-7 py-8 bg-white safe-pt safe-pb">
     <div class="text-center mb-6">
       <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3.5 border border-indigo-100 overflow-hidden bg-indigo-50">
         <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
+      </div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1.5">
+        <span>LATEST</span>
+        <span>{{ appVersion }}</span>
       </div>
       <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
       <p class="text-xs font-medium text-slate-400 mt-1">免註冊本機秒進・隱私隔離・雙平台離線記帳</p>
@@ -246,7 +256,7 @@
           <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
         </div>
         <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本。</p>
-        <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
       </div>
 
       <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
@@ -264,13 +274,13 @@
     <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div class="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-3">
         <span class="text-[11px] font-black text-indigo-600 uppercase tracking-wide block">雙軌安全驗證（二擇一）</span>
         <div>
           <label class="text-[11px] font-bold text-slate-600">方式 A：登入密碼</label>
-          <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div class="relative flex py-0.5 items-center">
           <div class="flex-grow border-t border-slate-200"></div>
@@ -279,7 +289,7 @@
         </div>
         <div>
           <label class="text-[11px] font-bold text-slate-600">方式 B：註冊手機後 5 碼</label>
-          <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
       </div>
       <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
@@ -291,15 +301,15 @@
     <form v-else @submit.prevent="handleRegister" class="space-y-4">
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">設定密碼 <span class="text-rose-500">*</span></label>
-        <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div>
         <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
-        <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
         {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
@@ -312,7 +322,7 @@
     <!-- 固定頂部導航列 -->
     <header class="px-3.5 sm:px-4 pb-3 bg-white/95 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
       <div class="relative flex-1 min-w-0">
-        <select v-model="currentTripId" @change="onTripSwitch" class="w-full appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-2 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition min-h-[42px]">
+        <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-2 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[42px]">
           <option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
           <option v-if="trips.length === 0" :value="null">✨ 歡迎使用旅遊分帳</option>
         </select>
@@ -328,7 +338,7 @@
           v-if="currentMember"
           type="button"
           @click="openEditMemberNameModal(currentMember)"
-          class="text-xs font-black rounded-full px-2.5 sm:px-3 h-10 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[115px] sm:max-w-[140px]"
+          class="text-xs font-black rounded-full px-2.5 sm:px-3 h-10 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[110px] sm:max-w-[136px]"
           :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'"
         >
           <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
@@ -341,39 +351,45 @@
       </div>
     </header>
 
-    <!-- 中央獨立滾動視口 (Native App Scroll Container) -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto no-scrollbar pb-28">
+    <!-- 中央獨立滾動視口 (嚴防左右水平溢出) -->
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-28">
       
       <!-- 0 帳本新手引導畫面 -->
-      <div v-if="trips.length === 0 && activeTab !== 'settings'" class="p-5 space-y-4">
+      <div v-if="trips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
         <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white p-6 rounded-[28px] shadow-xl shadow-indigo-200/80 space-y-3">
-          <span class="text-2xl">✈️</span>
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">✈️</span>
+            <span class="text-[10px] font-mono font-bold bg-white/15 px-2.5 py-0.5 rounded-full">{{ appVersion }} 最新版</span>
+          </div>
           <h2 class="text-xl font-black tracking-tight">開始您的第一趟旅程分帳</h2>
           <p class="text-xs text-indigo-100 leading-relaxed">建立新帳本並設定同行夥伴，或直接輸入朋友分享的 6 位數邀請碼加入。</p>
         </div>
 
-        <div class="bg-white p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3">
+        <div class="bg-white p-4 sm:p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3 overflow-hidden">
           <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
-          <div class="flex gap-2">
-            <input v-model="newTripName" @keyup.enter="createTrip" placeholder="例如：2026 東京賞楓" class="flex-1 px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-            <select v-model="newTripCurrency" class="px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
-              <option value="TWD">TWD</option>
-              <option value="JPY">JPY</option>
-              <option value="KRW">KRW</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-            </select>
+          <div class="flex items-center gap-2 w-full">
+            <input v-model="newTripName" @keyup.enter="createTrip" placeholder="例如：2026 東京賞楓" class="flex-1 min-w-0 w-full h-[48px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+            <div class="relative shrink-0 w-[92px]">
+              <select v-model="newTripCurrency" class="w-full h-[48px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
+                <option value="TWD">TWD</option>
+                <option value="JPY">JPY</option>
+                <option value="KRW">KRW</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+              <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+            </div>
           </div>
-          <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[46px]">
+          <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[48px]">
             ＋ 建立旅程並開始記帳
           </button>
         </div>
 
-        <div class="bg-indigo-50/80 border border-indigo-100 p-5 rounded-[24px] space-y-3">
+        <div class="bg-indigo-50/80 border border-indigo-100 p-4 sm:p-5 rounded-[24px] space-y-3 overflow-hidden">
           <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入朋友的帳本</h3>
-          <div class="flex gap-2">
-            <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 px-4 py-3 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-            <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition min-h-[46px]">加入</button>
+          <div class="flex items-center gap-2 w-full">
+            <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+            <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
           </div>
         </div>
       </div>
@@ -381,7 +397,7 @@
       <template v-else>
         <!-- 未認領角色提示 -->
         <div v-if="currentTrip && !isCurrentMemberBound" class="mx-4 mt-3 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <p class="text-xs font-black text-amber-900">尚未綁定您的分帳角色</p>
             <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">點選您的名字即可記帳並隔離私密帳務</p>
           </div>
@@ -409,14 +425,14 @@
         <!-- ================= Tab 1: 支出明細 (日期時間軸分組) ================= -->
         <main v-if="activeTab === 'expenses'" class="p-4 space-y-4">
           <div class="grid grid-cols-2 gap-3">
-            <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden min-w-0">
               <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
               <p class="text-[11px] font-bold text-indigo-100 tracking-wide">團體公帳總額</p>
               <p class="text-lg sm:text-xl font-black mt-1.5 font-mono tabular-nums tracking-tight truncate">
                 <span class="text-[11px] font-bold opacity-80 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(totalGroupExpense) }}
               </p>
             </div>
-            <div class="bg-white border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)]">
+            <div class="bg-white border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)] min-w-0">
               <p class="text-[11px] font-bold text-slate-400 tracking-wide">您的個人總開銷</p>
               <p class="text-lg sm:text-xl font-black text-slate-900 mt-1.5 font-mono tabular-nums tracking-tight truncate">
                 <span class="text-[11px] font-bold text-slate-400 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(currentMemberTotalCost) }}
@@ -450,7 +466,7 @@
             </div>
 
             <div v-if="visibleExpenses.length >= 4" class="relative">
-              <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
+              <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full min-w-0 pl-9 pr-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
               <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
           </div>
@@ -575,53 +591,56 @@
 
         <!-- ================= Tab 3: 類別管理 ================= -->
         <main v-if="activeTab === 'categories'" class="p-4 space-y-4">
-          <div v-if="isTripCreator" class="flex gap-2">
-            <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="button" :disabled="isSaving" @click="addCategory" class="px-5 py-3 bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-black shadow-md shadow-indigo-100 transition min-h-[48px] shrink-0 disabled:opacity-50">新增</button>
+          <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
+            <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-2xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" :disabled="isSaving" @click="addCategory" class="px-5 h-[48px] bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-black shadow-md shadow-indigo-100 transition shrink-0 disabled:opacity-50">新增</button>
           </div>
           <div class="grid grid-cols-1 gap-2">
             <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white border border-slate-200/70 rounded-2xl flex items-center justify-between shadow-sm">
-              <div class="flex items-center gap-3">
-                <span class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-lg">{{ getCategoryEmoji(c.id) }}</span>
-                <span class="font-black text-sm text-slate-800">{{ c.name }}</span>
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-lg shrink-0">{{ getCategoryEmoji(c.id) }}</span>
+                <span class="font-black text-sm text-slate-800 truncate">{{ c.name }}</span>
               </div>
-              <button v-if="isTripCreator" type="button" @click="triggerDeleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
+              <button v-if="isTripCreator" type="button" @click="triggerDeleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
           </div>
         </main>
 
-        <!-- ================= Tab 4: 成員與帳本設定 ================= -->
+        <!-- ================= Tab 4: 成員與帳本設定 (雙平台零溢出完美對齊) ================= -->
         <main v-if="activeTab === 'settings'" class="p-4 space-y-5">
-          <!-- 當前連線身分 -->
-          <div class="p-3.5 bg-white border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2">
-            <div class="min-w-0">
-              <span class="text-[10px] font-bold text-slate-400 uppercase block">目前連線身分</span>
+          <!-- 版本與強制更新卡片 -->
+          <div class="p-3.5 bg-white border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">系統版本</span>
+                <span class="text-[10px] font-mono font-black bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-1.5 py-0.5 rounded">{{ appVersion }}</span>
+              </div>
               <span class="text-xs font-black text-slate-800 truncate block mt-0.5">
                 {{ isGuestSession ? '📱 免註冊訪客模式（已綁定本機）' : session.user.email }}
               </span>
             </div>
-            <span class="text-[10px] font-black px-2.5 py-1 rounded-lg shrink-0" :class="isGuestSession ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-700'">
-              {{ isGuestSession ? '免註冊本機綁定' : '正式雲端帳號' }}
-            </span>
+            <button type="button" @click="forceAppReload" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-2 rounded-xl active:scale-95 transition shrink-0 min-h-[38px]">
+              ↻ 強制更新重整
+            </button>
           </div>
 
           <!-- 成員名單管理 -->
-          <div v-if="currentTrip" class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs font-black text-slate-800 tracking-wider uppercase">同行成員名單</h3>
-              <span class="text-[10px] text-slate-400 font-bold">點擊鉛筆可修改名稱</span>
+          <div v-if="currentTrip" class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-xs font-black text-slate-800 tracking-wider uppercase shrink-0">同行成員名單</h3>
+              <span class="text-[10px] text-slate-400 font-bold truncate">點擊鉛筆可修改名稱</span>
             </div>
 
-            <div v-if="isTripCreator" class="flex gap-2">
-              <input v-model="newMemberName" @keyup.enter="addMember" placeholder="輸入夥伴姓名（如：小明）" class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-              <button type="button" :disabled="isSaving" @click="addMember" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-95 transition min-h-[44px] shrink-0 disabled:opacity-50">新增</button>
+            <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
+              <input v-model="newMemberName" @keyup.enter="addMember" placeholder="輸入夥伴姓名（如：小明）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+              <button type="button" :disabled="isSaving" @click="addMember" class="px-4 h-[46px] bg-slate-900 text-white rounded-xl text-xs font-black active:scale-95 transition shrink-0 disabled:opacity-50">新增</button>
             </div>
 
             <div class="space-y-2">
               <div v-for="(m, idx) in members" :key="m.id" class="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2.5 min-w-0">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
                   <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
                     {{ m.name.slice(0, 1) }}
                   </div>
@@ -644,38 +663,38 @@
           </div>
 
           <!-- 加入同行帳本 -->
-          <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-[24px] space-y-2.5">
+          <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-[24px] space-y-2.5 overflow-hidden">
             <div>
               <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入同行帳本</h3>
               <p class="text-[11px] text-indigo-600 font-medium mt-0.5">輸入主揪分享的 6 位數邀請碼</p>
             </div>
-            <div class="flex gap-2">
-              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-              <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition min-h-[44px] shrink-0 disabled:opacity-50">加入</button>
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+              <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0 disabled:opacity-50">加入</button>
             </div>
           </div>
 
-          <!-- 建立與管理旅程帳本 -->
-          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3">
+          <!-- 建立與管理旅程帳本 (已徹底修正 Android 選框溢出) -->
+          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
-            <div class="flex gap-2">
-              <input v-model="newTripName" @keyup.enter="createTrip" placeholder="旅程名稱（如：東京五日）" class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-              <div class="relative shrink-0">
-                <select v-model="newTripCurrency" class="px-3 py-2.5 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="newTripName" @keyup.enter="createTrip" placeholder="旅程名稱（如：東京五日）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+              <div class="relative shrink-0 w-[88px]">
+                <select v-model="newTripCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
                   <option value="TWD">TWD</option>
                   <option value="JPY">JPY</option>
                   <option value="KRW">KRW</option>
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
                 </select>
-                <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </div>
             </div>
             <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[46px] disabled:opacity-50">建立新旅程</button>
 
             <div v-if="trips.length > 0" class="pt-2 space-y-2 border-t border-slate-100">
               <div v-for="t in trips" :key="t.id" class="p-3 bg-slate-50 rounded-xl flex items-center justify-between gap-2">
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1">
                   <span class="text-xs font-black text-slate-800 truncate block">{{ t.name }} ({{ t.base_currency || 'TWD' }})</span>
                   <span class="text-[10px] text-slate-400 font-bold">{{ t.user_id === session.user.id ? '我建立的帳本' : '受邀協作帳本' }}</span>
                 </div>
@@ -690,7 +709,7 @@
           </div>
 
           <!-- 數據安全備份與還原 -->
-          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3">
+          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <div>
               <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">帳務匯出與 JSON 備份還原</h3>
               <p class="text-[11px] text-slate-400 font-medium mt-0.5">支援 Excel/CSV 報帳、完整備份與還原匯入</p>
@@ -765,7 +784,7 @@
       </div>
       <div>
         <label class="text-[11px] font-black text-slate-400 uppercase">新名稱 / 暱稱</label>
-        <input v-model="editMemberNameInput" @keyup.enter="saveMemberName" type="text" placeholder="請輸入新名稱" class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="editMemberNameInput" @keyup.enter="saveMemberName" type="text" placeholder="請輸入新名稱" class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div class="flex gap-2.5 pt-1">
         <button type="button" @click="showEditNameModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs active:scale-95 transition min-h-[44px]">取消</button>
@@ -783,8 +802,8 @@
       </div>
       <div class="space-y-1.5 max-h-52 overflow-y-auto no-scrollbar">
         <button v-for="m in unassignedMembers" :key="m.id" type="button" @click="claimMemberRole(m.id)" class="w-full p-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200/80 rounded-2xl text-left font-black text-sm text-slate-800 flex items-center justify-between transition active:scale-98 min-h-[48px]">
-          <span>{{ m.name }}</span>
-          <span class="text-xs text-indigo-600 font-bold">綁定 ➜</span>
+          <span class="truncate">{{ m.name }}</span>
+          <span class="text-xs text-indigo-600 font-bold shrink-0">綁定 ➜</span>
         </button>
         <p v-if="unassignedMembers.length === 0" class="text-xs text-slate-400 py-6 text-center font-medium">目前所有名額皆已認領完畢！請聯繫主揪新增成員。</p>
       </div>
@@ -792,9 +811,9 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 4: 記帳 / 編輯抽屜 (支援算式輸入) ================= -->
+  <!-- ================= 彈窗 4: 記帳 / 編輯抽屜 ================= -->
   <div v-if="showModal" @click.self="showModal = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[70] flex items-end justify-center animate-fade-in">
-    <form @submit.prevent="saveExpense" class="bg-white w-full max-w-md rounded-t-[32px] px-5 sm:px-6 pt-3 space-y-4 max-h-[92dvh] overflow-y-auto no-scrollbar shadow-2xl border-t border-slate-100 animate-slide-up safe-modal-pb">
+    <form @submit.prevent="saveExpense" class="bg-white w-full max-w-md rounded-t-[32px] px-5 sm:px-6 pt-3 space-y-4 max-h-[92dvh] overflow-y-auto overflow-x-hidden no-scrollbar shadow-2xl border-t border-slate-100 animate-slide-up safe-modal-pb">
       <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto"></div>
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
         <h2 class="font-black text-lg text-slate-900">{{ isEditingExpense ? '編輯花費明細' : '記一筆花費' }}</h2>
@@ -809,10 +828,10 @@
       </div>
 
       <div class="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200/70 rounded-2xl">
-        <div>
-          <label class="text-[10px] font-black text-slate-400 uppercase">消費幣別</label>
+        <div class="min-w-0">
+          <label class="text-[10px] font-black text-slate-400 uppercase block">消費幣別</label>
           <div class="relative mt-1">
-            <select v-model="form.currency" @change="onCurrencyChange" class="w-full px-3 py-2.5 pr-7 bg-white rounded-xl border border-slate-200 text-base font-bold focus:outline-none">
+            <select v-model="form.currency" @change="onCurrencyChange" class="w-full min-w-0 h-[44px] px-3 pr-7 bg-white rounded-xl border border-slate-200 text-base font-bold focus:outline-none truncate">
               <option value="TWD">TWD 台幣</option>
               <option value="JPY">JPY 日幣</option>
               <option value="KRW">KRW 韓元</option>
@@ -823,60 +842,59 @@
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
-        <div>
-          <label class="text-[10px] font-black text-slate-400 uppercase">對 {{ currentTripBaseCurrency }} 匯率</label>
-          <input v-model.number="form.exchange_rate" type="number" inputmode="decimal" step="0.0001" min="0.0001" class="w-full mt-1 px-3 py-2.5 bg-white rounded-xl border border-slate-200 text-base font-mono font-bold focus:outline-none">
+        <div class="min-w-0">
+          <label class="text-[10px] font-black text-slate-400 uppercase block truncate">對 {{ currentTripBaseCurrency }} 匯率</label>
+          <input v-model.number="form.exchange_rate" type="number" inputmode="decimal" step="0.0001" min="0.0001" class="w-full min-w-0 h-[44px] mt-1 px-3 bg-white rounded-xl border border-slate-200 text-base font-mono font-bold focus:outline-none">
         </div>
       </div>
 
-      <!-- 金額欄 (支援直接輸入算式如 1200+350) -->
       <div>
-        <div class="flex justify-between items-center">
-          <label class="text-[11px] font-black text-slate-400 uppercase">金額 ({{ form.currency }}・可輸入如 500+320)</label>
-          <span v-if="evaluatedOriginalAmount > 0 && (isExpressionInput || form.currency !== currentTripBaseCurrency)" class="text-xs font-black text-indigo-600 font-mono tabular-nums">
+        <div class="flex justify-between items-center gap-2">
+          <label class="text-[11px] font-black text-slate-400 uppercase truncate">金額 ({{ form.currency }}・可輸入如 500+320)</label>
+          <span v-if="evaluatedOriginalAmount > 0 && (isExpressionInput || form.currency !== currentTripBaseCurrency)" class="text-xs font-black text-indigo-600 font-mono tabular-nums shrink-0">
             = ${{ formatMoney(calculatedConvertedAmount) }} {{ currentTripBaseCurrency }}
           </span>
         </div>
-        <input v-model="form.amountExpr" type="text" inputmode="decimal" placeholder="0" required class="w-full text-3xl font-black text-slate-900 border-b-2 border-slate-200 py-2 focus:outline-none focus:border-indigo-600 font-mono tabular-nums transition bg-transparent">
+        <input v-model="form.amountExpr" type="text" inputmode="decimal" placeholder="0" required class="w-full min-w-0 text-3xl font-black text-slate-900 border-b-2 border-slate-200 py-2 focus:outline-none focus:border-indigo-600 font-mono tabular-nums transition bg-transparent">
       </div>
 
       <div>
         <label class="text-[11px] font-black text-slate-400 uppercase">項目說明</label>
-        <input v-model="form.title" type="text" placeholder="例如：燒肉晚餐、藥妝採買" required class="w-full mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition">
+        <input v-model="form.title" type="text" placeholder="例如：燒肉晚餐、藥妝採買" required class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition">
       </div>
 
       <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-[11px] font-black text-slate-400 uppercase">消費類別</label>
+        <div class="min-w-0">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">消費類別</label>
           <div class="relative mt-1">
-            <select v-model="form.category_id" class="w-full px-3 py-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
+            <select v-model="form.category_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
               <option v-for="c in categories" :key="c.id" :value="c.id">{{ getCategoryEmoji(c.id) }} {{ c.name }}</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
-        <div>
-          <label class="text-[11px] font-black text-slate-400 uppercase">先代墊付款人</label>
+        <div class="min-w-0">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">先代墊付款人</label>
           <div v-if="isTripCreator" class="relative mt-1">
-            <select v-model="form.payer_id" class="w-full px-3 py-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none">
+            <select v-model="form.payer_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
               <option v-for="m in members" :key="m.id" :value="m.id">{{ m.name }}</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
-          <div v-else class="w-full mt-1 px-3.5 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-base font-bold text-slate-600 truncate">
+          <div v-else class="w-full h-[48px] mt-1 px-3.5 rounded-2xl bg-slate-100 border border-slate-200 text-base font-bold text-slate-600 flex items-center truncate">
             {{ currentMemberName }}
           </div>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-[11px] font-black text-slate-400 uppercase">消費日期</label>
-          <input v-model="form.date" type="date" required class="w-full mt-1 px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-base font-mono font-bold text-slate-800 focus:outline-none focus:bg-white">
+        <div class="min-w-0">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">消費日期</label>
+          <input v-model="form.date" type="date" required class="w-full min-w-0 mt-1 px-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-mono font-bold text-slate-800 focus:outline-none focus:bg-white">
         </div>
-        <div>
-          <label class="text-[11px] font-black text-slate-400 uppercase">備註 (選填)</label>
-          <input v-model="form.notes" type="text" placeholder="刷卡/現金/細項" class="w-full mt-1 px-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+        <div class="min-w-0">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">備註 (選填)</label>
+          <input v-model="form.notes" type="text" placeholder="刷卡/現金/細項" class="w-full min-w-0 h-[48px] mt-1 px-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
         </div>
       </div>
 
@@ -931,7 +949,7 @@
 
   createApp({
     setup() {
-      // 核心狀態
+      const appVersion = ref('v3.1.0');
       const session = ref(null);
       const authMode = ref('guest');
       const authEmail = ref('');
@@ -998,13 +1016,11 @@
         notes: ''
       });
 
-      // 各幣別對台幣基準匯率（支援任意幣別雙向交叉換算）
       const toTwdRates = { TWD: 1.0, JPY: 0.21, KRW: 0.024, USD: 32.5, EUR: 35.2, THB: 0.95 };
       const memberColors = ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#06B6D4', '#8B5CF6', '#F43F5E', '#14B8A6'];
       const categoryEmojiMap = { '餐飲': '🍜', '交通': '🚗', '住宿': '🏨', '娛樂': '🎟️', '購物': '🛍️', '油錢': '⛽', '停車': '🅿️' };
       const categoryColorMap = { '餐飲': '#FB7185', '交通': '#38BDF8', '住宿': '#818CF8', '娛樂': '#FBBF24', '購物': '#34D399', '油錢': '#F97316', '停車': '#A78BFA' };
 
-      // 計算屬性
       const isGuestSession = computed(() => {
         if (!session.value?.user) return false;
         const email = session.value.user.email || '';
@@ -1019,7 +1035,6 @@
       const isCurrentMemberBound = computed(() => !!currentMember.value && currentMember.value.user_id === session.value?.user?.id);
       const unassignedMembers = computed(() => members.value.filter(m => !m.user_id));
 
-      // 安全數學算式解析器（支援 1200+350、4500/3 等）
       const evaluateMathExpr = (raw) => {
         const str = String(raw || '').replace(/\s+/g, '');
         if (!str) return 0;
@@ -1063,7 +1078,6 @@
         return list;
       });
 
-      // 按日期分組並計算每日小計
       const groupedExpenses = computed(() => {
         const groups = [];
         const map = new Map();
@@ -1193,7 +1207,6 @@
           : settlementDebts.value.filter(d => d.fromId === currentMemberId.value || d.toId === currentMemberId.value)
       );
 
-      // Local-First 自動本機快取
       watch(expenses, (val) => {
         if (!currentTripId.value) return;
         try {
@@ -1203,7 +1216,6 @@
         } catch (e) {}
       }, { deep: true });
 
-      // 工具函式
       const showToast = (message, type = 'info') => {
         if (toastTimer) clearTimeout(toastTimer);
         toast.message = message; toast.type = type; toast.show = true;
@@ -1217,6 +1229,24 @@
       const executeConfirmAction = () => {
         if (typeof confirmDialog.onConfirm === 'function') confirmDialog.onConfirm();
         confirmDialog.show = false;
+      };
+
+      const forceAppReload = async () => {
+        showToast("正在清理快取並載入最新版本...");
+        try {
+          if ('caches' in window) {
+            const names = await caches.keys();
+            await Promise.all(names.map(name => caches.delete(name)));
+          }
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+          }
+        } catch (e) {}
+        setTimeout(() => {
+          const base = window.location.origin + window.location.pathname;
+          window.location.replace(`${base}?v=${Date.now()}`);
+        }, 400);
       };
 
       const switchTab = (tab) => {
@@ -1264,7 +1294,6 @@
         document.body.removeChild(ta);
       };
 
-      // 雙向交叉匯率計算（支援任意主幣別）
       const onCurrencyChange = () => {
         const base = currentTripBaseCurrency.value;
         if (form.currency === base) {
@@ -1276,7 +1305,6 @@
         }
       };
 
-      // 身份與訪客裝置綁定
       const checkSavedGuestDevice = () => {
         try { hasSavedGuestDevice.value = !!localStorage.getItem('travel_guest_device_creds'); }
         catch (e) { hasSavedGuestDevice.value = false; }
@@ -1408,7 +1436,6 @@
         });
       };
 
-      // 資料讀取與同步
       const addLog = async (action) => {
         if (!currentTripId.value || !isOnline.value) return;
         const email = session.value?.user?.email;
@@ -1517,7 +1544,6 @@
         await fetchTripDetails();
       };
 
-      // 成員與角色操作
       const canEditMemberName = (m) => !!(session.value?.user && (m.user_id === session.value.user.id || (isTripCreator.value && !m.user_id)));
 
       const openEditMemberNameModal = (member) => {
@@ -1596,7 +1622,6 @@
         copyTextSafe(shareText, "免註冊邀請連結已複製！快貼到 LINE 群組");
       };
 
-      // 記帳操作
       const canEditOrDeleteExpense = (item) => isTripCreator.value || item.payer_id === currentMemberId.value;
 
       const openNewExpenseModal = () => {
@@ -1786,7 +1811,6 @@
         });
       };
 
-      // 結算分享與匯出
       const copyLineSettlement = () => {
         let msg = `✈️【${currentTrip.value?.name || '旅遊'}】公帳結算清單\n-------------------------\n`;
         msg += `💰 團體公帳總額：$${formatMoney(totalGroupExpense.value)} ${currentTripBaseCurrency.value}\n\n📊 成員公帳收支：\n`;
@@ -1830,7 +1854,7 @@
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 2, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.1, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
@@ -1879,7 +1903,6 @@
         reader.readAsText(file);
       };
 
-      // 類別、帳本與成員管理
       const addCategory = async () => {
         if (isSaving.value || !isTripCreator.value) return;
         const name = newCategoryName.value.trim();
@@ -2029,7 +2052,7 @@
       });
 
       return {
-        session, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
+        appVersion, session, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
         authLoading, isSaving, appIconSrc, isOnline, offlineQueueCount, toast, confirmDialog, activeTab, filterType, searchQuery, scrollContainer,
         trips, currentTripId, members, currentMemberId, categories, expenses, activityLogs,
         showLogModal, showClaimModal, showEditNameModal, editMemberNameInput, joinCodeInput, newTripName, newTripCurrency, newMemberName, newCategoryName,
@@ -2037,7 +2060,7 @@
         isGuestSession, currentTrip, currentTripBaseCurrency, isTripCreator, currentMember, currentMemberName, isCurrentMemberBound, unassignedMembers,
         isExpressionInput, evaluatedOriginalAmount, calculatedConvertedAmount, visibleExpenses, filteredExpenses, groupedExpenses,
         totalGroupExpense, categoryStats, currentMemberTotalCost, myPersonalCost, myPaidGroupCost, myNetBalance, memberSummaries, myRelatedDebts,
-        executeConfirmAction, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser, getCategoryName, getCategoryEmoji, getMemberName,
+        executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser, getCategoryName, getCategoryEmoji, getMemberName,
         onCurrencyChange, handleGuestQuickJoin, resumeGuestDeviceSession, handleLogin, handleRegister, triggerSignOut,
         onTripSwitch, canEditMemberName, openEditMemberNameModal, saveMemberName, claimMemberRole, joinTripByCode, copyInviteCode, copyInviteLink,
         canEditOrDeleteExpense, openNewExpenseModal, openEditExpenseModal, toggleMemberSplit, toggleSelectAllMembers, saveExpense, triggerDeleteExpense,
