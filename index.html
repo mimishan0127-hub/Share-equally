@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>雲端多人旅遊分帳 v3.1</title>
+  <title>雲端多人旅遊分帳 v3.2</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -217,104 +217,118 @@
   </div>
 
   <!-- ================= 入口畫面 (免註冊訪客 / 登入 / 註冊) ================= -->
-  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-center px-5 sm:px-7 py-8 bg-white safe-pt safe-pb">
-    <div class="text-center mb-6">
-      <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3.5 border border-indigo-100 overflow-hidden bg-indigo-50">
-        <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
-      </div>
-      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1.5">
-        <span>LATEST</span>
-        <span>{{ appVersion }}</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
-      <p class="text-xs font-medium text-slate-400 mt-1">免註冊本機秒進・隱私隔離・雙平台離線記帳</p>
-    </div>
-
-    <!-- 網址直達邀請橫幅 -->
-    <div v-if="pendingInviteCode" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-bold text-indigo-100">🎉 收到同行分帳邀請</span>
-        <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-lg tracking-widest">{{ pendingInviteCode }}</span>
-      </div>
-      <button type="button" :disabled="authLoading" @click="handleGuestQuickJoin(pendingInviteCode)" class="w-full py-3 bg-white text-indigo-700 font-black text-xs rounded-xl shadow-sm active:scale-[0.98] transition min-h-[44px] disabled:opacity-60">
-        {{ authLoading ? '正在綁定手機並進入...' : '免註冊，一鍵綁定手機直接記帳 ➜' }}
-      </button>
-    </div>
-
-    <!-- Segmented Control -->
-    <div class="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
-      <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">免註冊加入</button>
-      <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">帳號登入</button>
-      <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">註冊主揪</button>
-    </div>
-
-    <!-- 1. 免註冊訪客 -->
-    <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-4">
-      <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-black text-indigo-950">同行旅伴免註冊通道</span>
-          <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
+  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white safe-pt safe-pb">
+    <div class="my-auto py-2">
+      <div class="text-center mb-5">
+        <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3 border border-indigo-100 overflow-hidden bg-indigo-50">
+          <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
         </div>
-        <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本。</p>
-        <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1">
+          <span>LATEST</span>
+          <span>{{ appVersion }}</span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
+        <p class="text-xs font-medium text-slate-400 mt-1">免註冊本機秒進・隱私隔離・雙平台離線記帳</p>
       </div>
 
-      <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-        {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入帳本' }}
-      </button>
-
-      <div v-if="hasSavedGuestDevice" class="pt-1 text-center">
-        <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-2">
-          ↻ 恢復此手機先前的訪客帳本紀錄
+      <!-- 網址直達邀請橫幅 -->
+      <div v-if="pendingInviteCode" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-indigo-100">🎉 收到同行分帳邀請</span>
+          <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-lg tracking-widest">{{ pendingInviteCode }}</span>
+        </div>
+        <button type="button" :disabled="authLoading" @click="handleGuestQuickJoin(pendingInviteCode)" class="w-full py-3 bg-white text-indigo-700 font-black text-xs rounded-xl shadow-sm active:scale-[0.98] transition min-h-[44px] disabled:opacity-60">
+          {{ authLoading ? '正在綁定手機並進入...' : '免註冊，一鍵綁定手機直接記帳 ➜' }}
         </button>
       </div>
-    </form>
 
-    <!-- 2. 帳號登入 -->
-    <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
-      <div>
-        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+      <!-- Segmented Control -->
+      <div class="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
+        <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">免註冊加入</button>
+        <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">帳號登入</button>
+        <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">註冊主揪</button>
       </div>
-      <div class="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-3">
-        <span class="text-[11px] font-black text-indigo-600 uppercase tracking-wide block">雙軌安全驗證（二擇一）</span>
-        <div>
-          <label class="text-[11px] font-bold text-slate-600">方式 A：登入密碼</label>
-          <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div class="relative flex py-0.5 items-center">
-          <div class="flex-grow border-t border-slate-200"></div>
-          <span class="flex-shrink mx-2.5 text-[10px] text-slate-400 font-bold">或者免記密碼</span>
-          <div class="flex-grow border-t border-slate-200"></div>
-        </div>
-        <div>
-          <label class="text-[11px] font-bold text-slate-600">方式 B：註冊手機後 5 碼</label>
-          <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-      </div>
-      <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-        {{ authLoading ? '正在驗證身分...' : '立即登入帳本' }}
-      </button>
-    </form>
 
-    <!-- 3. 註冊主揪 -->
-    <form v-else @submit.prevent="handleRegister" class="space-y-4">
-      <div>
-        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-        <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+      <!-- 1. 免註冊訪客 -->
+      <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-4">
+        <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-indigo-950">同行旅伴免註冊通道</span>
+            <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
+          </div>
+          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本。</p>
+          <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+        </div>
+
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入帳本' }}
+        </button>
+
+        <div v-if="hasSavedGuestDevice" class="pt-1 text-center">
+          <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-2">
+            ↻ 恢復此手機先前的訪客帳本紀錄
+          </button>
+        </div>
+      </form>
+
+      <!-- 2. 帳號登入 -->
+      <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        </div>
+        <div class="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-3">
+          <span class="text-[11px] font-black text-indigo-600 uppercase tracking-wide block">雙軌安全驗證（二擇一）</span>
+          <div>
+            <label class="text-[11px] font-bold text-slate-600">方式 A：登入密碼</label>
+            <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="relative flex py-0.5 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-2.5 text-[10px] text-slate-400 font-bold">或者免記密碼</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-600">方式 B：註冊手機後 5 碼</label>
+            <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在驗證身分...' : '立即登入帳本' }}
+        </button>
+      </form>
+
+      <!-- 3. 註冊主揪 -->
+      <form v-else @submit.prevent="handleRegister" class="space-y-4">
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        </div>
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">設定密碼 <span class="text-rose-500">*</span></label>
+          <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        </div>
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
+          <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        </div>
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- 入口頁底部：極簡加入手機桌面捷徑教學 -->
+    <div class="mt-6 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2">
+      <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
+        <span>📲</span>
+        <span>加到手機桌面（免下載 App・一鍵開啟）</span>
+      </p>
+      <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+        <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
+        <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
       </div>
-      <div>
-        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">設定密碼 <span class="text-rose-500">*</span></label>
-        <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-      </div>
-      <div>
-        <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
-        <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-      </div>
-      <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-        {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
-      </button>
-    </form>
+    </div>
   </div>
 
   <!-- ================= 主應用畫面 (原生 App Flex 架構) ================= -->
@@ -351,7 +365,7 @@
       </div>
     </header>
 
-    <!-- 中央獨立滾動視口 (嚴防左右水平溢出) -->
+    <!-- 中央獨立滾動視口 -->
     <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-28">
       
       <!-- 0 帳本新手引導畫面 -->
@@ -390,6 +404,18 @@
           <div class="flex items-center gap-2 w-full">
             <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
             <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
+          </div>
+        </div>
+
+        <!-- 極簡加入手機桌面捷徑教學 -->
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/70 space-y-2">
+          <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
+            <span>📲</span>
+            <span>加到手機桌面（免下載 App・一鍵開啟）</span>
+          </p>
+          <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+            <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
+            <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
           </div>
         </div>
       </div>
@@ -509,10 +535,22 @@
               </div>
             </div>
 
-            <div v-if="filteredExpenses.length === 0" class="text-center py-14 px-4 bg-white rounded-[24px] border border-dashed border-slate-200">
+            <div v-if="filteredExpenses.length === 0" class="text-center py-12 px-4 bg-white rounded-[24px] border border-dashed border-slate-200">
               <p class="text-3xl mb-2">🧾</p>
               <p class="text-xs font-black text-slate-600">{{ searchQuery ? '找不到符合關鍵字的消費' : '尚無可見的消費紀錄' }}</p>
               <p class="text-[11px] text-slate-400 mt-1">{{ searchQuery ? '請嘗試其他關鍵字或清除篩選' : '點擊右下角「＋」開始記下第一筆花費' }}</p>
+            </div>
+          </div>
+
+          <!-- 明細頁底部：極簡加入手機桌面捷徑教學 -->
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200/70 space-y-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.03)]">
+            <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
+              <span>📲</span>
+              <span>加到手機桌面（免下載 App・一鍵開啟）</span>
+            </p>
+            <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+              <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
+              <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
             </div>
           </div>
         </main>
@@ -608,7 +646,7 @@
           </div>
         </main>
 
-        <!-- ================= Tab 4: 成員與帳本設定 (雙平台零溢出完美對齊) ================= -->
+        <!-- ================= Tab 4: 成員與帳本設定 ================= -->
         <main v-if="activeTab === 'settings'" class="p-4 space-y-5">
           <!-- 版本與強制更新卡片 -->
           <div class="p-3.5 bg-white border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
@@ -674,7 +712,7 @@
             </div>
           </div>
 
-          <!-- 建立與管理旅程帳本 (已徹底修正 Android 選框溢出) -->
+          <!-- 建立與管理旅程帳本 -->
           <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
             <div class="flex items-center gap-2 w-full">
@@ -949,7 +987,7 @@
 
   createApp({
     setup() {
-      const appVersion = ref('v3.1.0');
+      const appVersion = ref('v3.2.0');
       const session = ref(null);
       const authMode = ref('guest');
       const authEmail = ref('');
@@ -1854,7 +1892,7 @@
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 3.1, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.2, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
