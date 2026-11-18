@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
-  <title>雲端多人旅遊分帳 v3.6</title>
+  <title>雲端多人旅遊分帳 v3.6.1</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -96,10 +96,11 @@
       -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     }
-    .safe-pt { padding-top: max(0.85rem, var(--sat)); }
-    .safe-pb { padding-bottom: max(0.65rem, var(--sab)); }
+    .safe-pt { padding-top: max(0.8rem, var(--sat)); }
+    .safe-pb { padding-bottom: max(0.45rem, var(--sab)); }
+    .safe-tab-pb { padding-bottom: max(0.35rem, var(--sab)); }
     .safe-modal-pb { padding-bottom: max(1.5rem, calc(var(--sab) + 0.85rem)); }
-    .safe-fab-bottom { bottom: calc(5.1rem + var(--sab)); }
+    .safe-fab-bottom { bottom: calc(4.2rem + var(--sab)); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     input, select, textarea {
@@ -148,7 +149,7 @@
     <span>正在同步 {{ offlineQueueCount }} 筆離線紀錄...</span>
   </div>
 
-  <!-- ================= 入口畫面 (免註冊訪客 / 登入 / 註冊) ================= -->
+  <!-- ================= 入口 / 登入畫面 (保留加入手機桌面捷徑教學) ================= -->
   <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white/85 backdrop-blur-xl relative z-10 safe-pt safe-pb">
     <div class="my-auto py-2">
       <div class="text-center mb-5">
@@ -247,7 +248,7 @@
       </form>
     </div>
 
-    <!-- 入口頁底部：極簡加入手機桌面捷徑教學 -->
+    <!-- 僅在登入入口頁顯示：加到手機桌面捷徑教學 -->
     <div class="mt-6 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5">
       <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
       <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
@@ -260,10 +261,10 @@
   <!-- ================= 主應用畫面 ================= -->
   <template v-else>
     <!-- 固定頂部毛玻璃導航列 -->
-    <header class="px-3.5 sm:px-4 pb-3 bg-white/80 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
-      <!-- 模式 A：日常共同基金專屬頂欄 (完全獨立，不顯示旅遊帳本名稱) -->
+    <header class="px-3.5 sm:px-4 pb-2.5 bg-white/85 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
+      <!-- 模式 A：日常共同基金專屬頂欄 (不顯示旅遊帳本名稱) -->
       <template v-if="fundMode">
-        <button type="button" @click="fundMode = false" class="h-10 px-3 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-black text-xs flex items-center gap-1 active:scale-95 transition shrink-0">
+        <button type="button" @click="fundMode = false" class="h-9 px-3 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-black text-xs flex items-center gap-1 active:scale-95 transition shrink-0">
           <span>←</span><span>返回分帳</span>
         </button>
         <span class="text-sm font-black text-slate-900 truncate">💑 日常共同基金</span>
@@ -276,7 +277,7 @@
       <!-- 模式 B：一般旅遊分帳頂欄 -->
       <template v-else>
         <div class="relative flex-1 min-w-0">
-          <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-2 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[42px]">
+          <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-1.5 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[40px]">
             <option v-for="t in travelTrips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
             <option v-if="travelTrips.length === 0" :value="null">✨ 尚無旅遊帳本</option>
           </select>
@@ -284,23 +285,23 @@
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <!-- 獨立小分頁入口：共同基金 (任何時候皆可獨立點擊進入) -->
-          <button type="button" @click="openFundView" class="h-10 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="日常共同出遊吃飯基金">
+          <!-- 獨立小分頁入口：共同基金 -->
+          <button type="button" @click="openFundView" class="h-9 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="日常共同出遊吃飯基金">
             <span>💑</span><span>基金</span>
             <span v-if="currentMonthFundBalance < 0" class="w-2 h-2 rounded-full bg-rose-500"></span>
           </button>
 
-          <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-10 h-10 bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
+          <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-9 h-9 bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </button>
           
           <button v-if="currentMember" type="button" @click="openEditMemberNameModal(currentMember, false)"
-            class="text-xs font-black rounded-full px-2.5 h-10 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[92px] sm:max-w-[116px]"
+            class="text-xs font-black rounded-full px-2.5 h-9 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[92px] sm:max-w-[116px]"
             :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'">
             <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
             <span class="truncate">{{ currentMemberName }}</span>
           </button>
-          <button v-else-if="currentTrip" type="button" @click="openClaimModal(false)" class="text-xs font-black text-amber-800 bg-amber-100 border border-amber-200 px-3 h-10 rounded-full active:scale-95 transition shrink-0">
+          <button v-else-if="currentTrip" type="button" @click="openClaimModal(false)" class="text-xs font-black text-amber-800 bg-amber-100 border border-amber-200 px-3 h-9 rounded-full active:scale-95 transition shrink-0">
             認領
           </button>
         </div>
@@ -308,9 +309,9 @@
     </header>
 
     <!-- 中央獨立滾動視口 -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="fundMode ? 'pb-12' : 'pb-28'">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="fundMode ? 'pb-12' : 'pb-24'">
       
-      <!-- ================= 獨立視圖：日常共同儲值基金 (完全獨立於旅遊帳簿) ================= -->
+      <!-- ================= 獨立視圖：日常共同儲值基金 ================= -->
       <main v-if="fundMode" class="p-4 space-y-4 animate-fade-in">
         
         <!-- 情況 A：尚未建立或加入獨立共同基金 -->
@@ -360,7 +361,7 @@
             </button>
           </div>
 
-          <!-- 伴侶專屬邀請碼列 (僅顯示於共同基金內) -->
+          <!-- 伴侶專屬邀請碼列 -->
           <div class="px-3.5 py-2.5 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
             <div class="flex items-center gap-1.5 min-w-0">
               <span class="text-[11px] font-bold text-slate-400 shrink-0">伴侶代碼</span>
@@ -383,7 +384,7 @@
             <button type="button" @click="shiftFundMonth(1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">›</button>
           </div>
 
-          <!-- 淺色晨光系・當月基金餘額卡片 (70-100% 綠、40-69% 黃、10-39% 橘、<10% 紅) -->
+          <!-- 淺色晨光系・當月基金餘額卡片 -->
           <div class="bg-gradient-to-br from-white via-rose-50/35 to-amber-50/40 backdrop-blur-xl border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
             <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full blur-2xl opacity-35 transition-colors duration-500" :class="fundStatusTheme.glowBg"></div>
             
@@ -498,7 +499,7 @@
         </template>
       </main>
 
-      <!-- ================= 0 旅遊帳本新手引導畫面 ================= -->
+      <!-- ================= 0 旅遊帳本新手引導畫面 (已移除安裝教學) ================= -->
       <div v-else-if="travelTrips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
         <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white p-6 rounded-[28px] shadow-xl shadow-indigo-200/80 space-y-3">
           <div class="flex items-center justify-between">
@@ -532,14 +533,6 @@
             <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
           </div>
         </div>
-
-        <div class="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70 space-y-1.5">
-          <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
-          <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
-            <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
-            <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
-          </div>
-        </div>
       </div>
 
       <!-- ================= 一般旅遊分帳主視圖 ================= -->
@@ -567,7 +560,7 @@
           </div>
         </div>
 
-        <!-- Tab 1: 支出明細 -->
+        <!-- Tab 1: 支出明細 (已移除安裝教學卡片) -->
         <main v-if="activeTab === 'expenses'" class="p-4 space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden min-w-0">
@@ -660,18 +653,9 @@
               <p class="text-[11px] text-slate-400 mt-1">{{ searchQuery ? '請嘗試其他關鍵字或清除篩選' : '點擊右下角「＋」開始記下第一筆花費' }}</p>
             </div>
           </div>
-
-          <!-- 明細頁底部：極簡加入手機桌面捷徑教學 -->
-          <div class="p-3.5 rounded-2xl bg-white/85 backdrop-blur-sm border border-slate-200/70 space-y-1.5 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.03)]">
-            <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
-            <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
-              <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
-              <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
-            </div>
-          </div>
         </main>
 
-        <!-- Tab 2: 即時結算頁 (淺色柔和毛玻璃卡片) -->
+        <!-- Tab 2: 即時結算頁 -->
         <main v-if="activeTab === 'settle'" class="p-4 space-y-5">
           <div class="bg-gradient-to-br from-indigo-50/95 via-white to-sky-50/90 backdrop-blur-xl border border-indigo-200/70 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(79,70,229,0.12)] relative overflow-hidden">
             <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-indigo-200/40 rounded-full blur-2xl"></div>
@@ -877,27 +861,27 @@
     </div>
 
     <!-- 懸浮記帳按鈕 (+) -->
-    <button v-if="!fundMode && activeTab === 'expenses' && currentTrip" type="button" @click="openDrawer('group')" class="fixed right-5 safe-fab-bottom w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-600 hover:opacity-95 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+    <button v-if="!fundMode && activeTab === 'expenses' && currentTrip" type="button" @click="openDrawer('group')" class="fixed right-5 safe-fab-bottom w-13 h-13 w-[52px] h-[52px] bg-gradient-to-tr from-indigo-600 to-violet-600 hover:opacity-95 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
     </button>
 
-    <!-- 固定底部 4 分頁導航欄 -->
-    <nav v-if="!fundMode" class="shrink-0 bg-white/85 backdrop-blur-xl border-t border-slate-200/70 pt-2 px-4 flex justify-around z-30 safe-pb">
-      <button type="button" @click="switchTab('expenses')" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[56px] justify-center">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-        明細
+    <!-- 精巧鎖定版底部 4 分頁導航欄 (適配 iPhone & Android 各種尺寸) -->
+    <nav v-if="!fundMode" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-xl border-t border-slate-200/70 pt-1.5 px-3 grid grid-cols-4 z-30 safe-tab-pb">
+      <button type="button" @click="switchTab('expenses')" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-0.5 text-[10px] leading-tight transition active:scale-95 min-h-[38px] min-w-0 justify-center">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span class="truncate">明細</span>
       </button>
-      <button type="button" @click="switchTab('settle')" :class="activeTab === 'settle' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[56px] justify-center">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
-        結算
+      <button type="button" @click="switchTab('settle')" :class="activeTab === 'settle' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-0.5 text-[10px] leading-tight transition active:scale-95 min-h-[38px] min-w-0 justify-center">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+        <span class="truncate">結算</span>
       </button>
-      <button type="button" @click="switchTab('categories')" :class="activeTab === 'categories' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[56px] justify-center">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-        類別
+      <button type="button" @click="switchTab('categories')" :class="activeTab === 'categories' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-0.5 text-[10px] leading-tight transition active:scale-95 min-h-[38px] min-w-0 justify-center">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        <span class="truncate">類別</span>
       </button>
-      <button type="button" @click="switchTab('settings')" :class="activeTab === 'settings' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[56px] justify-center">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        設定
+      <button type="button" @click="switchTab('settings')" :class="activeTab === 'settings' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-0.5 text-[10px] leading-tight transition active:scale-95 min-h-[38px] min-w-0 justify-center">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span class="truncate">設定</span>
       </button>
     </nav>
   </template>
@@ -952,7 +936,7 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 4: 統一智慧記帳抽屜 (支援旅遊分帳 & 獨立共同基金) ================= -->
+  <!-- ================= 彈窗 4: 統一智慧記帳抽屜 ================= -->
   <div v-if="drawer.open" @click.self="drawer.open = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[75] flex items-end justify-center animate-fade-in">
     <form @submit.prevent="saveDrawer" class="bg-white w-full max-w-md rounded-t-[32px] px-5 sm:px-6 pt-3 space-y-4 max-h-[92dvh] overflow-y-auto overflow-x-hidden no-scrollbar shadow-2xl border-t border-slate-100 animate-slide-up safe-modal-pb">
       <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto"></div>
@@ -963,7 +947,6 @@
         </button>
       </div>
 
-      <!-- 類型切換：旅遊模式(公帳/私物) vs 基金模式(儲值/扣款) -->
       <div v-if="!isFundDrawer" class="bg-slate-100 p-1 rounded-2xl flex">
         <button type="button" @click="drawer.type = 'group'" :class="drawer.type === 'group' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">團體公帳平攤</button>
         <button type="button" @click="drawer.type = 'personal'" :class="drawer.type === 'personal' ? 'bg-white text-amber-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">個人私物 (僅自己可見)</button>
@@ -973,14 +956,12 @@
         <button type="button" @click="switchFundDrawerType('fund_out')" :class="drawer.type === 'fund_out' ? 'bg-white text-rose-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">－ 花費扣款</button>
       </div>
 
-      <!-- 基金儲值快捷金額按鈕 -->
       <div v-if="drawer.type === 'fund_in'" class="flex gap-2">
         <button v-for="preset in [1000, 3000, 6000, 10000]" :key="preset" type="button" @click="drawer.amountExpr = String(preset)" class="flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 rounded-xl text-xs font-mono font-black active:scale-95 transition min-h-[36px]">
           +{{ preset.toLocaleString() }}
         </button>
       </div>
 
-      <!-- 多幣別與交叉匯率 (儲值入帳除外) -->
       <div v-if="drawer.type !== 'fund_in'" class="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200/70 rounded-2xl">
         <div class="min-w-0">
           <label class="text-[10px] font-black text-slate-400 uppercase block">消費幣別</label>
@@ -997,7 +978,6 @@
         </div>
       </div>
 
-      <!-- 金額欄 -->
       <div>
         <div class="flex justify-between items-center gap-2">
           <label class="text-[11px] font-black text-slate-400 uppercase truncate">
@@ -1011,13 +991,11 @@
           :class="drawer.type === 'fund_in' ? 'text-emerald-600 focus:border-emerald-600' : 'text-slate-900 focus:border-indigo-600'">
       </div>
 
-      <!-- 項目說明 -->
       <div>
         <label class="text-[11px] font-black text-slate-400 uppercase">項目說明</label>
         <input v-model="drawer.title" type="text" maxlength="60" :placeholder="drawer.type === 'fund_in' ? '例如：11月共同出遊吃飯基金儲值' : '例如：燒肉晚餐、看電影、週末咖啡廳'" required class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition">
       </div>
 
-      <!-- 類別與登記/付款人 (依據旅遊或獨立基金自動切換對應名單) -->
       <div class="grid grid-cols-2 gap-3">
         <div v-if="drawer.type !== 'fund_in'" class="min-w-0">
           <label class="text-[11px] font-black text-slate-400 uppercase block">消費類別</label>
@@ -1042,7 +1020,6 @@
         </div>
       </div>
 
-      <!-- 日期與備註 -->
       <div class="grid grid-cols-2 gap-3">
         <div class="min-w-0">
           <label class="text-[11px] font-black text-slate-400 uppercase block">日期</label>
@@ -1054,7 +1031,6 @@
         </div>
       </div>
 
-      <!-- 團體平攤成員勾選 -->
       <div v-if="drawer.type === 'group'">
         <div class="flex items-center justify-between mb-2">
           <label class="text-[11px] font-black text-slate-400 uppercase">參與平攤成員 ({{ drawer.split_members.length }}人)</label>
@@ -1110,7 +1086,7 @@
 
   createApp({
     setup() {
-      const appVersion = ref('v3.6.0');
+      const appVersion = ref('v3.6.1');
       const session = ref(null);
       const authMode = ref('guest');
       const authEmail = ref('');
@@ -1147,7 +1123,6 @@
       const currentYearMonth = ref(getYearMonthStr());
       const selectedFundMonth = ref(getYearMonthStr());
 
-      // 旅遊帳本資料狀態
       const allBooks = ref([]);
       const currentTripId = ref(null);
       const members = ref([]);
@@ -1156,7 +1131,6 @@
       const expenses = ref([]);
       const activityLogs = ref([]);
 
-      // 獨立日常共同基金資料狀態 (完全脫鉤旅遊帳本)
       const currentFundId = ref(null);
       const fundMembers = ref([]);
       const currentFundMemberId = ref(null);
@@ -1234,7 +1208,6 @@
         return session.value.user.is_anonymous || email.endsWith('@guest.travel.app');
       });
 
-      // 分離旅遊帳本與獨立共同基金
       const travelTrips = computed(() => allBooks.value.filter(t => !(t.name || '').startsWith(FUND_PREFIX)));
       const fundBooks = computed(() => allBooks.value.filter(t => (t.name || '').startsWith(FUND_PREFIX)));
 
@@ -1255,7 +1228,6 @@
         (claimModal.isFund ? fundMembers.value : members.value).filter(m => !m.user_id)
       );
 
-      // 抽屜動態對應 (旅遊 vs 獨立基金)
       const isFundDrawer = computed(() => drawer.type === 'fund_in' || drawer.type === 'fund_out');
       const activeDrawerBaseCurrency = computed(() => isFundDrawer.value ? currentFundBaseCurrency.value : currentTripBaseCurrency.value);
       const activeDrawerMembers = computed(() => isFundDrawer.value ? fundMembers.value : members.value);
@@ -1277,7 +1249,6 @@
           : Math.round(orig * rate * 100) / 100;
       });
 
-      // 獨立基金按月計算 (每月自動歸零)
       const calcMonthFundStats = (ym) => {
         const list = fundExpenses.value.filter(e => (e.date || '').startsWith(ym));
         const inCents = list.filter(e => e.expense_type === 'fund_in').reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0);
@@ -1303,7 +1274,6 @@
         return Math.round((selectedMonthFundBalance.value / selectedMonthFundIn.value) * 100);
       });
 
-      // 淺色背景高辨識度四色狀態 (70-100% 綠、40-69% 黃、10-39% 橘、<10% 紅)
       const fundStatusTheme = computed(() => {
         const totalIn = selectedMonthFundIn.value, bal = selectedMonthFundBalance.value, pct = selectedMonthRemainPercent.value;
         if (bal < 0 || (totalIn > 0 && pct < 10)) {
@@ -1321,7 +1291,6 @@
         return { label: `🟠 偏低 (${pct}%)`, textClass: 'text-orange-500', barClass: 'bg-orange-500', glowBg: 'bg-orange-300', badgeClass: 'bg-orange-50 text-orange-700 border-orange-200' };
       });
 
-      // 旅遊帳目計算
       const visibleExpenses = computed(() => expenses.value.filter(e =>
         e.expense_type !== 'fund_in' && e.expense_type !== 'fund_out' &&
         (e.expense_type === 'group' || isTripCreator.value || e.payer_id === currentMemberId.value)
@@ -1528,7 +1497,6 @@
         drawer.exchange_rate = drawer.currency === base ? 1 : Math.round(((toTwdRates[drawer.currency] || 1) / (toTwdRates[base] || 1)) * 10000) / 10000;
       };
 
-      // 訪客裝置綁定與認證
       const checkSavedGuestDevice = () => { try { hasSavedGuestDevice.value = !!localStorage.getItem('travel_guest_device_creds'); } catch (e) { hasSavedGuestDevice.value = false; } };
 
       const ensureGuestDeviceSession = async () => {
@@ -1643,7 +1611,6 @@
         [...(own || []), ...collab].forEach(t => map.set(t.id, t));
         allBooks.value = Array.from(map.values());
 
-        // 1. 載入目前旅遊帳本
         if (travelTrips.value.length) {
           if (!currentTripId.value || !travelTrips.value.some(t => t.id === currentTripId.value)) {
             currentTripId.value = travelTrips.value[0].id;
@@ -1653,7 +1620,6 @@
           currentTripId.value = null; members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
         }
 
-        // 2. 載入獨立共同基金帳本 (完全獨立於旅遊帳本)
         if (fundBooks.value.length) {
           if (!currentFundId.value || !fundBooks.value.some(t => t.id === currentFundId.value)) {
             currentFundId.value = fundBooks.value[0].id;
@@ -1703,7 +1669,6 @@
         } else { currentMemberId.value = null; if (!fundMode.value) openClaimModal(false); }
       };
 
-      // 獨立讀取共同基金資料 (完全隔離旅遊帳簿成員)
       const fetchFundDetails = async () => {
         if (!currentFundId.value) return;
         try {
@@ -1815,7 +1780,6 @@
         });
       };
 
-      // 建立完全獨立的共同基金帳本 (自動加上 [FUND] 隔離前綴)
       const createIndependentFund = async () => {
         if (isSaving.value) return;
         const partnerName = sanitizeText(newFundPartnerName.value, 20) || '伴侶';
@@ -1876,7 +1840,6 @@
         copyTextSafe(`💑 邀請你加入我們的【日常共同基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "伴侶基金邀請連結已複製！快傳給對方");
       };
 
-      // 統一抽屜開啟 / 編輯 / 儲存 / 刪除
       const canEditOrDeleteItem = (item) =>
         item.expense_type === 'fund_in' || item.expense_type === 'fund_out' || isTripCreator.value || item.payer_id === currentMemberId.value;
 
@@ -2093,7 +2056,7 @@
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 3.6, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.61, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
