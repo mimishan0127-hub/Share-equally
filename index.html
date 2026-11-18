@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
-  <title>生活基金 & 旅遊分帳 v3.7</title>
+  <title>生活基金 & 旅遊分帳 v3.8</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -149,40 +149,22 @@
     <span>正在同步 {{ offlineQueueCount }} 筆離線紀錄...</span>
   </div>
 
-  <!-- ================= 入口 / 登入畫面 (含「生活共用基金 / 雲端旅遊分帳」獨立入口切換) ================= -->
-  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-5 bg-white relative z-10 safe-pt safe-pb">
-    <div class="my-auto py-1">
-      <div class="text-center mb-4">
-        <div class="w-16 h-16 rounded-[22px] mx-auto flex items-center justify-center shadow-lg shadow-indigo-200/70 mb-2.5 border border-indigo-100 overflow-hidden bg-indigo-50">
+  <!-- ================= 整合精簡版入口 / 登入畫面 ================= -->
+  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white relative z-10 safe-pt safe-pb">
+    <div class="my-auto py-2">
+      <div class="text-center mb-5">
+        <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3 border border-indigo-100 overflow-hidden bg-indigo-50">
           <img :src="appIconSrc" alt="分帳與基金" class="w-full h-full object-cover">
         </div>
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-mono font-black text-slate-500 mb-1">
-          <span>{{ appVersion }}</span>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50/90 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1">
+          <span>LATEST</span><span>{{ appVersion }}</span>
         </div>
-        <h1 class="text-xl font-black text-slate-900 tracking-tight">
-          {{ entryTarget === 'fund' ? '💑 生活共用基金' : '✈️ 雲端旅遊分帳' }}
-        </h1>
-        <p class="text-xs font-medium text-slate-400 mt-0.5">
-          {{ entryTarget === 'fund' ? '伴侶每月吃飯・約會・出遊儲值錢包' : '多人出遊公帳平攤・私物隔離・即時結算' }}
-        </p>
-      </div>
-
-      <!-- 登入前獨立系統選擇器 (生活共用基金 vs 雲端旅遊分帳) -->
-      <div class="mb-4 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/60 grid grid-cols-2 gap-1.5">
-        <button type="button" @click="selectEntryTarget('fund')"
-          :class="entryTarget === 'fund' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-md shadow-rose-200/80 font-black' : 'text-slate-600 font-bold hover:bg-white/60'"
-          class="py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition active:scale-95 min-h-[42px]">
-          <span>💑</span><span>生活共用基金</span>
-        </button>
-        <button type="button" @click="selectEntryTarget('travel')"
-          :class="entryTarget === 'travel' ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-200/80 font-black' : 'text-slate-600 font-bold hover:bg-white/60'"
-          class="py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition active:scale-95 min-h-[42px]">
-          <span>✈️</span><span>雲端旅遊分帳</span>
-        </button>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">生活基金 & 旅遊分帳</h1>
+        <p class="text-xs font-medium text-slate-400 mt-1">日常共用儲值基金・多人旅遊分帳・雲端即時同步</p>
       </div>
 
       <!-- 網址直達邀請橫幅 -->
-      <div v-if="pendingInviteCode" class="mb-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
+      <div v-if="pendingInviteCode" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold text-indigo-100">🎉 收到雲端邀請碼</span>
           <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-lg tracking-widest">{{ pendingInviteCode }}</span>
@@ -192,48 +174,44 @@
         </button>
       </div>
 
-      <!-- 登入方式切換 -->
-      <div class="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-3 mb-4 border border-slate-200/50">
-        <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">免註冊加入</button>
-        <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">帳號登入</button>
-        <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">註冊主揪</button>
+      <!-- 單一整合登入方式切換 -->
+      <div class="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
+        <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">免註冊加入</button>
+        <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">帳號登入</button>
+        <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">註冊新帳號</button>
       </div>
 
       <!-- 1. 免註冊訪客 -->
-      <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-3.5">
-        <div class="p-4 rounded-2xl border space-y-2.5" :class="entryTarget === 'fund' ? 'bg-rose-50/70 border-rose-100' : 'bg-indigo-50/70 border-indigo-100'">
+      <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-4">
+        <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-black" :class="entryTarget === 'fund' ? 'text-rose-950' : 'text-indigo-950'">
-              {{ entryTarget === 'fund' ? '伴侶免註冊加入基金' : '旅伴免註冊加入分帳' }}
-            </span>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md" :class="entryTarget === 'fund' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700'">綁定本機</span>
+            <span class="text-xs font-black text-indigo-950">同行旅伴 / 另一半免註冊通道</span>
+            <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
           </div>
-          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入{{ entryTarget === 'fund' ? '生活共用基金' : '旅遊分帳本' }}。</p>
-          <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-base font-mono font-black uppercase tracking-widest text-center text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入對方分享的 6 位數邀請碼即可自動綁定手機進入對應帳本。</p>
+          <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
         </div>
-        <button type="submit" :disabled="authLoading"
-          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
-          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
-          {{ authLoading ? '正在綁定設備進入...' : `免註冊，進入${entryTarget === 'fund' ? '生活共用基金' : '雲端旅遊分帳'}` }}
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入' }}
         </button>
-        <div v-if="hasSavedGuestDevice" class="text-center">
-          <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-1.5">
+        <div v-if="hasSavedGuestDevice" class="pt-1 text-center">
+          <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-2">
             ↻ 恢復此手機先前的訪客紀錄
           </button>
         </div>
       </form>
 
       <!-- 2. 帳號登入 -->
-      <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-3.5">
+      <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
-        <div class="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-2.5">
+        <div class="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-3">
           <span class="text-[11px] font-black text-indigo-600 uppercase tracking-wide block">雙軌安全驗證（二擇一）</span>
           <div>
             <label class="text-[11px] font-bold text-slate-600">方式 A：登入密碼</label>
-            <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
           <div class="relative flex py-0.5 items-center">
             <div class="flex-grow border-t border-slate-200"></div>
@@ -242,40 +220,36 @@
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-600">方式 B：註冊手機後 5 碼</label>
-            <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
-        <button type="submit" :disabled="authLoading"
-          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
-          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
-          {{ authLoading ? '正在驗證身分...' : `登入並前往${entryTarget === 'fund' ? '生活共用基金' : '雲端旅遊分帳'}` }}
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在驗證身分...' : '立即登入' }}
         </button>
       </form>
 
       <!-- 3. 註冊主揪 -->
-      <form v-else @submit.prevent="handleRegister" class="space-y-3.5">
+      <form v-else @submit.prevent="handleRegister" class="space-y-4">
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">設定密碼 <span class="text-rose-500">*</span></label>
-          <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
-          <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
-        <button type="submit" :disabled="authLoading"
-          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
-          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
-          {{ authLoading ? '建立雲端帳號中...' : '完成註冊並進入' }}
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
         </button>
       </form>
     </div>
 
     <!-- 僅在登入入口頁顯示：加到手機桌面捷徑教學 -->
-    <div class="mt-5 p-3 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1">
+    <div class="mt-6 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5">
       <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
       <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
         <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
@@ -289,12 +263,12 @@
     <!-- 固定純淨白底頂部導航列 -->
     <header class="px-3.5 sm:px-4 pb-2.5 bg-white shrink-0 z-30 border-b border-slate-200/70 flex items-center justify-between gap-2 safe-pt">
       
-      <!-- 頂欄模式 1：雙系統選擇大廳 (Hub) -->
+      <!-- 頂欄模式 1：雙系統選擇大廳 (Hub - 手機已登入每次優先顯示) -->
       <template v-if="viewMode === 'hub'">
-        <div class="flex items-center gap-2 min-w-0">
+        <div class="flex items-center gap-2.5 min-w-0">
           <img :src="appIconSrc" alt="Icon" class="w-8 h-8 rounded-xl shadow-sm shrink-0">
           <div class="min-w-0">
-            <h1 class="text-sm font-black text-slate-900 truncate">選擇使用空間</h1>
+            <h1 class="text-sm font-black text-slate-900 truncate">生活基金與共同記帳</h1>
             <p class="text-[10px] text-slate-400 truncate">{{ isGuestSession ? '免註冊本機綁定' : session.user.email }}</p>
           </div>
         </div>
@@ -303,29 +277,25 @@
         </button>
       </template>
 
-      <!-- 頂欄模式 2：生活共用基金 (完全獨立，右上可一鍵切換到旅遊分帳) -->
+      <!-- 頂欄模式 2：生活共用基金 (已移除旅遊分帳互相切換鈕，僅保留返回大廳) -->
       <template v-else-if="viewMode === 'fund'">
-        <div class="flex items-center gap-1.5 min-w-0">
-          <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回雙系統選擇大廳">
+        <div class="flex items-center gap-2 min-w-0">
+          <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回首頁大廳">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
           </button>
-          <span class="text-sm font-black text-slate-900 truncate">💑 生活共用基金</span>
+          <span class="text-sm font-black text-slate-900 truncate">💰 生活共用基金</span>
         </div>
 
-        <div class="flex items-center gap-1.5 shrink-0">
-          <!-- 頂部列直接切換到旅遊分帳 -->
-          <button type="button" @click="switchViewMode('travel')" class="h-9 px-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0" title="切換至雲端旅遊分帳">
-            <span>✈️</span><span>旅遊分帳</span>
-          </button>
-          <button v-if="currentFundMember" type="button" @click="openEditMemberNameModal(currentFundMember, true)" class="text-xs font-black rounded-full px-2.5 h-9 bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center gap-1 max-w-[88px] shrink-0 active:scale-95 transition">
-            <span class="truncate">{{ currentFundMember.name }}</span>
-          </button>
-        </div>
+        <button v-if="currentFundMember" type="button" @click="openEditMemberNameModal(currentFundMember, true)" class="text-xs font-black rounded-full px-2.5 h-9 bg-amber-50 text-amber-800 border border-amber-200/90 flex items-center gap-1 max-w-[110px] shrink-0 active:scale-95 transition">
+          <span class="truncate">{{ currentFundMember.name }}</span>
+          <svg class="w-3 h-3 opacity-60 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        </button>
+        <div v-else class="w-9"></div>
       </template>
 
-      <!-- 頂欄模式 3：雲端旅遊分帳 (右上可一鍵切換到共用基金) -->
+      <!-- 頂欄模式 3：雲端旅遊分帳 (已移除基金互相切換鈕，僅保留返回大廳) -->
       <template v-else>
-        <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回雙系統選擇大廳">
+        <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回首頁大廳">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
         </button>
 
@@ -338,18 +308,12 @@
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <!-- 頂部列直接切換到共用基金 -->
-          <button type="button" @click="switchViewMode('fund')" class="h-9 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="切換至生活共用基金">
-            <span>💑</span><span>基金</span>
-            <span v-if="currentMonthFundBalance < 0" class="w-2 h-2 rounded-full bg-rose-500"></span>
-          </button>
-
           <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-9 h-9 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </button>
           
           <button v-if="currentMember" type="button" @click="openEditMemberNameModal(currentMember, false)"
-            class="text-xs font-black rounded-full px-2.5 h-9 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[84px] sm:max-w-[110px]"
+            class="text-xs font-black rounded-full px-2.5 h-9 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[96px] sm:max-w-[120px]"
             :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'">
             <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
             <span class="truncate">{{ currentMemberName }}</span>
@@ -364,34 +328,34 @@
     <!-- 中央獨立滾動視口 -->
     <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="viewMode === 'travel' ? 'pb-24' : 'pb-10'">
       
-      <!-- ================= 視圖 0：登入後雙系統獨立選擇大廳 (Hub) ================= -->
+      <!-- ================= 視圖 0：生活基金和共同記帳首頁大廳 (Hub) ================= -->
       <main v-if="viewMode === 'hub'" class="p-4 sm:p-5 space-y-4 animate-fade-in">
         <div class="px-1 pt-1">
           <h2 class="text-lg font-black text-slate-900">請問今天要記錄哪一項？</h2>
-          <p class="text-xs text-slate-400 mt-0.5">兩個系統資料完全獨立，進入後也可從頂部列一鍵切換</p>
+          <p class="text-xs text-slate-400 mt-0.5">兩個空間資料完全獨立，互不干擾</p>
         </div>
 
-        <!-- 卡片 1：生活共用基金 -->
-        <div @click="switchViewMode('fund')" class="bg-gradient-to-br from-white via-rose-50/40 to-amber-50/40 border border-rose-200/80 p-5 rounded-[28px] shadow-[0_10px_30px_-12px_rgba(244,63,94,0.16)] cursor-pointer active:scale-[0.98] transition space-y-3.5">
+        <!-- 卡片 1：生活共用基金 (錢圖示) -->
+        <div @click="switchViewMode('fund')" class="bg-gradient-to-br from-white via-amber-50/45 to-emerald-50/35 border border-amber-200/80 p-5 rounded-[28px] shadow-[0_10px_30px_-12px_rgba(245,158,11,0.16)] cursor-pointer active:scale-[0.98] transition space-y-3.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center text-2xl shadow-md shadow-rose-200">
-                💑
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md shadow-amber-200">
+                💰
               </div>
               <div>
                 <h3 class="text-base font-black text-slate-900">生活共用基金</h3>
-                <p class="text-[11px] text-slate-500 font-medium">每月定期儲值・吃飯約會扣款</p>
+                <p class="text-[11px] text-slate-500 font-medium">每月定期儲值・吃飯日常扣款</p>
               </div>
             </div>
-            <span class="text-xs font-black text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200/70">進入 ➜</span>
+            <span class="text-xs font-black text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200/80">進入 ➜</span>
           </div>
 
-          <div class="pt-3 border-t border-rose-100/80 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-bold">{{ currentFund ? `${formatYearMonthLabel(currentYearMonth)}剩餘額度` : '尚未建立伴侶基金' }}</span>
+          <div class="pt-3 border-t border-amber-100/80 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-bold">{{ currentFund ? `${formatYearMonthLabel(currentYearMonth)}剩餘額度` : '尚未建立共用基金' }}</span>
             <span v-if="currentFund" class="font-mono font-black text-base" :class="currentMonthFundBalance < 0 ? 'text-rose-600' : 'text-emerald-600'">
               {{ currentMonthFundBalance < 0 ? `-$${formatMoney(Math.abs(currentMonthFundBalance))}` : `$${formatMoney(currentMonthFundBalance)}` }}
             </span>
-            <span v-else class="text-rose-600 font-bold">點擊立即建立 / 加入</span>
+            <span v-else class="text-amber-700 font-bold">點擊立即建立 / 加入</span>
           </div>
         </div>
 
@@ -425,17 +389,17 @@
         
         <!-- 情況 A：尚未建立或加入獨立共同基金 -->
         <div v-if="!currentFund" class="space-y-4 pt-1">
-          <div class="bg-gradient-to-br from-rose-50 via-white to-amber-50/80 border border-rose-200/70 p-6 rounded-[28px] shadow-sm space-y-2">
-            <span class="text-2xl">💑</span>
+          <div class="bg-gradient-to-br from-amber-50 via-white to-emerald-50/60 border border-amber-200/70 p-6 rounded-[28px] shadow-sm space-y-2">
+            <span class="text-2xl">💰</span>
             <h2 class="text-lg font-black text-slate-900">建立或加入專屬生活共用基金</h2>
-            <p class="text-xs text-slate-500 leading-relaxed">此基金完全獨立於旅遊帳簿，專屬於您與伴侶每月的吃飯、約會與出遊儲值金，每月自動歸零重算。</p>
+            <p class="text-xs text-slate-500 leading-relaxed">此基金完全獨立於旅遊帳簿，專屬於日常吃飯、出遊儲值金，每月自動歸零重算。</p>
           </div>
 
           <div class="bg-white/95 p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3">
             <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新的共同基金</h3>
             <p class="text-[11px] text-slate-400">建立後會產生專屬 6 碼邀請碼，傳給另一半即可雙方共同記帳。</p>
             <div class="flex items-center gap-2 w-full">
-              <input v-model="newFundPartnerName" @keyup.enter="createIndependentFund" placeholder="伴侶暱稱（如：寶貝、米米）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+              <input v-model="newFundPartnerName" @keyup.enter="createIndependentFund" placeholder="另一半暱稱（如：寶貝、米米）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
               <div class="relative shrink-0 w-[88px]">
                 <select v-model="newFundCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
                   <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="USD">USD</option>
@@ -443,13 +407,13 @@
                 <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </div>
             </div>
-            <button type="button" :disabled="isSaving" @click="createIndependentFund" class="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl text-xs font-black shadow-md shadow-rose-200 active:scale-[0.98] transition min-h-[48px] disabled:opacity-50">
+            <button type="button" :disabled="isSaving" @click="createIndependentFund" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-xs font-black shadow-md shadow-amber-200 active:scale-[0.98] transition min-h-[48px] disabled:opacity-50">
               ＋ 建立專屬共同基金
             </button>
           </div>
 
           <div class="bg-indigo-50/80 border border-indigo-100 p-5 rounded-[24px] space-y-3">
-            <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入伴侶已建立的基金</h3>
+            <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入對方已建立的基金</h3>
             <div class="flex items-center gap-2 w-full">
               <input v-model="joinFundCodeInput" @keyup.enter="joinTripByCode(joinFundCodeInput, true)" maxlength="6" placeholder="輸入 6 碼基金邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
               <button type="button" :disabled="isSaving" @click="joinTripByCode(joinFundCodeInput, true)" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
@@ -463,22 +427,22 @@
           <div v-if="!isCurrentFundMemberBound" class="p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
             <div class="min-w-0 flex-1">
               <p class="text-xs font-black text-amber-900">請先認領您的基金成員身分</p>
-              <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">綁定後即可與伴侶同步記帳</p>
+              <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">綁定後即可與對方同步記帳</p>
             </div>
             <button type="button" @click="openClaimModal(true)" class="text-xs font-black text-white bg-amber-600 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
               立即認領
             </button>
           </div>
 
-          <!-- 伴侶專屬邀請碼列 -->
+          <!-- 專屬邀請碼列 -->
           <div class="px-3.5 py-2.5 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
             <div class="flex items-center gap-1.5 min-w-0">
-              <span class="text-[11px] font-bold text-slate-400 shrink-0">伴侶代碼</span>
-              <span class="font-mono font-black text-rose-600 tracking-wider text-sm bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 truncate">{{ currentFund.invite_code || '------' }}</span>
+              <span class="text-[11px] font-bold text-slate-400 shrink-0">基金代碼</span>
+              <span class="font-mono font-black text-amber-600 tracking-wider text-sm bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200/70 truncate">{{ currentFund.invite_code || '------' }}</span>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
-              <button type="button" @click="copyFundInviteLink" class="text-[11px] font-black text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/70 px-3 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">
-                分享伴侶邀請連結
+              <button type="button" @click="copyFundInviteLink" class="text-[11px] font-black text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/70 px-3 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">
+                分享基金邀請連結
               </button>
             </div>
           </div>
@@ -488,13 +452,13 @@
             <button type="button" @click="shiftFundMonth(-1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">‹</button>
             <div class="text-center">
               <span class="text-sm font-black text-slate-900 font-mono">{{ formatYearMonthLabel(selectedFundMonth) }}</span>
-              <span v-if="selectedFundMonth === currentYearMonth" class="ml-1.5 text-[10px] font-black bg-rose-50 text-rose-600 border border-rose-200/70 px-2 py-0.5 rounded-full">本月</span>
+              <span v-if="selectedFundMonth === currentYearMonth" class="ml-1.5 text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200/70 px-2 py-0.5 rounded-full">本月</span>
             </div>
             <button type="button" @click="shiftFundMonth(1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">›</button>
           </div>
 
           <!-- 淺色晨光系・當月基金餘額卡片 -->
-          <div class="bg-gradient-to-br from-white via-rose-50/35 to-amber-50/40 border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
+          <div class="bg-gradient-to-br from-white via-amber-50/35 to-emerald-50/30 border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
             <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full blur-2xl opacity-35 transition-colors duration-500" :class="fundStatusTheme.glowBg"></div>
             
             <div class="flex items-center justify-between gap-2 relative">
@@ -600,16 +564,16 @@
             </div>
 
             <div v-if="selectedMonthFundTransactions.length === 0" class="text-center py-10 px-4 bg-white/90 rounded-[24px] border border-dashed border-slate-200">
-              <p class="text-3xl mb-2">💑</p>
+              <p class="text-3xl mb-2">💰</p>
               <p class="text-xs font-black text-slate-600">{{ formatYearMonthLabel(selectedFundMonth) }}尚無基金紀錄</p>
               <p class="text-[11px] text-slate-400 mt-1">點擊上方「＋ 儲值基金」存入本月出遊吃飯金吧！</p>
             </div>
           </div>
 
-          <!-- 獨立基金成員與設定區 (無需依賴旅遊分帳頁面即可自理) -->
+          <!-- 獨立基金成員與設定區 -->
           <div class="bg-white/95 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-black text-slate-700 tracking-wider uppercase">💑 基金成員名單 (點筆改名)</h3>
+              <h3 class="text-xs font-black text-slate-700 tracking-wider uppercase">💰 基金成員名單 (點筆改名)</h3>
               <button v-if="isFundCreator" type="button" @click="triggerDeleteTrip(currentFund, true)" class="text-[11px] font-bold text-rose-500 hover:underline">刪除基金</button>
               <button v-else type="button" @click="triggerLeaveTrip(currentFund, true)" class="text-[11px] font-bold text-rose-500 hover:underline">退出基金</button>
             </div>
@@ -620,9 +584,9 @@
                     {{ m.name.slice(0, 1) }}
                   </div>
                   <span class="font-black text-xs text-slate-800 truncate">{{ m.name }}</span>
-                  <span v-if="m.user_id === session.user.id" class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-bold shrink-0">您</span>
+                  <span v-if="m.user_id === session.user.id" class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold shrink-0">您</span>
                   <span v-else-if="m.user_id" class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold shrink-0">已綁定</span>
-                  <span v-else class="text-[10px] bg-slate-200/80 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">待伴侶認領</span>
+                  <span v-else class="text-[10px] bg-slate-200/80 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">待認領</span>
                 </div>
                 <button v-if="canEditMemberName(m, true)" type="button" @click="openEditMemberNameModal(m, true)" class="p-1.5 text-slate-400 hover:text-indigo-600 active:scale-90 transition">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -1222,11 +1186,9 @@
 
   createApp({
     setup() {
-      const appVersion = ref('v3.7.0');
+      const appVersion = ref('v3.8.0');
       const session = ref(null);
-      const entryTarget = ref('fund'); // 登入前預設選擇：'fund' (生活共用基金) 或 'travel' (雲端旅遊分帳)
-      const viewMode = ref('hub');     // 登入後視圖：'hub' (選擇大廳)、'fund' (共用基金)、'travel' (旅遊分帳)
-      const hasExplicitEntryIntent = ref(false);
+      const viewMode = ref('hub'); // 登入後永遠優先進入 'hub' (生活基金與共同記帳選擇大廳)
 
       const authMode = ref('guest');
       const authEmail = ref('');
@@ -1336,10 +1298,10 @@
       };
 
       const activeThemeGlow = computed(() => {
-        const isFund = !session.value ? entryTarget.value === 'fund' : viewMode.value === 'fund';
+        const isFund = session.value && viewMode.value === 'fund';
         return isFund
-          ? { topRight: 'bg-rose-200/35', midLeft: 'bg-amber-100/40', bottomRight: 'bg-emerald-100/35' }
-          : { topRight: 'bg-indigo-200/35', midLeft: 'bg-sky-200/35', bottomRight: 'bg-violet-200/30' };
+          ? { topRight: 'bg-amber-200/35', midLeft: 'bg-emerald-100/35', bottomRight: 'bg-rose-100/30' }
+          : { topRight: 'bg-indigo-200/30', midLeft: 'bg-sky-200/30', bottomRight: 'bg-violet-200/25' };
       });
 
       const notificationStatusText = computed(() => {
@@ -1561,18 +1523,12 @@
         toastTimer = setTimeout(() => { toast.show = false; }, 3500);
       };
 
-      const selectEntryTarget = (target) => {
-        entryTarget.value = target;
-        hasExplicitEntryIntent.value = true;
-        try { localStorage.setItem('travel_last_entry_target', target); } catch (e) {}
-      };
-
       const switchViewMode = (mode) => {
         viewMode.value = mode;
         if (mode === 'fund') {
           currentYearMonth.value = getYearMonthStr();
           selectedFundMonth.value = currentYearMonth.value;
-          if (currentFundId.value && !isCurrentFundMemberBound.value && activeUnassignedMembers.value.length > 0) {
+          if (currentFundId.value && !isCurrentFundMemberBound.value && fundMembers.value.some(m => !m.user_id)) {
             openClaimModal(true);
           }
         } else if (mode === 'travel') {
@@ -1610,7 +1566,7 @@
         showToast(`${prefix} 對方${verb}「${rec.title || '紀錄'}」${amtText}`, 'sync');
         try { navigator.vibrate?.([80, 40, 80]); } catch (e) {}
         if (isFund && notificationPermission.value === 'granted') {
-          try { new Notification("💑 共同基金帳務更新", { body: `${verb}「${rec.title || '紀錄'}」${amtText}`, icon: appIconSrc.value }); } catch (e) {}
+          try { new Notification("💰 共同基金帳務更新", { body: `${verb}「${rec.title || '紀錄'}」${amtText}`, icon: appIconSrc.value }); } catch (e) {}
         }
       };
 
@@ -1645,7 +1601,7 @@
       const getCategoryEmoji = (id) => categoryEmojiMap[getCategoryName(id)] || '🏷️';
       const getMemberName = (id) => members.value.find(x => x.id === id)?.name || '未知';
       const getFundCategoryEmoji = (id) => getCategoryEmojiByList(id, fundCategories.value);
-      const getFundMemberName = (id) => fundMembers.value.find(x => x.id === id)?.name || '伴侶';
+      const getFundMemberName = (id) => fundMembers.value.find(x => x.id === id)?.name || '另一半';
 
       const copyTextSafe = async (text, msg) => {
         try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return showToast(msg); } } catch (e) {}
@@ -1695,7 +1651,7 @@
         try {
           if (!(await ensureGuestDeviceSession())) return;
           pendingInviteCode.value = ''; guestCodeInput.value = '';
-          await joinTripByCode(code, entryTarget.value === 'fund');
+          await joinTripByCode(code, false);
         } finally { authLoading.value = false; }
       };
 
@@ -1706,7 +1662,7 @@
           if (await ensureGuestDeviceSession()) {
             showToast("已恢復此手機的訪客紀錄！");
             await fetchTrips(); setupRealtimeSubscription();
-            switchViewMode(entryTarget.value);
+            viewMode.value = 'hub';
           }
         } finally { authLoading.value = false; }
       };
@@ -1716,7 +1672,6 @@
         if (!email) return showToast("請輸入電子郵件", "error");
         if (!password && !last5) return showToast("請填寫密碼或手機後 5 碼", "error");
         authLoading.value = true;
-        hasExplicitEntryIntent.value = true;
         try {
           if (password) {
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -1741,7 +1696,6 @@
         if (phone.length < 5) return showToast("請輸入正確手機號碼", "error");
         const phoneLast5 = phone.slice(-5);
         authLoading.value = true;
-        hasExplicitEntryIntent.value = true;
         try {
           const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { phone, phone_last5: phoneLast5 } } });
           if (error) return showToast("註冊失敗：" + error.message, "error");
@@ -1753,7 +1707,7 @@
       const triggerSignOut = () => {
         const msg = isGuestSession.value ? "切換後可登入正式帳號或輸入其他邀請碼；本機訪客紀錄仍會保留於此手機。" : "確定要登出目前帳號並返回登入畫面嗎？";
         openConfirmDialog("切換 / 登出", msg, async () => {
-          viewMode.value = 'hub'; hasExplicitEntryIntent.value = false;
+          viewMode.value = 'hub';
           await supabaseClient.auth.signOut(); checkSavedGuestDevice(); showToast("已返回入口畫面");
         });
       };
@@ -1952,7 +1906,7 @@
 
       const createIndependentFund = async () => {
         if (isSaving.value) return;
-        const partnerName = sanitizeText(newFundPartnerName.value, 20) || '伴侶';
+        const partnerName = sanitizeText(newFundPartnerName.value, 20) || '另一半';
         isSaving.value = true;
         try {
           const code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -1968,7 +1922,7 @@
             await supabaseClient.from('categories').insert(['餐飲', '約會', '出遊', '娛樂', '購物', '交通'].map(cat => ({ trip_id: fundBook.id, name: cat })));
             newFundPartnerName.value = ''; currentFundId.value = fundBook.id;
             await fetchTrips(); setupRealtimeSubscription();
-            showToast("專屬生活共用基金已建立！快把邀請碼分享給伴侶");
+            showToast("專屬生活共用基金已建立！快把邀請碼分享給對方");
           }
         } finally { isSaving.value = false; }
       };
@@ -2008,7 +1962,7 @@
       const copyFundInviteLink = () => {
         if (!currentFund.value?.invite_code) return;
         const url = `${window.location.origin}${window.location.pathname}?code=${currentFund.value.invite_code}`;
-        copyTextSafe(`💑 邀請你加入我們的【生活共用基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "伴侶基金邀請連結已複製！快傳給對方");
+        copyTextSafe(`💰 邀請你加入我們的【生活共用基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "基金邀請連結已複製！快傳給對方");
       };
 
       const canEditOrDeleteItem = (item) =>
@@ -2227,7 +2181,7 @@
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 3.7, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.8, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
@@ -2355,11 +2309,6 @@
         window.addEventListener('offline', () => { isOnline.value = false; });
         refreshOfflineCount(); checkSavedGuestDevice();
 
-        try {
-          const savedTarget = localStorage.getItem('travel_last_entry_target');
-          if (savedTarget === 'fund' || savedTarget === 'travel') entryTarget.value = savedTarget;
-        } catch (e) {}
-
         const params = new URLSearchParams(window.location.search);
         const urlCode = (params.get('code') || params.get('invite') || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
         if (urlCode) {
@@ -2377,10 +2326,8 @@
               if (pendingInviteCode.value) {
                 const code = pendingInviteCode.value; pendingInviteCode.value = '';
                 await joinTripByCode(code, false);
-              } else if (hasExplicitEntryIntent.value) {
-                switchViewMode(entryTarget.value);
               } else {
-                // 已登入直接開啟 App 時，進入雙系統選擇大廳讓使用者自由選擇
+                // 手機已登入時，每次開啟一律優先跳轉到「生活基金和共同記帳」選擇頁面
                 viewMode.value = 'hub';
               }
             } else if (pendingInviteCode.value) {
@@ -2396,7 +2343,7 @@
       });
 
       return {
-        appVersion, session, entryTarget, viewMode, activeThemeGlow, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
+        appVersion, session, viewMode, activeThemeGlow, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
         authLoading, isSaving, appIconSrc, isOnline, offlineQueueCount, notificationPermission, notificationStatusText,
         toast, confirmDialog, activeTab, filterType, searchQuery, scrollContainer,
         currentYearMonth, selectedFundMonth, prevFundMonth,
@@ -2411,7 +2358,7 @@
         prevMonthFundBalance, selectedMonthRemainPercent, fundStatusTheme,
         visibleExpenses, filteredExpenses, groupedExpenses,
         totalGroupExpense, categoryStats, currentMemberTotalCost, myPersonalCost, myPaidGroupCost, myNetBalance, memberSummaries, myRelatedDebts,
-        selectEntryTarget, switchViewMode, shiftFundMonth, formatYearMonthLabel, requestNotificationPermission, executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser,
+        switchViewMode, shiftFundMonth, formatYearMonthLabel, requestNotificationPermission, executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser,
         getCategoryName, getCategoryEmoji, getCategoryEmojiByList, getMemberName, getFundCategoryEmoji, getFundMemberName,
         onDrawerCurrencyChange, switchFundDrawerType, openDrawer, openEditDrawer, toggleMemberSplit, toggleSelectAllMembers, saveDrawer, triggerDeleteItem, canEditOrDeleteItem,
         handleGuestQuickJoin, resumeGuestDeviceSession, handleLogin, handleRegister, triggerSignOut,
