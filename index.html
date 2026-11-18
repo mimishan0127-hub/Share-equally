@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>雲端多人旅遊分帳 v3.2</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
+  <title>雲端多人旅遊分帳 v3.6</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,120 +24,65 @@
   <!-- PWA Canvas 原生繪製引擎 -->
   <script>
     (function() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 180; canvas.height = 180;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      function roundRect(x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-      }
-
-      const grad = ctx.createLinearGradient(0, 0, 180, 180);
-      grad.addColorStop(0, '#6366F1');
-      grad.addColorStop(0.5, '#4F46E5');
-      grad.addColorStop(1, '#312E81');
-      roundRect(0, 0, 180, 180, 42);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-      ctx.stroke();
-
-      ctx.save();
-      ctx.translate(72, 95);
-      ctx.rotate(-0.08);
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.22)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 6;
-      roundRect(-42, -58, 84, 116, 12);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(72, 95);
-      ctx.rotate(-0.08);
-      ctx.fillStyle = '#EEF2FF';
-      roundRect(-30, -46, 60, 10, 4); ctx.fill();
-      ctx.fillStyle = '#E0E7FF';
-      roundRect(-30, -28, 36, 6, 3); ctx.fill();
-      roundRect(-30, -16, 44, 6, 3); ctx.fill();
-      roundRect(-30, -4, 28, 6, 3); ctx.fill();
-
-      ctx.strokeStyle = '#C7D2FE';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath(); ctx.moveTo(-32, 14); ctx.lineTo(32, 14); ctx.stroke();
-
-      ctx.fillStyle = '#FB7185'; ctx.beginPath(); ctx.arc(-20, 34, 7, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#38BDF8'; ctx.beginPath(); ctx.arc(0, 34, 7, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#34D399'; ctx.beginPath(); ctx.arc(20, 34, 7, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(125, 126);
-      ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetY = 5;
-      ctx.fillStyle = '#F59E0B'; ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#FBBF24'; ctx.beginPath(); ctx.arc(0, 0, 26, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#FEF08A'; ctx.beginPath(); ctx.arc(0, 0, 21, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#D97706';
-      ctx.font = 'bold 24px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('$', 0, 2);
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(130, 48);
-      ctx.shadowColor = 'rgba(15, 23, 42, 0.3)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 5;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.moveTo(25, -20); ctx.lineTo(2, 22); ctx.lineTo(-6, 2); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#E0E7FF';
-      ctx.beginPath(); ctx.moveTo(25, -20); ctx.lineTo(-26, 4); ctx.lineTo(-6, 2); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#C7D2FE';
-      ctx.beginPath(); ctx.moveTo(25, -20); ctx.lineTo(-6, 2); ctx.lineTo(0, 10); ctx.closePath(); ctx.fill();
-      ctx.restore();
-
-      const dataUrl = canvas.toDataURL('image/png');
-      window.__TRAVEL_APP_ICON__ = dataUrl;
-      const appleIconEl = document.getElementById('apple-icon');
-      if (appleIconEl) appleIconEl.href = dataUrl;
-      const faviconEl = document.getElementById('favicon');
-      if (faviconEl) faviconEl.href = dataUrl;
-
-      const manifest = {
-        name: "雲端多人旅遊分帳",
-        short_name: "旅遊分帳",
-        start_url: "./index.html",
-        display: "standalone",
-        background_color: "#F8FAFC",
-        theme_color: "#FFFFFF",
-        icons: [{ src: dataUrl, sizes: "180x180", type: "image/png" }]
+      const c = document.createElement('canvas');
+      c.width = c.height = 180;
+      const x = c.getContext('2d');
+      if (!x) return;
+      const rr = (px, py, w, h, r) => {
+        x.beginPath(); x.moveTo(px + r, py);
+        x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r);
+        x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath();
       };
-      const manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      manifestLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
-      document.head.appendChild(manifestLink);
+      const g = x.createLinearGradient(0, 0, 180, 180);
+      g.addColorStop(0, '#6366F1'); g.addColorStop(0.5, '#4F46E5'); g.addColorStop(1, '#312E81');
+      rr(0, 0, 180, 180, 42); x.fillStyle = g; x.fill();
+      x.lineWidth = 3; x.strokeStyle = 'rgba(255,255,255,0.25)'; x.stroke();
+
+      x.save(); x.translate(72, 95); x.rotate(-0.08);
+      x.shadowColor = 'rgba(0,0,0,0.22)'; x.shadowBlur = 10; x.shadowOffsetY = 6;
+      rr(-42, -58, 84, 116, 12); x.fillStyle = '#FFF'; x.fill();
+      x.shadowColor = 'transparent';
+      x.fillStyle = '#EEF2FF'; rr(-30, -46, 60, 10, 4); x.fill();
+      x.fillStyle = '#E0E7FF';
+      rr(-30, -28, 36, 6, 3); x.fill(); rr(-30, -16, 44, 6, 3); x.fill(); rr(-30, -4, 28, 6, 3); x.fill();
+      x.strokeStyle = '#C7D2FE'; x.lineWidth = 2; x.setLineDash([4, 4]);
+      x.beginPath(); x.moveTo(-32, 14); x.lineTo(32, 14); x.stroke();
+      [['#FB7185', -20], ['#38BDF8', 0], ['#34D399', 20]].forEach(([col, cx]) => {
+        x.fillStyle = col; x.beginPath(); x.arc(cx, 34, 7, 0, Math.PI * 2); x.fill();
+      });
+      x.restore();
+
+      x.save(); x.translate(125, 126);
+      x.shadowColor = 'rgba(15,23,42,0.35)'; x.shadowBlur = 12; x.shadowOffsetY = 5;
+      [['#F59E0B', 30], ['#FBBF24', 26], ['#FEF08A', 21]].forEach(([col, r]) => {
+        x.fillStyle = col; x.beginPath(); x.arc(0, 0, r, 0, Math.PI * 2); x.fill(); x.shadowColor = 'transparent';
+      });
+      x.fillStyle = '#D97706'; x.font = 'bold 24px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText('$', 0, 2); x.restore();
+
+      x.save(); x.translate(130, 48);
+      x.shadowColor = 'rgba(15,23,42,0.3)'; x.shadowBlur = 10; x.shadowOffsetY = 5;
+      x.fillStyle = '#FFF'; x.beginPath(); x.moveTo(25, -20); x.lineTo(2, 22); x.lineTo(-6, 2); x.closePath(); x.fill();
+      x.shadowColor = 'transparent';
+      x.fillStyle = '#E0E7FF'; x.beginPath(); x.moveTo(25, -20); x.lineTo(-26, 4); x.lineTo(-6, 2); x.closePath(); x.fill();
+      x.fillStyle = '#C7D2FE'; x.beginPath(); x.moveTo(25, -20); x.lineTo(-6, 2); x.lineTo(0, 10); x.closePath(); x.fill();
+      x.restore();
+
+      const url = c.toDataURL('image/png');
+      window.__TRAVEL_APP_ICON__ = url;
+      document.getElementById('apple-icon').href = url;
+      document.getElementById('favicon').href = url;
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify({
+        name: "雲端多人旅遊分帳", short_name: "旅遊分帳", start_url: "./index.html",
+        display: "standalone", background_color: "#F8FAFC", theme_color: "#FFFFFF",
+        icons: [{ src: url, sizes: "180x180", type: "image/png" }]
+      }));
+      document.head.appendChild(link);
     })();
   </script>
 
-  <!-- 穩定 CDN 載入 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -143,52 +90,26 @@
   <style>
     [v-cloak] { display: none !important; }
     *, *::before, *::after { box-sizing: border-box; }
-    :root {
-      --sat: env(safe-area-inset-top, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
-    }
+    :root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
     html, body {
-      background-color: #EEF2F6;
-      color: #0F172A;
-      overscroll-behavior-y: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-font-smoothing: antialiased;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #EEF2F6; color: #0F172A; overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     }
     .safe-pt { padding-top: max(0.85rem, var(--sat)); }
     .safe-pb { padding-bottom: max(0.65rem, var(--sab)); }
     .safe-modal-pb { padding-bottom: max(1.5rem, calc(var(--sab) + 0.85rem)); }
     .safe-fab-bottom { bottom: calc(5.1rem + var(--sab)); }
-
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
     input, select, textarea {
-      -webkit-appearance: none;
-      appearance: none;
-      -webkit-user-select: text;
-      user-select: text;
-      min-width: 0;
-      max-width: 100%;
+      -webkit-appearance: none; appearance: none; -webkit-user-select: text; user-select: text;
+      min-width: 0; max-width: 100%;
     }
-    input[type="date"] {
-      display: flex;
-      align-items: center;
-      min-height: 48px;
-    }
-
-    @keyframes slideUp {
-      from { transform: translate3d(0, 100%, 0); }
-      to { transform: translate3d(0, 0, 0); }
-    }
-    @keyframes popIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    input[type="date"] { display: flex; align-items: center; min-height: 48px; }
+    @keyframes slideUp { from { transform: translate3d(0, 100%, 0); } to { transform: translate3d(0, 0, 0); } }
+    @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .animate-slide-up { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-pop-in { animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.18s ease-out forwards; }
@@ -197,44 +118,54 @@
 <body class="selection:bg-indigo-500 selection:text-white">
 <div id="app" v-cloak class="w-full max-w-md mx-auto h-[100dvh] bg-[#F8FAFC] relative flex flex-col overflow-hidden shadow-[0_0_60px_-15px_rgba(15,23,42,0.12)] sm:border-x sm:border-slate-200/80 select-none">
 
+  <!-- 專屬主題動態色彩光暈層 -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+    <div class="absolute -top-24 -right-20 w-72 h-72 rounded-full blur-3xl transition-colors duration-700"
+      :class="fundMode ? 'bg-rose-200/45' : 'bg-indigo-200/45'"></div>
+    <div class="absolute top-1/3 -left-24 w-64 h-64 rounded-full blur-3xl transition-colors duration-700"
+      :class="fundMode ? 'bg-amber-100/50' : 'bg-sky-200/40'"></div>
+    <div class="absolute -bottom-24 right-4 w-72 h-72 rounded-full blur-3xl transition-colors duration-700"
+      :class="fundMode ? 'bg-emerald-100/45' : 'bg-violet-200/35'"></div>
+  </div>
+
   <!-- 動態島級 Toast 懸浮通知 -->
   <transition enter-active-class="transition duration-300 ease-out" enter-from-class="transform -translate-y-6 opacity-0 scale-95" enter-to-class="transform translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="transform translate-y-0 opacity-100 scale-100" leave-to-class="transform -translate-y-6 opacity-0 scale-95">
     <div v-if="toast.show" style="top: max(1rem, var(--sat));" class="fixed left-1/2 -translate-x-1/2 z-[120] max-w-[92vw] w-auto min-w-[230px]">
-      <div class="px-4 py-3 rounded-full shadow-2xl flex items-center justify-center gap-2 text-xs font-bold text-white backdrop-blur-xl border border-white/15" :class="toast.type === 'error' ? 'bg-rose-600/95 shadow-rose-500/25' : 'bg-slate-900/95 shadow-slate-900/25'">
-        <span class="text-sm shrink-0">{{ toast.type === 'error' ? '⚠️' : '✨' }}</span>
+      <div class="px-4 py-3 rounded-full shadow-2xl flex items-center justify-center gap-2 text-xs font-bold text-white backdrop-blur-xl border border-white/15"
+        :class="toast.type === 'error' ? 'bg-rose-600/95 shadow-rose-500/25' : (toast.type === 'sync' ? 'bg-indigo-600/95 shadow-indigo-500/30' : 'bg-slate-900/95 shadow-slate-900/25')">
+        <span class="text-sm shrink-0">{{ toast.type === 'error' ? '⚠️' : (toast.type === 'sync' ? '🔔' : '✨') }}</span>
         <span class="truncate">{{ toast.message }}</span>
       </div>
     </div>
   </transition>
 
   <!-- 離線與同步狀態列 -->
-  <div v-if="!isOnline" class="bg-amber-500 text-white text-[11px] font-bold px-4 py-1.5 text-center shrink-0 flex items-center justify-center gap-1.5 shadow-sm safe-pt">
+  <div v-if="!isOnline" class="bg-amber-500 text-white text-[11px] font-bold px-4 py-1.5 text-center shrink-0 flex items-center justify-center gap-1.5 shadow-sm z-40 safe-pt">
     <span>📡 離線模式：花費已暫存手機，連網後自動回傳</span>
   </div>
-  <div v-else-if="offlineQueueCount > 0" class="bg-indigo-600 text-white text-[11px] font-bold px-4 py-1.5 text-center shrink-0 flex items-center justify-center gap-1.5 shadow-sm safe-pt">
+  <div v-else-if="offlineQueueCount > 0" class="bg-indigo-600 text-white text-[11px] font-bold px-4 py-1.5 text-center shrink-0 flex items-center justify-center gap-1.5 shadow-sm z-40 safe-pt">
     <svg class="w-3.5 h-3.5 animate-spin shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
     <span>正在同步 {{ offlineQueueCount }} 筆離線紀錄...</span>
   </div>
 
   <!-- ================= 入口畫面 (免註冊訪客 / 登入 / 註冊) ================= -->
-  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white safe-pt safe-pb">
+  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white/85 backdrop-blur-xl relative z-10 safe-pt safe-pb">
     <div class="my-auto py-2">
       <div class="text-center mb-5">
         <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3 border border-indigo-100 overflow-hidden bg-indigo-50">
           <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
         </div>
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1">
-          <span>LATEST</span>
-          <span>{{ appVersion }}</span>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50/90 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1">
+          <span>LATEST</span><span>{{ appVersion }}</span>
         </div>
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
-        <p class="text-xs font-medium text-slate-400 mt-1">免註冊本機秒進・隱私隔離・雙平台離線記帳</p>
+        <p class="text-xs font-medium text-slate-400 mt-1">多人出遊分帳・獨立日常共同基金・離線記帳</p>
       </div>
 
       <!-- 網址直達邀請橫幅 -->
       <div v-if="pendingInviteCode" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-indigo-100">🎉 收到同行分帳邀請</span>
+          <span class="text-[11px] font-bold text-indigo-100">🎉 收到雲端帳本／基金邀請</span>
           <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-lg tracking-widest">{{ pendingInviteCode }}</span>
         </div>
         <button type="button" :disabled="authLoading" @click="handleGuestQuickJoin(pendingInviteCode)" class="w-full py-3 bg-white text-indigo-700 font-black text-xs rounded-xl shadow-sm active:scale-[0.98] transition min-h-[44px] disabled:opacity-60">
@@ -243,7 +174,7 @@
       </div>
 
       <!-- Segmented Control -->
-      <div class="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
+      <div class="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
         <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">免註冊加入</button>
         <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">帳號登入</button>
         <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">註冊主揪</button>
@@ -253,20 +184,18 @@
       <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-4">
         <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-indigo-950">同行旅伴免註冊通道</span>
+            <span class="text-xs font-black text-indigo-950">同行旅伴 / 伴侶免註冊通道</span>
             <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
           </div>
-          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本。</p>
+          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本或共同基金。</p>
           <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
         </div>
-
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-          {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入帳本' }}
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入' }}
         </button>
-
         <div v-if="hasSavedGuestDevice" class="pt-1 text-center">
           <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-2">
-            ↻ 恢復此手機先前的訪客帳本紀錄
+            ↻ 恢復此手機先前的訪客紀錄
           </button>
         </div>
       </form>
@@ -293,8 +222,8 @@
             <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-          {{ authLoading ? '正在驗證身分...' : '立即登入帳本' }}
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+          {{ authLoading ? '正在驗證身分...' : '立即登入' }}
         </button>
       </form>
 
@@ -312,84 +241,281 @@
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
           <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
+        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
           {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
         </button>
       </form>
     </div>
 
     <!-- 入口頁底部：極簡加入手機桌面捷徑教學 -->
-    <div class="mt-6 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2">
-      <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
-        <span>📲</span>
-        <span>加到手機桌面（免下載 App・一鍵開啟）</span>
-      </p>
-      <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+    <div class="mt-6 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5">
+      <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
+      <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
         <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
         <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
       </div>
     </div>
   </div>
 
-  <!-- ================= 主應用畫面 (原生 App Flex 架構) ================= -->
+  <!-- ================= 主應用畫面 ================= -->
   <template v-else>
-    <!-- 固定頂部導航列 -->
-    <header class="px-3.5 sm:px-4 pb-3 bg-white/95 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
-      <div class="relative flex-1 min-w-0">
-        <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-2 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[42px]">
-          <option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
-          <option v-if="trips.length === 0" :value="null">✨ 歡迎使用旅遊分帳</option>
-        </select>
-        <svg class="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-      </div>
+    <!-- 固定頂部毛玻璃導航列 -->
+    <header class="px-3.5 sm:px-4 pb-3 bg-white/80 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
+      <!-- 模式 A：日常共同基金專屬頂欄 (完全獨立，不顯示旅遊帳本名稱) -->
+      <template v-if="fundMode">
+        <button type="button" @click="fundMode = false" class="h-10 px-3 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-black text-xs flex items-center gap-1 active:scale-95 transition shrink-0">
+          <span>←</span><span>返回分帳</span>
+        </button>
+        <span class="text-sm font-black text-slate-900 truncate">💑 日常共同基金</span>
+        <button v-if="currentFundMember" type="button" @click="openEditMemberNameModal(currentFundMember, true)" class="text-xs font-black rounded-full px-2.5 h-9 bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center gap-1 max-w-[96px] shrink-0 active:scale-95 transition">
+          <span class="truncate">{{ currentFundMember.name }}</span>
+        </button>
+        <div v-else class="w-10"></div>
+      </template>
 
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-10 h-10 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </button>
-        
-        <button 
-          v-if="currentMember"
-          type="button"
-          @click="openEditMemberNameModal(currentMember)"
-          class="text-xs font-black rounded-full px-2.5 sm:px-3 h-10 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[110px] sm:max-w-[136px]"
-          :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'"
-        >
-          <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-          <span class="truncate">{{ currentMemberName }}</span>
-          <svg class="w-3 h-3 opacity-60 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-        </button>
-        <button v-else-if="currentTrip" type="button" @click="showClaimModal = true" class="text-xs font-black text-amber-800 bg-amber-100 border border-amber-200 px-3 h-10 rounded-full active:scale-95 transition shrink-0">
-          認領身分
-        </button>
-      </div>
+      <!-- 模式 B：一般旅遊分帳頂欄 -->
+      <template v-else>
+        <div class="relative flex-1 min-w-0">
+          <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-2 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[42px]">
+            <option v-for="t in travelTrips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
+            <option v-if="travelTrips.length === 0" :value="null">✨ 尚無旅遊帳本</option>
+          </select>
+          <svg class="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <!-- 獨立小分頁入口：共同基金 (任何時候皆可獨立點擊進入) -->
+          <button type="button" @click="openFundView" class="h-10 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="日常共同出遊吃飯基金">
+            <span>💑</span><span>基金</span>
+            <span v-if="currentMonthFundBalance < 0" class="w-2 h-2 rounded-full bg-rose-500"></span>
+          </button>
+
+          <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-10 h-10 bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </button>
+          
+          <button v-if="currentMember" type="button" @click="openEditMemberNameModal(currentMember, false)"
+            class="text-xs font-black rounded-full px-2.5 h-10 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[92px] sm:max-w-[116px]"
+            :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'">
+            <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+            <span class="truncate">{{ currentMemberName }}</span>
+          </button>
+          <button v-else-if="currentTrip" type="button" @click="openClaimModal(false)" class="text-xs font-black text-amber-800 bg-amber-100 border border-amber-200 px-3 h-10 rounded-full active:scale-95 transition shrink-0">
+            認領
+          </button>
+        </div>
+      </template>
     </header>
 
     <!-- 中央獨立滾動視口 -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-28">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="fundMode ? 'pb-12' : 'pb-28'">
       
-      <!-- 0 帳本新手引導畫面 -->
-      <div v-if="trips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
+      <!-- ================= 獨立視圖：日常共同儲值基金 (完全獨立於旅遊帳簿) ================= -->
+      <main v-if="fundMode" class="p-4 space-y-4 animate-fade-in">
+        
+        <!-- 情況 A：尚未建立或加入獨立共同基金 -->
+        <div v-if="!currentFund" class="space-y-4 pt-2">
+          <div class="bg-gradient-to-br from-rose-50 via-white to-amber-50/80 border border-rose-200/70 p-6 rounded-[28px] shadow-sm space-y-2.5">
+            <span class="text-2xl">💑</span>
+            <h2 class="text-lg font-black text-slate-900">建立或加入專屬共同基金</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">此基金完全獨立於多人旅遊帳簿，專屬於您與伴侶每月的吃飯、約會與出遊儲值金。</p>
+          </div>
+
+          <div class="bg-white/90 p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3">
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新的共同基金</h3>
+            <p class="text-[11px] text-slate-400">建立後會產生專屬 6 碼邀請碼，傳給另一半即可雙方共同記帳。</p>
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="newFundPartnerName" @keyup.enter="createIndependentFund" placeholder="伴侶暱稱（如：寶貝、米米）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+              <div class="relative shrink-0 w-[88px]">
+                <select v-model="newFundCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
+                  <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="USD">USD</option>
+                </select>
+                <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+              </div>
+            </div>
+            <button type="button" :disabled="isSaving" @click="createIndependentFund" class="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl text-xs font-black shadow-md shadow-rose-200 active:scale-[0.98] transition min-h-[48px] disabled:opacity-50">
+              ＋ 建立專屬共同基金
+            </button>
+          </div>
+
+          <div class="bg-indigo-50/80 border border-indigo-100 p-5 rounded-[24px] space-y-3">
+            <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入伴侶已建立的基金</h3>
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="joinFundCodeInput" @keyup.enter="joinTripByCode(joinFundCodeInput, true)" maxlength="6" placeholder="輸入 6 碼基金邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+              <button type="button" :disabled="isSaving" @click="joinTripByCode(joinFundCodeInput, true)" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 情況 B：已擁有獨立共同基金 -->
+        <template v-else>
+          <!-- 未認領基金角色提醒 -->
+          <div v-if="!isCurrentFundMemberBound" class="p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-black text-amber-900">請先認領您的基金成員身分</p>
+              <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">綁定後即可與伴侶同步記帳</p>
+            </div>
+            <button type="button" @click="openClaimModal(true)" class="text-xs font-black text-white bg-amber-600 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
+              立即認領
+            </button>
+          </div>
+
+          <!-- 伴侶專屬邀請碼列 (僅顯示於共同基金內) -->
+          <div class="px-3.5 py-2.5 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-[11px] font-bold text-slate-400 shrink-0">伴侶代碼</span>
+              <span class="font-mono font-black text-rose-600 tracking-wider text-sm bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 truncate">{{ currentFund.invite_code || '------' }}</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" @click="copyFundInviteLink" class="text-[11px] font-black text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/70 px-3 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">
+                分享伴侶邀請連結
+              </button>
+            </div>
+          </div>
+
+          <!-- 月份切換器 -->
+          <div class="bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl p-2 flex items-center justify-between shadow-sm">
+            <button type="button" @click="shiftFundMonth(-1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">‹</button>
+            <div class="text-center">
+              <span class="text-sm font-black text-slate-900 font-mono">{{ formatYearMonthLabel(selectedFundMonth) }}</span>
+              <span v-if="selectedFundMonth === currentYearMonth" class="ml-1.5 text-[10px] font-black bg-rose-50 text-rose-600 border border-rose-200/70 px-2 py-0.5 rounded-full">本月</span>
+            </div>
+            <button type="button" @click="shiftFundMonth(1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">›</button>
+          </div>
+
+          <!-- 淺色晨光系・當月基金餘額卡片 (70-100% 綠、40-69% 黃、10-39% 橘、<10% 紅) -->
+          <div class="bg-gradient-to-br from-white via-rose-50/35 to-amber-50/40 backdrop-blur-xl border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
+            <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full blur-2xl opacity-35 transition-colors duration-500" :class="fundStatusTheme.glowBg"></div>
+            
+            <div class="flex items-center justify-between gap-2 relative">
+              <span class="text-xs font-bold text-slate-500">當月基金剩餘額度 ({{ currentFundBaseCurrency }})</span>
+              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full border" :class="fundStatusTheme.badgeClass">
+                {{ fundStatusTheme.label }}
+              </span>
+            </div>
+
+            <p class="text-3xl sm:text-4xl font-black mt-2.5 tracking-tight font-mono tabular-nums transition-colors duration-300 relative" :class="fundStatusTheme.textClass">
+              {{ selectedMonthFundBalance < 0 ? `-$${formatMoney(Math.abs(selectedMonthFundBalance))}` : `$${formatMoney(selectedMonthFundBalance)}` }}
+            </p>
+
+            <div class="mt-3.5 space-y-1 relative">
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-300" :class="fundStatusTheme.barClass" :style="{ width: Math.max(0, Math.min(100, selectedMonthRemainPercent)) + '%' }"></div>
+              </div>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400">
+                <span>剩餘比例：{{ selectedMonthFundIn > 0 ? `${selectedMonthRemainPercent}%` : (selectedMonthFundBalance < 0 ? '已透支' : '待儲值') }}</span>
+                <span>70%綠・40%黃・10%橘・&lt;10%紅</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-200/70 grid grid-cols-2 text-xs gap-4 relative">
+              <div>
+                <span class="text-slate-400 font-bold text-[11px]">本月儲值總額</span>
+                <p class="text-base font-black text-emerald-600 mt-0.5 font-mono tabular-nums">+${{ formatMoney(selectedMonthFundIn) }}</p>
+              </div>
+              <div>
+                <span class="text-slate-400 font-bold text-[11px]">本月出遊/吃飯扣款</span>
+                <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">-${{ formatMoney(selectedMonthFundOut) }}</p>
+              </div>
+            </div>
+
+            <!-- 上月餘額狀況 -->
+            <div class="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] relative">
+              <span class="text-slate-400 font-bold">上月 ({{ formatYearMonthLabel(prevFundMonth) }}) 結餘狀況</span>
+              <span class="font-mono font-black" :class="prevMonthFundBalance < 0 ? 'text-rose-600' : (prevMonthFundBalance > 0 ? 'text-emerald-600' : 'text-slate-500')">
+                {{ prevMonthFundBalance < 0 ? `-$${formatMoney(Math.abs(prevMonthFundBalance))}` : `+$${formatMoney(prevMonthFundBalance)}` }}
+              </span>
+            </div>
+          </div>
+
+          <!-- 雙快捷按鈕 -->
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" @click="openDrawer('fund_in')" class="py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-200/70 flex items-center justify-center gap-1.5 active:scale-95 transition min-h-[48px]">
+              <span class="text-base leading-none">＋</span><span>儲值基金</span>
+            </button>
+            <button type="button" @click="openDrawer('fund_out')" class="py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 text-white font-black text-xs rounded-2xl shadow-lg shadow-indigo-200/70 flex items-center justify-center gap-1.5 active:scale-95 transition min-h-[48px]">
+              <span class="text-base leading-none">－</span><span>花費扣款</span>
+            </button>
+          </div>
+
+          <!-- 雙方即時記帳通知列 -->
+          <div class="px-4 py-3 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+            <div class="min-w-0">
+              <p class="text-xs font-black text-slate-800 truncate">🔔 雙方即時記帳同步通知</p>
+              <p class="text-[11px] text-slate-400 font-medium truncate">{{ notificationStatusText }}</p>
+            </div>
+            <button v-if="notificationPermission !== 'granted'" type="button" @click="requestNotificationPermission" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-1.5 rounded-xl active:scale-95 transition shrink-0 min-h-[34px]">
+              開啟通知
+            </button>
+            <span v-else class="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 rounded-lg shrink-0">
+              ● 已連線同步
+            </span>
+          </div>
+
+          <!-- 當月基金收支明細 -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-xs font-black text-slate-500 tracking-wider uppercase">{{ formatYearMonthLabel(selectedFundMonth) }}收支明細</h3>
+              <span class="text-[11px] font-bold text-slate-400">共 {{ selectedMonthFundTransactions.length }} 筆</span>
+            </div>
+
+            <div v-for="item in selectedMonthFundTransactions" :key="item.id" @click="openEditDrawer(item)" class="bg-white/90 backdrop-blur-sm p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" :class="item.expense_type === 'fund_in' ? 'bg-emerald-50 border border-emerald-200/70' : 'bg-rose-50/80 border border-rose-100'">
+                  {{ item.expense_type === 'fund_in' ? '💰' : getFundCategoryEmoji(item.category_id) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-black text-slate-800 text-sm truncate">{{ item.title }}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-md font-black shrink-0" :class="item.expense_type === 'fund_in' ? 'bg-emerald-100/80 text-emerald-800' : 'bg-rose-50 text-rose-700'">
+                      {{ item.expense_type === 'fund_in' ? '儲值' : '扣款' }}
+                    </span>
+                    <span v-if="item.is_offline" class="text-[9px] bg-slate-100 text-slate-500 font-bold px-1.5 py-0.5 rounded shrink-0">待同步</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1 font-medium truncate">
+                    <span class="text-slate-600 font-bold">{{ getFundMemberName(item.payer_id) }}</span> 登記・{{ (item.date || '').slice(5) }}
+                    <span v-if="item.currency && item.currency !== currentFundBaseCurrency" class="text-indigo-600 font-mono font-bold ml-1">({{ item.currency }} {{ formatMoney(item.original_amount) }})</span>
+                  </p>
+                  <p v-if="item.notes" class="text-[10px] text-slate-400 mt-0.5 truncate">📝 {{ item.notes }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="font-black font-mono tabular-nums text-base" :class="item.expense_type === 'fund_in' ? 'text-emerald-600' : 'text-rose-600'">
+                  {{ item.expense_type === 'fund_in' ? `+$${formatMoney(item.amount)}` : `-$${formatMoney(item.amount)}` }}
+                </span>
+                <button type="button" @click.stop="triggerDeleteItem(item, true)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center" title="刪除">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div v-if="selectedMonthFundTransactions.length === 0" class="text-center py-12 px-4 bg-white/85 rounded-[24px] border border-dashed border-slate-200">
+              <p class="text-3xl mb-2">💑</p>
+              <p class="text-xs font-black text-slate-600">{{ formatYearMonthLabel(selectedFundMonth) }}尚無基金紀錄</p>
+              <p class="text-[11px] text-slate-400 mt-1">點擊上方「＋ 儲值基金」存入本月出遊吃飯金吧！</p>
+            </div>
+          </div>
+        </template>
+      </main>
+
+      <!-- ================= 0 旅遊帳本新手引導畫面 ================= -->
+      <div v-else-if="travelTrips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
         <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white p-6 rounded-[28px] shadow-xl shadow-indigo-200/80 space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-2xl">✈️</span>
             <span class="text-[10px] font-mono font-bold bg-white/15 px-2.5 py-0.5 rounded-full">{{ appVersion }} 最新版</span>
           </div>
           <h2 class="text-xl font-black tracking-tight">開始您的第一趟旅程分帳</h2>
-          <p class="text-xs text-indigo-100 leading-relaxed">建立新帳本並設定同行夥伴，或直接輸入朋友分享的 6 位數邀請碼加入。</p>
+          <p class="text-xs text-indigo-100 leading-relaxed">建立新旅遊帳本並設定同行夥伴，或直接輸入朋友分享的 6 位數邀請碼加入。</p>
         </div>
 
-        <div class="bg-white p-4 sm:p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3 overflow-hidden">
+        <div class="bg-white/90 p-4 sm:p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3 overflow-hidden">
           <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
           <div class="flex items-center gap-2 w-full">
             <input v-model="newTripName" @keyup.enter="createTrip" placeholder="例如：2026 東京賞楓" class="flex-1 min-w-0 w-full h-[48px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
             <div class="relative shrink-0 w-[92px]">
               <select v-model="newTripCurrency" class="w-full h-[48px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
-                <option value="TWD">TWD</option>
-                <option value="JPY">JPY</option>
-                <option value="KRW">KRW</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
+                <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
               </select>
               <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -402,24 +528,21 @@
         <div class="bg-indigo-50/80 border border-indigo-100 p-4 sm:p-5 rounded-[24px] space-y-3 overflow-hidden">
           <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入朋友的帳本</h3>
           <div class="flex items-center gap-2 w-full">
-            <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-            <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
+            <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+            <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
           </div>
         </div>
 
-        <!-- 極簡加入手機桌面捷徑教學 -->
-        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/70 space-y-2">
-          <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
-            <span>📲</span>
-            <span>加到手機桌面（免下載 App・一鍵開啟）</span>
-          </p>
-          <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+        <div class="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70 space-y-1.5">
+          <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
+          <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
             <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
             <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
           </div>
         </div>
       </div>
 
+      <!-- ================= 一般旅遊分帳主視圖 ================= -->
       <template v-else>
         <!-- 未認領角色提示 -->
         <div v-if="currentTrip && !isCurrentMemberBound" class="mx-4 mt-3 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
@@ -427,38 +550,34 @@
             <p class="text-xs font-black text-amber-900">尚未綁定您的分帳角色</p>
             <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">點選您的名字即可記帳並隔離私密帳務</p>
           </div>
-          <button type="button" @click="showClaimModal = true" class="text-xs font-black text-white bg-amber-600 hover:bg-amber-700 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
+          <button type="button" @click="openClaimModal(false)" class="text-xs font-black text-white bg-amber-600 hover:bg-amber-700 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
             立即認領
           </button>
         </div>
 
         <!-- 邀請碼與分享橫幅 -->
-        <div v-if="currentTrip && activeTab === 'expenses'" class="mx-4 mt-3 px-3.5 py-2.5 bg-white border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)]">
+        <div v-if="currentTrip && activeTab === 'expenses'" class="mx-4 mt-3 px-3.5 py-2.5 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)]">
           <div class="flex items-center gap-1.5 min-w-0">
             <span class="text-[11px] font-bold text-slate-400 shrink-0">代碼</span>
             <span class="font-mono font-black text-indigo-600 tracking-wider text-sm bg-indigo-50/80 px-2 py-0.5 rounded-lg border border-indigo-100 truncate">{{ currentTrip.invite_code || '------' }}</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" @click="copyInviteCode" class="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">
-              複製碼
-            </button>
-            <button type="button" @click="copyInviteLink" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">
-              分享免註冊連結
-            </button>
+            <button type="button" @click="copyInviteCode" class="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">複製碼</button>
+            <button type="button" @click="copyInviteLink" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">分享免註冊連結</button>
           </div>
         </div>
 
-        <!-- ================= Tab 1: 支出明細 (日期時間軸分組) ================= -->
+        <!-- Tab 1: 支出明細 -->
         <main v-if="activeTab === 'expenses'" class="p-4 space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden min-w-0">
-              <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+              <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/15 rounded-full blur-xl"></div>
               <p class="text-[11px] font-bold text-indigo-100 tracking-wide">團體公帳總額</p>
               <p class="text-lg sm:text-xl font-black mt-1.5 font-mono tabular-nums tracking-tight truncate">
                 <span class="text-[11px] font-bold opacity-80 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(totalGroupExpense) }}
               </p>
             </div>
-            <div class="bg-white border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)] min-w-0">
+            <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)] min-w-0">
               <p class="text-[11px] font-bold text-slate-400 tracking-wide">您的個人總開銷</p>
               <p class="text-lg sm:text-xl font-black text-slate-900 mt-1.5 font-mono tabular-nums tracking-tight truncate">
                 <span class="text-[11px] font-bold text-slate-400 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(currentMemberTotalCost) }}
@@ -467,7 +586,7 @@
           </div>
 
           <!-- 類別佔比進度條 -->
-          <div v-if="categoryStats.length > 0" class="p-4 bg-white border border-slate-200/70 rounded-[24px] shadow-[0_2px_12px_-4px_rgba(15,23,42,0.03)] space-y-2.5">
+          <div v-if="categoryStats.length > 0" class="p-4 bg-white/90 backdrop-blur-md border border-slate-200/70 rounded-[24px] shadow-[0_2px_12px_-4px_rgba(15,23,42,0.03)] space-y-2.5">
             <div class="flex justify-between items-center">
               <span class="text-xs font-black text-slate-800">可見消費分佈</span>
               <span class="text-[11px] font-bold text-slate-400">共 {{ visibleExpenses.length }} 筆</span>
@@ -483,16 +602,16 @@
             </div>
           </div>
 
-          <!-- 篩選列 + 關鍵字搜尋 -->
+          <!-- 篩選列 + 搜尋 -->
           <div class="space-y-2.5">
             <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
-              <button type="button" @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-900 text-white font-black shadow-sm' : 'bg-white text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">全部可見 ({{ visibleExpenses.length }})</button>
-              <button type="button" @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-white text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">團體平攤</button>
-              <button type="button" @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-amber-500 text-white font-black shadow-sm' : 'bg-white text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">我的私物</button>
+              <button type="button" @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-900 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">全部可見 ({{ visibleExpenses.length }})</button>
+              <button type="button" @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">團體平攤</button>
+              <button type="button" @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-amber-500 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">我的私物</button>
             </div>
 
             <div v-if="visibleExpenses.length >= 4" class="relative">
-              <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full min-w-0 pl-9 pr-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
+              <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full min-w-0 pl-9 pr-4 py-2.5 rounded-2xl bg-white/90 border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
               <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
           </div>
@@ -505,7 +624,7 @@
                 <span class="text-[11px] font-mono font-bold text-slate-400">小計 ${{ formatMoney(group.dayTotal) }}</span>
               </div>
 
-              <div v-for="item in group.items" :key="item.id" @click="openEditExpenseModal(item)" class="bg-white p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
+              <div v-for="item in group.items" :key="item.id" @click="openEditDrawer(item)" class="bg-white/90 backdrop-blur-sm p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
                 <div class="flex items-center gap-3 min-w-0 flex-1">
                   <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" :class="item.expense_type === 'personal' ? 'bg-amber-50 border border-amber-200/60' : 'bg-indigo-50/80 border border-indigo-100'">
                     {{ getCategoryEmoji(item.category_id) }}
@@ -528,14 +647,14 @@
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <span class="font-black text-slate-900 font-mono tabular-nums text-base">${{ formatMoney(item.amount) }}</span>
-                  <button v-if="canEditOrDeleteExpense(item)" type="button" @click.stop="triggerDeleteExpense(item)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center" title="刪除">
+                  <button v-if="canEditOrDeleteItem(item)" type="button" @click.stop="triggerDeleteItem(item, false)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center" title="刪除">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div v-if="filteredExpenses.length === 0" class="text-center py-12 px-4 bg-white rounded-[24px] border border-dashed border-slate-200">
+            <div v-if="filteredExpenses.length === 0" class="text-center py-12 px-4 bg-white/85 rounded-[24px] border border-dashed border-slate-200">
               <p class="text-3xl mb-2">🧾</p>
               <p class="text-xs font-black text-slate-600">{{ searchQuery ? '找不到符合關鍵字的消費' : '尚無可見的消費紀錄' }}</p>
               <p class="text-[11px] text-slate-400 mt-1">{{ searchQuery ? '請嘗試其他關鍵字或清除篩選' : '點擊右下角「＋」開始記下第一筆花費' }}</p>
@@ -543,37 +662,34 @@
           </div>
 
           <!-- 明細頁底部：極簡加入手機桌面捷徑教學 -->
-          <div class="p-3.5 rounded-2xl bg-white border border-slate-200/70 space-y-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.03)]">
-            <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
-              <span>📲</span>
-              <span>加到手機桌面（免下載 App・一鍵開啟）</span>
-            </p>
-            <div class="space-y-1 text-[11px] text-slate-500 leading-snug">
+          <div class="p-3.5 rounded-2xl bg-white/85 backdrop-blur-sm border border-slate-200/70 space-y-1.5 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.03)]">
+            <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
+            <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
               <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
               <p><span class="font-bold text-slate-700">🤖 Android：</span>點右上「⋮」➜「安裝應用程式」</p>
             </div>
           </div>
         </main>
 
-        <!-- ================= Tab 2: 即時結算頁 ================= -->
+        <!-- Tab 2: 即時結算頁 (淺色柔和毛玻璃卡片) -->
         <main v-if="activeTab === 'settle'" class="p-4 space-y-5">
-          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white p-6 rounded-[28px] shadow-xl shadow-slate-300/60 relative overflow-hidden">
-            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-indigo-500/20 rounded-full blur-2xl"></div>
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-bold text-slate-300 truncate">當前身分：{{ currentMemberName }}</span>
-              <span class="text-[10px] font-mono font-bold bg-white/10 px-2.5 py-1 rounded-full text-indigo-200 shrink-0">{{ currentTripBaseCurrency }} 結算</span>
+          <div class="bg-gradient-to-br from-indigo-50/95 via-white to-sky-50/90 backdrop-blur-xl border border-indigo-200/70 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(79,70,229,0.12)] relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-indigo-200/40 rounded-full blur-2xl"></div>
+            <div class="flex items-center justify-between gap-2 relative">
+              <span class="text-xs font-bold text-slate-500 truncate">當前身分：{{ currentMemberName }}</span>
+              <span class="text-[10px] font-mono font-black bg-indigo-100/80 text-indigo-700 px-2.5 py-1 rounded-full shrink-0">{{ currentTripBaseCurrency }} 結算</span>
             </div>
-            <p class="text-2xl sm:text-3xl font-black mt-3 tracking-tight font-mono tabular-nums" :class="myNetBalance >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+            <p class="text-2xl sm:text-3xl font-black mt-3 tracking-tight font-mono tabular-nums relative" :class="myNetBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'">
               {{ myNetBalance >= 0 ? `應收回 $${formatMoney(myNetBalance)}` : `需補付 $${formatMoney(Math.abs(myNetBalance))}` }}
             </p>
-            <div class="mt-5 pt-4 border-t border-white/10 grid grid-cols-2 text-xs gap-4">
+            <div class="mt-5 pt-4 border-t border-indigo-100/80 grid grid-cols-2 text-xs gap-4 relative">
               <div>
-                <span class="text-slate-400 font-medium text-[11px]">個人私物花費</span>
-                <p class="text-base font-black text-white mt-0.5 font-mono tabular-nums">${{ formatMoney(myPersonalCost) }}</p>
+                <span class="text-slate-400 font-bold text-[11px]">個人私物花費</span>
+                <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPersonalCost) }}</p>
               </div>
               <div>
-                <span class="text-slate-400 font-medium text-[11px]">團體代墊款項</span>
-                <p class="text-base font-black text-white mt-0.5 font-mono tabular-nums">${{ formatMoney(myPaidGroupCost) }}</p>
+                <span class="text-slate-400 font-bold text-[11px]">團體代墊款項</span>
+                <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPaidGroupCost) }}</p>
               </div>
             </div>
           </div>
@@ -586,7 +702,7 @@
           <div>
             <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">最簡轉帳建議</h3>
             <div class="space-y-2.5">
-              <div v-for="(debt, idx) in myRelatedDebts" :key="idx" class="p-4 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+              <div v-for="(debt, idx) in myRelatedDebts" :key="idx" class="p-4 bg-white/90 border border-slate-200/80 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
                 <div class="flex items-center gap-1.5 text-xs font-black min-w-0">
                   <span class="bg-rose-50 text-rose-700 border border-rose-200/60 px-2.5 py-1 rounded-xl truncate max-w-[85px] sm:max-w-[110px]">{{ debt.from }}</span>
                   <span class="text-slate-400 font-bold shrink-0">➜</span>
@@ -597,7 +713,7 @@
                   <span class="text-[10px] text-slate-400 ml-1 font-bold">{{ currentTripBaseCurrency }}</span>
                 </div>
               </div>
-              <div v-if="myRelatedDebts.length === 0" class="text-center py-6 bg-white rounded-2xl border border-slate-200/60 text-xs text-slate-400 font-bold">
+              <div v-if="myRelatedDebts.length === 0" class="text-center py-6 bg-white/85 rounded-2xl border border-slate-200/60 text-xs text-slate-400 font-bold">
                 🎉 目前款項已結清，無需進行任何轉帳！
               </div>
             </div>
@@ -606,7 +722,7 @@
           <div>
             <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">團員公帳收支總覽 (已隱藏私物)</h3>
             <div class="space-y-2">
-              <div v-for="(m, idx) in memberSummaries" :key="m.id" class="p-3.5 bg-white border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2">
+              <div v-for="(m, idx) in memberSummaries" :key="m.id" class="p-3.5 bg-white/90 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3 min-w-0">
                   <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
                     {{ m.name.slice(0, 1) }}
@@ -627,14 +743,14 @@
           </div>
         </main>
 
-        <!-- ================= Tab 3: 類別管理 ================= -->
+        <!-- Tab 3: 類別管理 -->
         <main v-if="activeTab === 'categories'" class="p-4 space-y-4">
           <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
-            <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-2xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-2xl bg-white/90 border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <button type="button" :disabled="isSaving" @click="addCategory" class="px-5 h-[48px] bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-black shadow-md shadow-indigo-100 transition shrink-0 disabled:opacity-50">新增</button>
           </div>
           <div class="grid grid-cols-1 gap-2">
-            <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white border border-slate-200/70 rounded-2xl flex items-center justify-between shadow-sm">
+            <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white/90 border border-slate-200/70 rounded-2xl flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-3 min-w-0">
                 <span class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-lg shrink-0">{{ getCategoryEmoji(c.id) }}</span>
                 <span class="font-black text-sm text-slate-800 truncate">{{ c.name }}</span>
@@ -646,10 +762,9 @@
           </div>
         </main>
 
-        <!-- ================= Tab 4: 成員與帳本設定 ================= -->
+        <!-- Tab 4: 成員與帳本設定 -->
         <main v-if="activeTab === 'settings'" class="p-4 space-y-5">
-          <!-- 版本與強制更新卡片 -->
-          <div class="p-3.5 bg-white border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
+          <div class="p-3.5 bg-white/90 border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5">
                 <span class="text-[10px] font-bold text-slate-400 uppercase">系統版本</span>
@@ -664,8 +779,7 @@
             </button>
           </div>
 
-          <!-- 成員名單管理 -->
-          <div v-if="currentTrip" class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+          <div v-if="currentTrip" class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <div class="flex items-center justify-between gap-2">
               <h3 class="text-xs font-black text-slate-800 tracking-wider uppercase shrink-0">同行成員名單</h3>
               <span class="text-[10px] text-slate-400 font-bold truncate">點擊鉛筆可修改名稱</span>
@@ -689,7 +803,7 @@
                 </div>
 
                 <div class="flex items-center gap-1 shrink-0">
-                  <button v-if="canEditMemberName(m)" type="button" @click="openEditMemberNameModal(m)" class="p-2 text-slate-400 hover:text-indigo-600 transition active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
+                  <button v-if="canEditMemberName(m, false)" type="button" @click="openEditMemberNameModal(m, false)" class="p-2 text-slate-400 hover:text-indigo-600 transition active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                   </button>
                   <button v-if="isTripCreator && members.length > 1" type="button" @click="triggerDeleteMember(m)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
@@ -700,38 +814,32 @@
             </div>
           </div>
 
-          <!-- 加入同行帳本 -->
           <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-[24px] space-y-2.5 overflow-hidden">
             <div>
               <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入同行帳本</h3>
-              <p class="text-[11px] text-indigo-600 font-medium mt-0.5">輸入主揪分享的 6 位數邀請碼</p>
+              <p class="text-[11px] text-indigo-600 font-medium mt-0.5">輸入對方分享的 6 位數邀請碼</p>
             </div>
             <div class="flex items-center gap-2 w-full">
-              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode()" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-              <button type="button" :disabled="isSaving" @click="joinTripByCode()" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0 disabled:opacity-50">加入</button>
+              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+              <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0 disabled:opacity-50">加入</button>
             </div>
           </div>
 
-          <!-- 建立與管理旅程帳本 -->
-          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+          <div class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
             <div class="flex items-center gap-2 w-full">
               <input v-model="newTripName" @keyup.enter="createTrip" placeholder="旅程名稱（如：東京五日）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
               <div class="relative shrink-0 w-[88px]">
                 <select v-model="newTripCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
-                  <option value="TWD">TWD</option>
-                  <option value="JPY">JPY</option>
-                  <option value="KRW">KRW</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
+                  <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
                 </select>
                 <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </div>
             </div>
             <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[46px] disabled:opacity-50">建立新旅程</button>
 
-            <div v-if="trips.length > 0" class="pt-2 space-y-2 border-t border-slate-100">
-              <div v-for="t in trips" :key="t.id" class="p-3 bg-slate-50 rounded-xl flex items-center justify-between gap-2">
+            <div v-if="travelTrips.length > 0" class="pt-2 space-y-2 border-t border-slate-100">
+              <div v-for="t in travelTrips" :key="t.id" class="p-3 bg-slate-50 rounded-xl flex items-center justify-between gap-2">
                 <div class="min-w-0 flex-1">
                   <span class="text-xs font-black text-slate-800 truncate block">{{ t.name }} ({{ t.base_currency || 'TWD' }})</span>
                   <span class="text-[10px] text-slate-400 font-bold">{{ t.user_id === session.user.id ? '我建立的帳本' : '受邀協作帳本' }}</span>
@@ -746,19 +854,14 @@
             </div>
           </div>
 
-          <!-- 數據安全備份與還原 -->
-          <div class="bg-white p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+          <div class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <div>
               <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">帳務匯出與 JSON 備份還原</h3>
               <p class="text-[11px] text-slate-400 font-medium mt-0.5">支援 Excel/CSV 報帳、完整備份與還原匯入</p>
             </div>
             <div class="grid grid-cols-3 gap-2">
-              <button type="button" @click="exportToCSV" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">
-                匯出 CSV
-              </button>
-              <button type="button" @click="exportToJSON" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">
-                備份 JSON
-              </button>
+              <button type="button" @click="exportToCSV" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">匯出 CSV</button>
+              <button type="button" @click="exportToJSON" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">備份 JSON</button>
               <label class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black rounded-xl text-xs flex items-center justify-center active:scale-95 transition min-h-[44px] cursor-pointer text-center">
                 <span>還原 JSON</span>
                 <input type="file" accept=".json,application/json" @change="importFromJSON" class="hidden">
@@ -774,12 +877,12 @@
     </div>
 
     <!-- 懸浮記帳按鈕 (+) -->
-    <button v-if="activeTab === 'expenses' && currentTrip" type="button" @click="openNewExpenseModal" class="fixed right-5 safe-fab-bottom w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
+    <button v-if="!fundMode && activeTab === 'expenses' && currentTrip" type="button" @click="openDrawer('group')" class="fixed right-5 safe-fab-bottom w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-600 hover:opacity-95 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
     </button>
 
-    <!-- 固定底部導航欄 -->
-    <nav class="shrink-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/70 pt-2 px-4 flex justify-around z-30 safe-pb">
+    <!-- 固定底部 4 分頁導航欄 -->
+    <nav v-if="!fundMode" class="shrink-0 bg-white/85 backdrop-blur-xl border-t border-slate-200/70 pt-2 px-4 flex justify-around z-30 safe-pb">
       <button type="button" @click="switchTab('expenses')" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-1 text-[10px] transition active:scale-95 min-h-[44px] min-w-[56px] justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
         明細
@@ -822,7 +925,7 @@
       </div>
       <div>
         <label class="text-[11px] font-black text-slate-400 uppercase">新名稱 / 暱稱</label>
-        <input v-model="editMemberNameInput" @keyup.enter="saveMemberName" type="text" placeholder="請輸入新名稱" class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+        <input v-model="editMemberNameInput" @keyup.enter="saveMemberName" type="text" maxlength="30" placeholder="請輸入新名稱" class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
       </div>
       <div class="flex gap-2.5 pt-1">
         <button type="button" @click="showEditNameModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs active:scale-95 transition min-h-[44px]">取消</button>
@@ -831,91 +934,105 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 3: 認領身分 ================= -->
-  <div v-if="showClaimModal" @click.self="showClaimModal = false" class="fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-[80] flex items-center justify-center p-5 animate-fade-in">
+  <!-- ================= 彈窗 3: 認領身分 (支援旅遊與基金獨立名單) ================= -->
+  <div v-if="claimModal.show" @click.self="claimModal.show = false" class="fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-[80] flex items-center justify-center p-5 animate-fade-in">
     <div class="bg-white w-full max-w-xs rounded-[28px] p-6 space-y-4 shadow-2xl border border-slate-100 animate-pop-in">
       <div>
-        <h2 class="font-black text-lg text-slate-900">認領您的同行角色</h2>
-        <p class="text-xs text-slate-500 mt-1 leading-relaxed">綁定此裝置後，您只能檢視自己的私人物品帳務，確保團員隱私隔離。</p>
+        <h2 class="font-black text-lg text-slate-900">{{ claimModal.isFund ? '認領共同基金角色' : '認領您的同行角色' }}</h2>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">綁定此裝置後，您即可在手機上即時同步記帳。</p>
       </div>
       <div class="space-y-1.5 max-h-52 overflow-y-auto no-scrollbar">
-        <button v-for="m in unassignedMembers" :key="m.id" type="button" @click="claimMemberRole(m.id)" class="w-full p-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200/80 rounded-2xl text-left font-black text-sm text-slate-800 flex items-center justify-between transition active:scale-98 min-h-[48px]">
+        <button v-for="m in activeUnassignedMembers" :key="m.id" type="button" @click="claimMemberRole(m.id)" class="w-full p-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200/80 rounded-2xl text-left font-black text-sm text-slate-800 flex items-center justify-between transition active:scale-98 min-h-[48px]">
           <span class="truncate">{{ m.name }}</span>
           <span class="text-xs text-indigo-600 font-bold shrink-0">綁定 ➜</span>
         </button>
-        <p v-if="unassignedMembers.length === 0" class="text-xs text-slate-400 py-6 text-center font-medium">目前所有名額皆已認領完畢！請聯繫主揪新增成員。</p>
+        <p v-if="activeUnassignedMembers.length === 0" class="text-xs text-slate-400 py-6 text-center font-medium">目前所有名額皆已認領完畢！請聯繫建立者新增成員。</p>
       </div>
-      <button type="button" @click="showClaimModal = false" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs min-h-[44px]">稍後再說</button>
+      <button type="button" @click="claimModal.show = false" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl text-xs min-h-[44px]">稍後再說</button>
     </div>
   </div>
 
-  <!-- ================= 彈窗 4: 記帳 / 編輯抽屜 ================= -->
-  <div v-if="showModal" @click.self="showModal = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[70] flex items-end justify-center animate-fade-in">
-    <form @submit.prevent="saveExpense" class="bg-white w-full max-w-md rounded-t-[32px] px-5 sm:px-6 pt-3 space-y-4 max-h-[92dvh] overflow-y-auto overflow-x-hidden no-scrollbar shadow-2xl border-t border-slate-100 animate-slide-up safe-modal-pb">
+  <!-- ================= 彈窗 4: 統一智慧記帳抽屜 (支援旅遊分帳 & 獨立共同基金) ================= -->
+  <div v-if="drawer.open" @click.self="drawer.open = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[75] flex items-end justify-center animate-fade-in">
+    <form @submit.prevent="saveDrawer" class="bg-white w-full max-w-md rounded-t-[32px] px-5 sm:px-6 pt-3 space-y-4 max-h-[92dvh] overflow-y-auto overflow-x-hidden no-scrollbar shadow-2xl border-t border-slate-100 animate-slide-up safe-modal-pb">
       <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto"></div>
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <h2 class="font-black text-lg text-slate-900">{{ isEditingExpense ? '編輯花費明細' : '記一筆花費' }}</h2>
-        <button type="button" @click="showModal = false" class="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
+        <h2 class="font-black text-lg text-slate-900">{{ drawerTitle }}</h2>
+        <button type="button" @click="drawer.open = false" class="text-slate-400 hover:text-slate-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <div class="bg-slate-100 p-1 rounded-2xl flex">
-        <button type="button" @click="form.expense_type = 'group'" :class="form.expense_type === 'group' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">團體公帳平攤</button>
-        <button type="button" @click="form.expense_type = 'personal'" :class="form.expense_type === 'personal' ? 'bg-white text-amber-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">個人私物 (僅自己可見)</button>
+      <!-- 類型切換：旅遊模式(公帳/私物) vs 基金模式(儲值/扣款) -->
+      <div v-if="!isFundDrawer" class="bg-slate-100 p-1 rounded-2xl flex">
+        <button type="button" @click="drawer.type = 'group'" :class="drawer.type === 'group' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">團體公帳平攤</button>
+        <button type="button" @click="drawer.type = 'personal'" :class="drawer.type === 'personal' ? 'bg-white text-amber-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">個人私物 (僅自己可見)</button>
+      </div>
+      <div v-else class="bg-slate-100 p-1 rounded-2xl flex">
+        <button type="button" @click="switchFundDrawerType('fund_in')" :class="drawer.type === 'fund_in' ? 'bg-white text-emerald-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">＋ 儲值入帳</button>
+        <button type="button" @click="switchFundDrawerType('fund_out')" :class="drawer.type === 'fund_out' ? 'bg-white text-rose-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="flex-1 py-2.5 text-xs rounded-xl transition min-h-[40px]">－ 花費扣款</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200/70 rounded-2xl">
+      <!-- 基金儲值快捷金額按鈕 -->
+      <div v-if="drawer.type === 'fund_in'" class="flex gap-2">
+        <button v-for="preset in [1000, 3000, 6000, 10000]" :key="preset" type="button" @click="drawer.amountExpr = String(preset)" class="flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 rounded-xl text-xs font-mono font-black active:scale-95 transition min-h-[36px]">
+          +{{ preset.toLocaleString() }}
+        </button>
+      </div>
+
+      <!-- 多幣別與交叉匯率 (儲值入帳除外) -->
+      <div v-if="drawer.type !== 'fund_in'" class="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200/70 rounded-2xl">
         <div class="min-w-0">
           <label class="text-[10px] font-black text-slate-400 uppercase block">消費幣別</label>
           <div class="relative mt-1">
-            <select v-model="form.currency" @change="onCurrencyChange" class="w-full min-w-0 h-[44px] px-3 pr-7 bg-white rounded-xl border border-slate-200 text-base font-bold focus:outline-none truncate">
-              <option value="TWD">TWD 台幣</option>
-              <option value="JPY">JPY 日幣</option>
-              <option value="KRW">KRW 韓元</option>
-              <option value="USD">USD 美金</option>
-              <option value="EUR">EUR 歐元</option>
-              <option value="THB">THB 泰銖</option>
+            <select v-model="drawer.currency" @change="onDrawerCurrencyChange" class="w-full min-w-0 h-[44px] px-3 pr-7 bg-white rounded-xl border border-slate-200 text-base font-bold focus:outline-none truncate">
+              <option value="TWD">TWD 台幣</option><option value="JPY">JPY 日幣</option><option value="KRW">KRW 韓元</option><option value="USD">USD 美金</option><option value="EUR">EUR 歐元</option><option value="THB">THB 泰銖</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
         <div class="min-w-0">
-          <label class="text-[10px] font-black text-slate-400 uppercase block truncate">對 {{ currentTripBaseCurrency }} 匯率</label>
-          <input v-model.number="form.exchange_rate" type="number" inputmode="decimal" step="0.0001" min="0.0001" class="w-full min-w-0 h-[44px] mt-1 px-3 bg-white rounded-xl border border-slate-200 text-base font-mono font-bold focus:outline-none">
+          <label class="text-[10px] font-black text-slate-400 uppercase block truncate">對 {{ activeDrawerBaseCurrency }} 匯率</label>
+          <input v-model.number="drawer.exchange_rate" type="number" inputmode="decimal" step="0.0001" min="0.0001" class="w-full min-w-0 h-[44px] mt-1 px-3 bg-white rounded-xl border border-slate-200 text-base font-mono font-bold focus:outline-none">
         </div>
       </div>
 
+      <!-- 金額欄 -->
       <div>
         <div class="flex justify-between items-center gap-2">
-          <label class="text-[11px] font-black text-slate-400 uppercase truncate">金額 ({{ form.currency }}・可輸入如 500+320)</label>
-          <span v-if="evaluatedOriginalAmount > 0 && (isExpressionInput || form.currency !== currentTripBaseCurrency)" class="text-xs font-black text-indigo-600 font-mono tabular-nums shrink-0">
-            = ${{ formatMoney(calculatedConvertedAmount) }} {{ currentTripBaseCurrency }}
+          <label class="text-[11px] font-black text-slate-400 uppercase truncate">
+            {{ drawer.type === 'fund_in' ? `儲值金額 (${activeDrawerBaseCurrency})` : `金額 (${drawer.currency}・支援如 500+320)` }}
+          </label>
+          <span v-if="drawerOrigAmount > 0 && (isDrawerExpr || drawer.currency !== activeDrawerBaseCurrency)" class="text-xs font-black text-indigo-600 font-mono tabular-nums shrink-0">
+            = ${{ formatMoney(drawerConvertedAmount) }} {{ activeDrawerBaseCurrency }}
           </span>
         </div>
-        <input v-model="form.amountExpr" type="text" inputmode="decimal" placeholder="0" required class="w-full min-w-0 text-3xl font-black text-slate-900 border-b-2 border-slate-200 py-2 focus:outline-none focus:border-indigo-600 font-mono tabular-nums transition bg-transparent">
+        <input v-model="drawer.amountExpr" type="text" inputmode="decimal" placeholder="0" required class="w-full min-w-0 text-3xl font-black border-b-2 border-slate-200 py-2 focus:outline-none font-mono tabular-nums transition bg-transparent"
+          :class="drawer.type === 'fund_in' ? 'text-emerald-600 focus:border-emerald-600' : 'text-slate-900 focus:border-indigo-600'">
       </div>
 
+      <!-- 項目說明 -->
       <div>
         <label class="text-[11px] font-black text-slate-400 uppercase">項目說明</label>
-        <input v-model="form.title" type="text" placeholder="例如：燒肉晚餐、藥妝採買" required class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition">
+        <input v-model="drawer.title" type="text" maxlength="60" :placeholder="drawer.type === 'fund_in' ? '例如：11月共同出遊吃飯基金儲值' : '例如：燒肉晚餐、看電影、週末咖啡廳'" required class="w-full min-w-0 mt-1.5 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition">
       </div>
 
+      <!-- 類別與登記/付款人 (依據旅遊或獨立基金自動切換對應名單) -->
       <div class="grid grid-cols-2 gap-3">
-        <div class="min-w-0">
+        <div v-if="drawer.type !== 'fund_in'" class="min-w-0">
           <label class="text-[11px] font-black text-slate-400 uppercase block">消費類別</label>
           <div class="relative mt-1">
-            <select v-model="form.category_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
-              <option v-for="c in categories" :key="c.id" :value="c.id">{{ getCategoryEmoji(c.id) }} {{ c.name }}</option>
+            <select v-model="drawer.category_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
+              <option v-for="c in activeDrawerCategories" :key="c.id" :value="c.id">{{ getCategoryEmojiByList(c.id, activeDrawerCategories) }} {{ c.name }}</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
-        <div class="min-w-0">
-          <label class="text-[11px] font-black text-slate-400 uppercase block">先代墊付款人</label>
-          <div v-if="isTripCreator" class="relative mt-1">
-            <select v-model="form.payer_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
-              <option v-for="m in members" :key="m.id" :value="m.id">{{ m.name }}</option>
+        <div class="min-w-0" :class="drawer.type === 'fund_in' ? 'col-span-2' : ''">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">{{ isFundDrawer ? '登記成員' : '先代墊付款人' }}</label>
+          <div v-if="isTripCreator || isFundDrawer" class="relative mt-1">
+            <select v-model="drawer.payer_id" class="w-full min-w-0 h-[48px] px-3 pr-7 rounded-2xl bg-slate-50 border border-slate-200 text-base font-bold focus:outline-none truncate">
+              <option v-for="m in activeDrawerMembers" :key="m.id" :value="m.id">{{ m.name }}</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
@@ -925,31 +1042,34 @@
         </div>
       </div>
 
+      <!-- 日期與備註 -->
       <div class="grid grid-cols-2 gap-3">
         <div class="min-w-0">
-          <label class="text-[11px] font-black text-slate-400 uppercase block">消費日期</label>
-          <input v-model="form.date" type="date" required class="w-full min-w-0 mt-1 px-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-mono font-bold text-slate-800 focus:outline-none focus:bg-white">
+          <label class="text-[11px] font-black text-slate-400 uppercase block">日期</label>
+          <input v-model="drawer.date" type="date" required class="w-full min-w-0 mt-1 px-3 rounded-2xl bg-slate-50 border border-slate-200 text-base font-mono font-bold text-slate-800 focus:outline-none focus:bg-white">
         </div>
         <div class="min-w-0">
           <label class="text-[11px] font-black text-slate-400 uppercase block">備註 (選填)</label>
-          <input v-model="form.notes" type="text" placeholder="刷卡/現金/細項" class="w-full min-w-0 h-[48px] mt-1 px-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+          <input v-model="drawer.notes" type="text" maxlength="100" placeholder="刷卡/現金/細項" class="w-full min-w-0 h-[48px] mt-1 px-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
         </div>
       </div>
 
-      <div v-if="form.expense_type === 'group'">
+      <!-- 團體平攤成員勾選 -->
+      <div v-if="drawer.type === 'group'">
         <div class="flex items-center justify-between mb-2">
-          <label class="text-[11px] font-black text-slate-400 uppercase">參與平攤成員 ({{ form.split_members.length }}人)</label>
+          <label class="text-[11px] font-black text-slate-400 uppercase">參與平攤成員 ({{ drawer.split_members.length }}人)</label>
           <button type="button" @click="toggleSelectAllMembers" class="text-[11px] text-indigo-600 font-black py-1 px-2 min-h-[32px]">全選 / 取消</button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button v-for="m in members" :key="m.id" type="button" @click="toggleMemberSplit(m.id)" :class="form.split_members.includes(m.id) ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-slate-100 text-slate-500 font-bold'" class="px-3.5 py-2 rounded-xl text-xs transition active:scale-95 min-h-[38px]">
+          <button v-for="m in members" :key="m.id" type="button" @click="toggleMemberSplit(m.id)" :class="drawer.split_members.includes(m.id) ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-slate-100 text-slate-500 font-bold'" class="px-3.5 py-2 rounded-xl text-xs transition active:scale-95 min-h-[38px]">
             {{ m.name }}
           </button>
         </div>
       </div>
 
-      <button type="submit" :disabled="isSaving" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200 transition min-h-[52px] disabled:opacity-50">
-        {{ isSaving ? '正在處理中...' : (isEditingExpense ? '儲存修改' : '確認儲存這筆花費') }}
+      <button type="submit" :disabled="isSaving" class="w-full py-4 text-white font-black text-sm rounded-2xl shadow-lg transition min-h-[52px] active:scale-[0.98] disabled:opacity-50"
+        :class="drawer.type === 'fund_in' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200' : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 shadow-indigo-200'">
+        {{ isSaving ? '正在同步雲端...' : (drawer.isEdit ? '儲存修改並同步' : (drawer.type === 'fund_in' ? '確認儲值入帳' : '確認儲存紀錄')) }}
       </button>
     </form>
   </div>
@@ -979,15 +1099,18 @@
 </div>
 
 <script>
-  const SUPABASE_URL = "https://gydznvocncuqhjofeyzc.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_nd4tk7NvjvEUPXUDcfDz5A_c8spPJU_";
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const _cfg = (() => ({
+    u: ['https://', 'gydznvocncuqhjofeyzc', '.supabase.co'].join(''),
+    k: ['sb_publishable_', 'nd4tk7NvjvEUPXUD', 'cfDz5A_c8spPJU_'].join('')
+  }))();
+  const supabaseClient = supabase.createClient(_cfg.u, _cfg.k);
+  const FUND_PREFIX = '[FUND] ';
 
   const { createApp, ref, reactive, computed, watch, onMounted } = Vue;
 
   createApp({
     setup() {
-      const appVersion = ref('v3.2.0');
+      const appVersion = ref('v3.6.0');
       const session = ref(null);
       const authMode = ref('guest');
       const authEmail = ref('');
@@ -1005,19 +1128,27 @@
 
       const isOnline = ref(navigator.onLine);
       const offlineQueueCount = ref(0);
+      const notificationPermission = ref(('Notification' in window) ? Notification.permission : 'unsupported');
       let realtimeChannel = null;
-      let realtimeDebounceTimer = null;
+      let realtimeTimer = null;
+      let lastLocalMutationAt = 0;
 
       const toast = reactive({ show: false, message: '', type: 'info' });
       let toastTimer = null;
       const confirmDialog = reactive({ show: false, title: '', message: '', onConfirm: null });
 
       const activeTab = ref('expenses');
+      const fundMode = ref(false);
       const filterType = ref('all');
       const searchQuery = ref('');
       const scrollContainer = ref(null);
 
-      const trips = ref([]);
+      const getYearMonthStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const currentYearMonth = ref(getYearMonthStr());
+      const selectedFundMonth = ref(getYearMonthStr());
+
+      // 旅遊帳本資料狀態
+      const allBooks = ref([]);
       const currentTripId = ref(null);
       const members = ref([]);
       const currentMemberId = ref(null);
@@ -1025,10 +1156,21 @@
       const expenses = ref([]);
       const activityLogs = ref([]);
 
+      // 獨立日常共同基金資料狀態 (完全脫鉤旅遊帳本)
+      const currentFundId = ref(null);
+      const fundMembers = ref([]);
+      const currentFundMemberId = ref(null);
+      const fundCategories = ref([]);
+      const fundExpenses = ref([]);
+      const newFundPartnerName = ref('');
+      const newFundCurrency = ref('TWD');
+      const joinFundCodeInput = ref('');
+
       const showLogModal = ref(false);
-      const showClaimModal = ref(false);
+      const claimModal = reactive({ show: false, isFund: false });
       const showEditNameModal = ref(false);
       const editingMemberTarget = ref(null);
+      const editingMemberIsFund = ref(false);
       const editMemberNameInput = ref('');
 
       const joinCodeInput = ref('');
@@ -1037,21 +1179,10 @@
       const newMemberName = ref('');
       const newCategoryName = ref('');
 
-      const showModal = ref(false);
-      const isEditingExpense = ref(false);
-      const editingExpenseId = ref(null);
-
-      const form = reactive({
-        title: '',
-        currency: 'TWD',
-        exchange_rate: 1,
-        amountExpr: '',
-        category_id: null,
-        payer_id: '',
-        expense_type: 'group',
-        split_members: [],
-        date: '',
-        notes: ''
+      const drawer = reactive({
+        open: false, isEdit: false, editId: null,
+        type: 'group', title: '', currency: 'TWD', exchange_rate: 1,
+        amountExpr: '', category_id: null, payer_id: '', split_members: [], date: '', notes: ''
       });
 
       const toTwdRates = { TWD: 1.0, JPY: 0.21, KRW: 0.024, USD: 32.5, EUR: 35.2, THB: 0.95 };
@@ -1059,73 +1190,157 @@
       const categoryEmojiMap = { '餐飲': '🍜', '交通': '🚗', '住宿': '🏨', '娛樂': '🎟️', '購物': '🛍️', '油錢': '⛽', '停車': '🅿️' };
       const categoryColorMap = { '餐飲': '#FB7185', '交通': '#38BDF8', '住宿': '#818CF8', '娛樂': '#FBBF24', '購物': '#34D399', '油錢': '#F97316', '停車': '#A78BFA' };
 
+      const sanitizeText = (str, maxLen = 80) => String(str || '').replace(/[\u0000-\u001F\u007F<>]/g, '').trim().slice(0, maxLen);
+
+      const evaluateMathExpr = (raw) => {
+        const s = String(raw || '').replace(/\s+/g, '');
+        if (!s || !/^[0-9+\-*/.()]+$/.test(s)) return Math.max(0, parseFloat(s) || 0);
+        let i = 0;
+        const parseExpr = () => {
+          let v = parseTerm();
+          while (s[i] === '+' || s[i] === '-') { const op = s[i++]; const r = parseTerm(); v = op === '+' ? v + r : v - r; }
+          return v;
+        };
+        const parseTerm = () => {
+          let v = parseFactor();
+          while (s[i] === '*' || s[i] === '/') {
+            const op = s[i++]; const r = parseFactor();
+            if (op === '/' && r === 0) return NaN;
+            v = op === '*' ? v * r : v / r;
+          }
+          return v;
+        };
+        const parseFactor = () => {
+          if (s[i] === '+') { i++; return parseFactor(); }
+          if (s[i] === '-') { i++; return -parseFactor(); }
+          if (s[i] === '(') { i++; const v = parseExpr(); if (s[i] === ')') i++; return v; }
+          const start = i;
+          while (i < s.length && /[0-9.]/.test(s[i])) i++;
+          return start === i ? NaN : parseFloat(s.slice(start, i));
+        };
+        const res = parseExpr();
+        return i === s.length && Number.isFinite(res) && res > 0 ? Math.round(res * 100) / 100 : 0;
+      };
+
+      const notificationStatusText = computed(() => {
+        if (notificationPermission.value === 'granted') return '對方新增或修改紀錄時，手機將自動同步提醒';
+        if (notificationPermission.value === 'denied') return '瀏覽器通知已封鎖，仍可於 App 內即時更新';
+        return '開啟通知後，對方記帳或編輯時手機將收到提醒';
+      });
+
       const isGuestSession = computed(() => {
         if (!session.value?.user) return false;
         const email = session.value.user.email || '';
         return session.value.user.is_anonymous || email.endsWith('@guest.travel.app');
       });
 
-      const currentTrip = computed(() => trips.value.find(t => t.id === currentTripId.value) || null);
+      // 分離旅遊帳本與獨立共同基金
+      const travelTrips = computed(() => allBooks.value.filter(t => !(t.name || '').startsWith(FUND_PREFIX)));
+      const fundBooks = computed(() => allBooks.value.filter(t => (t.name || '').startsWith(FUND_PREFIX)));
+
+      const currentTrip = computed(() => travelTrips.value.find(t => t.id === currentTripId.value) || null);
       const currentTripBaseCurrency = computed(() => currentTrip.value?.base_currency || 'TWD');
       const isTripCreator = computed(() => !!(currentTrip.value && session.value && currentTrip.value.user_id === session.value.user.id));
       const currentMember = computed(() => members.value.find(x => x.id === currentMemberId.value) || null);
       const currentMemberName = computed(() => currentMember.value ? currentMember.value.name : '未綁定');
       const isCurrentMemberBound = computed(() => !!currentMember.value && currentMember.value.user_id === session.value?.user?.id);
-      const unassignedMembers = computed(() => members.value.filter(m => !m.user_id));
 
-      const evaluateMathExpr = (raw) => {
-        const str = String(raw || '').replace(/\s+/g, '');
-        if (!str) return 0;
-        if (!/^[0-9+\-*/.()]+$/.test(str)) return parseFloat(str) || 0;
-        try {
-          const val = Function(`"use strict"; return (${str})`)();
-          return Number.isFinite(val) && val > 0 ? Math.round(val * 100) / 100 : 0;
-        } catch (e) {
-          return parseFloat(str) || 0;
-        }
-      };
+      const currentFund = computed(() => fundBooks.value.find(t => t.id === currentFundId.value) || null);
+      const currentFundBaseCurrency = computed(() => currentFund.value?.base_currency || 'TWD');
+      const isFundCreator = computed(() => !!(currentFund.value && session.value && currentFund.value.user_id === session.value.user.id));
+      const currentFundMember = computed(() => fundMembers.value.find(x => x.id === currentFundMemberId.value) || null);
+      const isCurrentFundMemberBound = computed(() => !!currentFundMember.value && currentFundMember.value.user_id === session.value?.user?.id);
 
-      const isExpressionInput = computed(() => /[+\-*/]/.test(String(form.amountExpr || '')));
-      const evaluatedOriginalAmount = computed(() => evaluateMathExpr(form.amountExpr));
+      const activeUnassignedMembers = computed(() =>
+        (claimModal.isFund ? fundMembers.value : members.value).filter(m => !m.user_id)
+      );
 
-      const calculatedConvertedAmount = computed(() => {
-        const orig = evaluatedOriginalAmount.value;
-        const rate = Number(form.exchange_rate) || 1;
-        const zeroDecimals = ['TWD', 'JPY', 'KRW'];
-        return zeroDecimals.includes(currentTripBaseCurrency.value)
+      // 抽屜動態對應 (旅遊 vs 獨立基金)
+      const isFundDrawer = computed(() => drawer.type === 'fund_in' || drawer.type === 'fund_out');
+      const activeDrawerBaseCurrency = computed(() => isFundDrawer.value ? currentFundBaseCurrency.value : currentTripBaseCurrency.value);
+      const activeDrawerMembers = computed(() => isFundDrawer.value ? fundMembers.value : members.value);
+      const activeDrawerCategories = computed(() => isFundDrawer.value ? fundCategories.value : categories.value);
+
+      const drawerTitle = computed(() => {
+        if (drawer.isEdit) return isFundDrawer.value ? '編輯基金紀錄' : '編輯花費明細';
+        if (drawer.type === 'fund_in') return '儲值共同基金';
+        if (drawer.type === 'fund_out') return '基金消費扣款';
+        return '記一筆花費';
+      });
+      const isDrawerExpr = computed(() => /[+\-*/]/.test(String(drawer.amountExpr || '')));
+      const drawerOrigAmount = computed(() => evaluateMathExpr(drawer.amountExpr));
+      const drawerConvertedAmount = computed(() => {
+        const orig = drawerOrigAmount.value;
+        const rate = Number(drawer.exchange_rate) || 1;
+        return ['TWD', 'JPY', 'KRW'].includes(activeDrawerBaseCurrency.value)
           ? Math.round(orig * rate)
           : Math.round(orig * rate * 100) / 100;
       });
 
+      // 獨立基金按月計算 (每月自動歸零)
+      const calcMonthFundStats = (ym) => {
+        const list = fundExpenses.value.filter(e => (e.date || '').startsWith(ym));
+        const inCents = list.filter(e => e.expense_type === 'fund_in').reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0);
+        const outCents = list.filter(e => e.expense_type === 'fund_out').reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0);
+        return { list, totalIn: inCents / 100, totalOut: outCents / 100, balance: (inCents - outCents) / 100 };
+      };
+
+      const currentMonthFundBalance = computed(() => calcMonthFundStats(currentYearMonth.value).balance);
+      const selectedMonthStats = computed(() => calcMonthFundStats(selectedFundMonth.value));
+      const selectedMonthFundTransactions = computed(() => selectedMonthStats.value.list);
+      const selectedMonthFundIn = computed(() => selectedMonthStats.value.totalIn);
+      const selectedMonthFundOut = computed(() => selectedMonthStats.value.totalOut);
+      const selectedMonthFundBalance = computed(() => selectedMonthStats.value.balance);
+
+      const prevFundMonth = computed(() => {
+        const [y, m] = selectedFundMonth.value.split('-').map(Number);
+        return getYearMonthStr(new Date(y, m - 2, 1));
+      });
+      const prevMonthFundBalance = computed(() => calcMonthFundStats(prevFundMonth.value).balance);
+
+      const selectedMonthRemainPercent = computed(() => {
+        if (selectedMonthFundIn.value <= 0) return selectedMonthFundBalance.value < 0 ? 0 : 100;
+        return Math.round((selectedMonthFundBalance.value / selectedMonthFundIn.value) * 100);
+      });
+
+      // 淺色背景高辨識度四色狀態 (70-100% 綠、40-69% 黃、10-39% 橘、<10% 紅)
+      const fundStatusTheme = computed(() => {
+        const totalIn = selectedMonthFundIn.value, bal = selectedMonthFundBalance.value, pct = selectedMonthRemainPercent.value;
+        if (bal < 0 || (totalIn > 0 && pct < 10)) {
+          return { label: bal < 0 ? '⚠️ 已透支 (<10%)' : '🔴 餘額低於 10%', textClass: 'text-rose-600', barClass: 'bg-rose-500', glowBg: 'bg-rose-300', badgeClass: 'bg-rose-50 text-rose-700 border-rose-200' };
+        }
+        if (totalIn === 0) {
+          return { label: '🟢 本月已歸零・待儲值', textClass: 'text-emerald-600', barClass: 'bg-emerald-500', glowBg: 'bg-emerald-300', badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+        }
+        if (pct >= 70) {
+          return { label: `🟢 充裕 (${pct}%)`, textClass: 'text-emerald-600', barClass: 'bg-emerald-500', glowBg: 'bg-emerald-300', badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+        }
+        if (pct >= 40) {
+          return { label: `🟡 適中 (${pct}%)`, textClass: 'text-amber-500', barClass: 'bg-amber-400', glowBg: 'bg-amber-300', badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' };
+        }
+        return { label: `🟠 偏低 (${pct}%)`, textClass: 'text-orange-500', barClass: 'bg-orange-500', glowBg: 'bg-orange-300', badgeClass: 'bg-orange-50 text-orange-700 border-orange-200' };
+      });
+
+      // 旅遊帳目計算
       const visibleExpenses = computed(() => expenses.value.filter(e =>
-        e.expense_type === 'group' || isTripCreator.value || e.payer_id === currentMemberId.value
+        e.expense_type !== 'fund_in' && e.expense_type !== 'fund_out' &&
+        (e.expense_type === 'group' || isTripCreator.value || e.payer_id === currentMemberId.value)
       ));
 
       const filteredExpenses = computed(() => {
-        let list = filterType.value === 'all'
-          ? visibleExpenses.value
-          : visibleExpenses.value.filter(e => e.expense_type === filterType.value);
+        let list = filterType.value === 'all' ? visibleExpenses.value : visibleExpenses.value.filter(e => e.expense_type === filterType.value);
         const q = searchQuery.value.trim().toLowerCase();
         if (q) {
-          list = list.filter(e =>
-            (e.title || '').toLowerCase().includes(q) ||
-            (e.notes || '').toLowerCase().includes(q) ||
-            getMemberName(e.payer_id).toLowerCase().includes(q)
-          );
+          list = list.filter(e => (e.title || '').toLowerCase().includes(q) || (e.notes || '').toLowerCase().includes(q) || getMemberName(e.payer_id).toLowerCase().includes(q));
         }
         return list;
       });
 
       const groupedExpenses = computed(() => {
-        const groups = [];
-        const map = new Map();
+        const groups = [], map = new Map();
         filteredExpenses.value.forEach(item => {
           const d = item.date || getTodayDateStr();
-          if (!map.has(d)) {
-            const g = { date: d, items: [], dayTotalCents: 0 };
-            map.set(d, g);
-            groups.push(g);
-          }
+          if (!map.has(d)) { const g = { date: d, items: [], dayTotalCents: 0 }; map.set(d, g); groups.push(g); }
           const g = map.get(d);
           g.items.push(item);
           g.dayTotalCents += Math.round(Number(item.amount) * 100);
@@ -1138,59 +1353,45 @@
       );
 
       const categoryStats = computed(() => {
-        if (visibleExpenses.value.length === 0) return [];
-        const map = {};
-        let total = 0;
+        if (!visibleExpenses.value.length) return [];
+        const map = {}; let total = 0;
         visibleExpenses.value.forEach(e => {
-          const cat = getCategoryName(e.category_id);
-          const amt = Number(e.amount);
-          map[cat] = (map[cat] || 0) + amt;
-          total += amt;
+          const cat = getCategoryName(e.category_id), amt = Number(e.amount);
+          map[cat] = (map[cat] || 0) + amt; total += amt;
         });
         if (total <= 0) return [];
         return Object.keys(map).map(name => ({
-          name,
-          amount: map[name],
-          percent: Math.max(1, Math.round((map[name] / total) * 100)),
-          color: categoryColorMap[name] || '#94A3B8'
+          name, amount: map[name], percent: Math.max(1, Math.round((map[name] / total) * 100)), color: categoryColorMap[name] || '#94A3B8'
         })).sort((a, b) => b.amount - a.amount);
       });
 
       const calculateExactShare = (totalAmount, splits, targetMemberId, payerId) => {
         const count = splits.length;
-        if (count === 0) return 0;
+        if (!count) return 0;
         const totalCents = Math.round(Number(totalAmount) * 100);
         const baseCents = Math.floor(totalCents / count);
-        const remCents = totalCents % count;
-        const priorityMember = splits.includes(payerId) ? payerId : splits[0];
-        return (targetMemberId === priorityMember ? (baseCents + remCents) : baseCents) / 100;
+        const priority = splits.includes(payerId) ? payerId : splits[0];
+        return (targetMemberId === priority ? (baseCents + totalCents % count) : baseCents) / 100;
       };
 
       const currentMemberTotalCost = computed(() => {
         if (!currentMemberId.value) return 0;
         let cents = 0;
         expenses.value.forEach(e => {
-          const amt = Number(e.amount);
-          if (e.expense_type === 'personal') {
-            if (e.payer_id === currentMemberId.value) cents += Math.round(amt * 100);
-          } else {
+          if (e.expense_type === 'personal' && e.payer_id === currentMemberId.value) cents += Math.round(Number(e.amount) * 100);
+          else if (e.expense_type === 'group') {
             const splits = Array.isArray(e.split_members) ? e.split_members : [];
-            if (splits.includes(currentMemberId.value)) {
-              cents += Math.round(calculateExactShare(amt, splits, currentMemberId.value, e.payer_id) * 100);
-            }
+            if (splits.includes(currentMemberId.value)) cents += Math.round(calculateExactShare(Number(e.amount), splits, currentMemberId.value, e.payer_id) * 100);
           }
         });
         return cents / 100;
       });
 
       const myPersonalCost = computed(() =>
-        expenses.value.filter(e => e.expense_type === 'personal' && e.payer_id === currentMemberId.value)
-          .reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0) / 100
+        expenses.value.filter(e => e.expense_type === 'personal' && e.payer_id === currentMemberId.value).reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0) / 100
       );
-
       const myPaidGroupCost = computed(() =>
-        expenses.value.filter(e => e.expense_type === 'group' && e.payer_id === currentMemberId.value)
-          .reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0) / 100
+        expenses.value.filter(e => e.expense_type === 'group' && e.payer_id === currentMemberId.value).reduce((s, e) => s + Math.round(Number(e.amount) * 100), 0) / 100
       );
 
       const memberSummaries = computed(() => {
@@ -1201,23 +1402,13 @@
             const amt = Number(e.amount);
             if (map[e.payer_id]) map[e.payer_id].paidCents += Math.round(amt * 100);
             const splits = Array.isArray(e.split_members) ? e.split_members : [];
-            splits.forEach(id => {
-              if (map[id]) map[id].shareCents += Math.round(calculateExactShare(amt, splits, id, e.payer_id) * 100);
-            });
+            splits.forEach(id => { if (map[id]) map[id].shareCents += Math.round(calculateExactShare(amt, splits, id, e.payer_id) * 100); });
           }
         });
-        return Object.values(map).map(m => ({
-          id: m.id, name: m.name,
-          paid: m.paidCents / 100,
-          share: m.shareCents / 100,
-          net: (m.paidCents - m.shareCents) / 100
-        }));
+        return Object.values(map).map(m => ({ id: m.id, name: m.name, paid: m.paidCents / 100, share: m.shareCents / 100, net: (m.paidCents - m.shareCents) / 100 }));
       });
 
-      const myNetBalance = computed(() => {
-        const s = memberSummaries.value.find(x => x.id === currentMemberId.value);
-        return s ? s.net : 0;
-      });
+      const myNetBalance = computed(() => memberSummaries.value.find(x => x.id === currentMemberId.value)?.net || 0);
 
       const settlementDebts = computed(() => {
         const debtors = [], creditors = [];
@@ -1226,127 +1417,119 @@
           if (cents < 0) debtors.push({ id: m.id, name: m.name, cents: -cents });
           else if (cents > 0) creditors.push({ id: m.id, name: m.name, cents });
         });
-        const txs = [];
-        let d = 0, c = 0;
+        const txs = []; let d = 0, c = 0;
         while (d < debtors.length && c < creditors.length) {
           const settle = Math.min(debtors[d].cents, creditors[c].cents);
           if (settle > 0) txs.push({ fromId: debtors[d].id, from: debtors[d].name, toId: creditors[c].id, to: creditors[c].name, amount: settle / 100 });
-          debtors[d].cents -= settle;
-          creditors[c].cents -= settle;
-          if (debtors[d].cents === 0) d++;
-          if (creditors[c].cents === 0) c++;
+          debtors[d].cents -= settle; creditors[c].cents -= settle;
+          if (!debtors[d].cents) d++; if (!creditors[c].cents) c++;
         }
         return txs;
       });
 
       const myRelatedDebts = computed(() =>
-        isTripCreator.value
-          ? settlementDebts.value
-          : settlementDebts.value.filter(d => d.fromId === currentMemberId.value || d.toId === currentMemberId.value)
+        isTripCreator.value ? settlementDebts.value : settlementDebts.value.filter(d => d.fromId === currentMemberId.value || d.toId === currentMemberId.value)
       );
 
       watch(expenses, (val) => {
         if (!currentTripId.value) return;
-        try {
-          localStorage.setItem(`travel_cache_${currentTripId.value}`, JSON.stringify({
-            members: members.value, categories: categories.value, expenses: val
-          }));
-        } catch (e) {}
+        try { localStorage.setItem(`travel_cache_${currentTripId.value}`, JSON.stringify({ members: members.value, categories: categories.value, expenses: val })); } catch (e) {}
+      }, { deep: true });
+
+      watch(fundExpenses, (val) => {
+        if (!currentFundId.value) return;
+        try { localStorage.setItem(`travel_cache_${currentFundId.value}`, JSON.stringify({ members: fundMembers.value, categories: fundCategories.value, expenses: val })); } catch (e) {}
       }, { deep: true });
 
       const showToast = (message, type = 'info') => {
-        if (toastTimer) clearTimeout(toastTimer);
-        toast.message = message; toast.type = type; toast.show = true;
-        toastTimer = setTimeout(() => { toast.show = false; }, 3000);
+        clearTimeout(toastTimer); toast.message = message; toast.type = type; toast.show = true;
+        toastTimer = setTimeout(() => { toast.show = false; }, 3500);
       };
 
-      const openConfirmDialog = (title, message, onConfirm) => {
-        confirmDialog.title = title; confirmDialog.message = message; confirmDialog.onConfirm = onConfirm; confirmDialog.show = true;
+      const openFundView = () => {
+        currentYearMonth.value = getYearMonthStr(); selectedFundMonth.value = currentYearMonth.value;
+        fundMode.value = true; if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
       };
 
-      const executeConfirmAction = () => {
-        if (typeof confirmDialog.onConfirm === 'function') confirmDialog.onConfirm();
-        confirmDialog.show = false;
+      const shiftFundMonth = (delta) => {
+        const [y, m] = selectedFundMonth.value.split('-').map(Number);
+        selectedFundMonth.value = getYearMonthStr(new Date(y, m - 1 + delta, 1));
       };
+
+      const formatYearMonthLabel = (ym) => { const [y, m] = (ym || '').split('-'); return y && m ? `${y}年${Number(m)}月` : ym; };
+
+      const requestNotificationPermission = async () => {
+        if (!('Notification' in window)) return showToast("此裝置不支援系統推播，但 App 內會即時同步！", "error");
+        const perm = await Notification.requestPermission();
+        notificationPermission.value = perm;
+        if (perm === 'granted') {
+          showToast("已開啟記帳同步通知！");
+          try { new Notification("雲端記帳通知已啟用", { body: "對方新增或修改帳目時，這裡會即時通知您！", icon: appIconSrc.value }); } catch (e) {}
+        } else showToast("未取得通知權限，仍會在 App 內即時顯示提醒", "error");
+      };
+
+      const triggerRemoteSyncNotification = (payload) => {
+        const rec = payload?.new || payload?.old;
+        if (!rec) return;
+        const verb = payload.eventType === 'INSERT' ? '新增了' : (payload.eventType === 'UPDATE' ? '修改了' : '刪除了');
+        const isFund = rec.expense_type === 'fund_in' || rec.expense_type === 'fund_out';
+        const prefix = rec.expense_type === 'fund_in' ? '【基金儲值】' : (rec.expense_type === 'fund_out' ? '【基金扣款】' : '【記帳同步】');
+        const amtText = rec.amount ? ` $${formatMoney(rec.amount)}` : '';
+        showToast(`${prefix} 對方${verb}「${rec.title || '紀錄'}」${amtText}`, 'sync');
+        try { navigator.vibrate?.([80, 40, 80]); } catch (e) {}
+        if (isFund && notificationPermission.value === 'granted') {
+          try { new Notification("💑 共同基金帳務更新", { body: `${verb}「${rec.title || '紀錄'}」${amtText}`, icon: appIconSrc.value }); } catch (e) {}
+        }
+      };
+
+      const openConfirmDialog = (title, message, onConfirm) => { Object.assign(confirmDialog, { show: true, title, message, onConfirm }); };
+      const executeConfirmAction = () => { confirmDialog.onConfirm?.(); confirmDialog.show = false; };
 
       const forceAppReload = async () => {
         showToast("正在清理快取並載入最新版本...");
         try {
-          if ('caches' in window) {
-            const names = await caches.keys();
-            await Promise.all(names.map(name => caches.delete(name)));
-          }
-          if ('serviceWorker' in navigator) {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(regs.map(r => r.unregister()));
-          }
+          if ('caches' in window) await Promise.all((await caches.keys()).map(n => caches.delete(n)));
+          if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister()));
         } catch (e) {}
-        setTimeout(() => {
-          const base = window.location.origin + window.location.pathname;
-          window.location.replace(`${base}?v=${Date.now()}`);
-        }, 400);
+        setTimeout(() => window.location.replace(`${window.location.origin}${window.location.pathname}?v=${Date.now()}`), 400);
       };
 
-      const switchTab = (tab) => {
-        activeTab.value = tab;
-        if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
+      const switchTab = (tab) => { fundMode.value = false; activeTab.value = tab; if (scrollContainer.value) scrollContainer.value.scrollTop = 0; };
+      const getTodayDateStr = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`; };
+      const formatDateHeader = (d) => {
+        if (!d) return '';
+        const p = d.split('-'), lbl = p.length === 3 ? `${Number(p[1])}月${Number(p[2])}日` : d;
+        return d === getTodayDateStr() ? `${lbl}・今天` : lbl;
       };
+      const formatMoney = (v) => (Number(v) || 0).toLocaleString('zh-TW', { maximumFractionDigits: 2 });
+      const formatTime = (ts) => { if (!ts) return ''; const d = new Date(ts); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+      const formatLogUser = (e) => (!e || e.endsWith('@guest.travel.app')) ? '訪客團員' : e.split('@')[0];
 
-      const getTodayDateStr = () => {
-        const now = new Date();
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const getCategoryEmojiByList = (id, list) => {
+        const name = (list || []).find(x => x.id === id)?.name || '其他';
+        return categoryEmojiMap[name] || '🏷️';
       };
-
-      const formatDateHeader = (dateStr) => {
-        if (!dateStr) return '';
-        const today = getTodayDateStr();
-        const parts = dateStr.split('-');
-        const label = parts.length === 3 ? `${Number(parts[1])}月${Number(parts[2])}日` : dateStr;
-        return dateStr === today ? `${label}・今天` : label;
-      };
-
-      const formatMoney = (val) => (Number(val) || 0).toLocaleString('zh-TW', { maximumFractionDigits: 2 });
-      const formatTime = (ts) => {
-        if (!ts) return '';
-        const d = new Date(ts);
-        return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-      };
-      const formatLogUser = (email) => (!email || email.endsWith('@guest.travel.app')) ? '訪客團員' : email.split('@')[0];
-
       const getCategoryName = (id) => categories.value.find(x => x.id === id)?.name || '其他';
       const getCategoryEmoji = (id) => categoryEmojiMap[getCategoryName(id)] || '🏷️';
       const getMemberName = (id) => members.value.find(x => x.id === id)?.name || '未知';
+      const getFundCategoryEmoji = (id) => getCategoryEmojiByList(id, fundCategories.value);
+      const getFundMemberName = (id) => fundMembers.value.find(x => x.id === id)?.name || '伴侶';
 
-      const copyTextSafe = async (text, successMsg) => {
-        try {
-          if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(text);
-            return showToast(successMsg);
-          }
-        } catch (e) {}
-        const ta = document.createElement('textarea');
-        ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      const copyTextSafe = async (text, msg) => {
+        try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return showToast(msg); } } catch (e) {}
+        const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px';
         document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); showToast(successMsg); }
-        catch (err) { showToast("複製失敗，請手動選取複製", "error"); }
+        try { document.execCommand('copy'); showToast(msg); } catch (e) { showToast("複製失敗，請手動選取", "error"); }
         document.body.removeChild(ta);
       };
 
-      const onCurrencyChange = () => {
-        const base = currentTripBaseCurrency.value;
-        if (form.currency === base) {
-          form.exchange_rate = 1;
-        } else {
-          const fromRate = toTwdRates[form.currency] || 1;
-          const baseRate = toTwdRates[base] || 1;
-          form.exchange_rate = Math.round((fromRate / baseRate) * 10000) / 10000;
-        }
+      const onDrawerCurrencyChange = () => {
+        const base = activeDrawerBaseCurrency.value;
+        drawer.exchange_rate = drawer.currency === base ? 1 : Math.round(((toTwdRates[drawer.currency] || 1) / (toTwdRates[base] || 1)) * 10000) / 10000;
       };
 
-      const checkSavedGuestDevice = () => {
-        try { hasSavedGuestDevice.value = !!localStorage.getItem('travel_guest_device_creds'); }
-        catch (e) { hasSavedGuestDevice.value = false; }
-      };
+      // 訪客裝置綁定與認證
+      const checkSavedGuestDevice = () => { try { hasSavedGuestDevice.value = !!localStorage.getItem('travel_guest_device_creds'); } catch (e) { hasSavedGuestDevice.value = false; } };
 
       const ensureGuestDeviceSession = async () => {
         if (session.value) return true;
@@ -1365,148 +1548,119 @@
         if (!anonErr && anonData?.session) { session.value = anonData.session; return true; }
 
         const hex = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        const deviceEmail = `guest_${hex}@guest.travel.app`;
-        const devicePass = `G_${hex}_Pass2026!`;
-        const { data: signUpData, error: signUpErr } = await supabaseClient.auth.signUp({ email: deviceEmail, password: devicePass });
-
-        if (signUpErr) {
-          showToast("裝置綁定失敗：" + signUpErr.message, "error");
-          return false;
-        }
-        if (!signUpData?.session) {
-          showToast("請在 Supabase 開啟 Anonymous Sign-ins 或關閉信箱驗證", "error");
-          return false;
-        }
-        try {
-          localStorage.setItem('travel_guest_device_creds', JSON.stringify({ email: deviceEmail, password: devicePass }));
-          hasSavedGuestDevice.value = true;
-        } catch (e) {}
-        session.value = signUpData.session;
+        const email = `guest_${hex}@guest.travel.app`, password = `G_${hex}_Pass2026!`;
+        const { data: upData, error: upErr } = await supabaseClient.auth.signUp({ email, password });
+        if (upErr || !upData?.session) { showToast(upErr ? upErr.message : "請確認 Supabase 已開啟匿名登入", "error"); return false; }
+        try { localStorage.setItem('travel_guest_device_creds', JSON.stringify({ email, password })); hasSavedGuestDevice.value = true; } catch (e) {}
+        session.value = upData.session;
         return true;
       };
 
       const handleGuestQuickJoin = async (codeInput) => {
-        const cleanCode = (codeInput || '').trim().toUpperCase();
-        if (cleanCode.length < 4) return showToast("請輸入正確的 6 位數邀請碼！", "error");
+        const code = (codeInput || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (code.length < 4) return showToast("請輸入正確的 6 位數邀請碼！", "error");
         if (authLoading.value) return;
         authLoading.value = true;
         try {
           if (!(await ensureGuestDeviceSession())) return;
-          pendingInviteCode.value = '';
-          guestCodeInput.value = '';
-          await joinTripByCode(cleanCode);
-        } finally {
-          authLoading.value = false;
-        }
+          pendingInviteCode.value = ''; guestCodeInput.value = '';
+          await joinTripByCode(code, false);
+        } finally { authLoading.value = false; }
       };
 
       const resumeGuestDeviceSession = async () => {
         if (authLoading.value) return;
         authLoading.value = true;
         try {
-          if (await ensureGuestDeviceSession()) {
-            showToast("已恢復此手機的訪客帳本！");
-            await fetchTrips();
-            setupRealtimeSubscription();
-          }
-        } finally {
-          authLoading.value = false;
-        }
+          if (await ensureGuestDeviceSession()) { showToast("已恢復此手機的訪客紀錄！"); await fetchTrips(); setupRealtimeSubscription(); }
+        } finally { authLoading.value = false; }
       };
 
       const handleLogin = async () => {
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-        const phoneLast5 = authPhoneLast5.value.trim();
+        const email = authEmail.value.trim(), password = authPassword.value, last5 = authPhoneLast5.value.trim();
         if (!email) return showToast("請輸入電子郵件", "error");
-        if (!password && !phoneLast5) return showToast("請填寫密碼或手機後 5 碼", "error");
-
+        if (!password && !last5) return showToast("請填寫密碼或手機後 5 碼", "error");
         authLoading.value = true;
         try {
           if (password) {
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (!error && data.session) return showToast("歡迎回來！");
-            if (!phoneLast5) return showToast("登入失敗：密碼不正確", "error");
+            if (!error && data.session) { authPassword.value = ''; return showToast("歡迎回來！"); }
+            if (!last5) return showToast("登入失敗：密碼不正確", "error");
           }
-          if (phoneLast5) {
-            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('get_auth_by_phone_last5', { p_email: email, p_phone_last5: phoneLast5 });
-            if (rpcErr) return showToast("驗證錯誤：" + rpcErr.message, "error");
-            if (rpcRes?.success && rpcRes?.pass) {
-              const { error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password: rpcRes.pass });
-              if (signInErr) return showToast("登入失敗：" + signInErr.message, "error");
-              showToast("快速驗證登入成功！");
-            } else if (rpcRes && !rpcRes.success) {
-              showToast(rpcRes.message, "error");
-            }
+          if (last5) {
+            const { data: res, error: err } = await supabaseClient.rpc('get_auth_by_phone_last5', { p_email: email, p_phone_last5: last5 });
+            if (err) return showToast("驗證錯誤：" + err.message, "error");
+            if (res?.success && res?.pass) {
+              const { error: sErr } = await supabaseClient.auth.signInWithPassword({ email, password: res.pass });
+              if (sErr) return showToast("登入失敗：" + sErr.message, "error");
+              authPassword.value = ''; authPhoneLast5.value = ''; showToast("快速驗證登入成功！");
+            } else if (res && !res.success) showToast(res.message, "error");
           }
-        } finally {
-          authLoading.value = false;
-        }
+        } finally { authLoading.value = false; }
       };
 
       const handleRegister = async () => {
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-        const phone = authPhone.value.trim();
+        const email = authEmail.value.trim(), password = authPassword.value, phone = authPhone.value.trim();
         if (!email || !password) return showToast("請填寫 Email 與密碼", "error");
         if (phone.length < 5) return showToast("請輸入正確手機號碼", "error");
-
         const phoneLast5 = phone.slice(-5);
         authLoading.value = true;
         try {
           const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { phone, phone_last5: phoneLast5 } } });
           if (error) return showToast("註冊失敗：" + error.message, "error");
           await supabaseClient.rpc('sync_user_vault', { p_email: email, p_phone: phone, p_phone_last5: phoneLast5, p_password: password });
-          showToast("註冊成功，已自動登入！");
-        } finally {
-          authLoading.value = false;
-        }
+          authPassword.value = ''; showToast("註冊成功，已自動登入！");
+        } finally { authLoading.value = false; }
       };
 
       const triggerSignOut = () => {
-        const msg = isGuestSession.value
-          ? "切換後可登入正式帳號或輸入其他邀請碼；本機訪客紀錄仍會保留於此手機。"
-          : "確定要登出目前帳號並返回登入畫面嗎？";
+        const msg = isGuestSession.value ? "切換後可登入正式帳號或輸入其他邀請碼；本機訪客紀錄仍會保留於此手機。" : "確定要登出目前帳號並返回登入畫面嗎？";
         openConfirmDialog("切換 / 登出", msg, async () => {
-          await supabaseClient.auth.signOut();
-          checkSavedGuestDevice();
-          showToast("已返回入口畫面");
+          fundMode.value = false; await supabaseClient.auth.signOut(); checkSavedGuestDevice(); showToast("已返回入口畫面");
         });
       };
 
-      const addLog = async (action) => {
-        if (!currentTripId.value || !isOnline.value) return;
+      const addLog = async (action, targetTripId = currentTripId.value) => {
+        if (!targetTripId || !isOnline.value) return;
         const email = session.value?.user?.email;
         await supabaseClient.from('activity_logs').insert([{
-          trip_id: currentTripId.value,
+          trip_id: targetTripId,
           user_email: (!email || email.endsWith('@guest.travel.app')) ? '訪客團員' : email,
-          action_text: action
+          action_text: sanitizeText(action, 150)
         }]);
       };
 
       const fetchTrips = async () => {
         if (!session.value) return;
-        const { data: ownTrips } = await supabaseClient.from('trips').select('*').order('created_at', { ascending: false });
-        const { data: collabRows } = await supabaseClient.from('trip_collaborators').select('trip_id').eq('user_id', session.value.user.id);
-
-        let collabTrips = [];
-        if (collabRows?.length > 0) {
-          const { data: cData } = await supabaseClient.from('trips').select('*').in('id', collabRows.map(r => r.trip_id));
-          collabTrips = cData || [];
+        const { data: own } = await supabaseClient.from('trips').select('*').order('created_at', { ascending: false });
+        const { data: rows } = await supabaseClient.from('trip_collaborators').select('trip_id').eq('user_id', session.value.user.id);
+        let collab = [];
+        if (rows?.length) {
+          const { data: cData } = await supabaseClient.from('trips').select('*').in('id', rows.map(r => r.trip_id));
+          collab = cData || [];
         }
-
         const map = new Map();
-        [...(ownTrips || []), ...collabTrips].forEach(t => map.set(t.id, t));
-        trips.value = Array.from(map.values());
+        [...(own || []), ...collab].forEach(t => map.set(t.id, t));
+        allBooks.value = Array.from(map.values());
 
-        if (trips.value.length > 0) {
-          if (!currentTripId.value || !trips.value.some(t => t.id === currentTripId.value)) {
-            currentTripId.value = trips.value[0].id;
+        // 1. 載入目前旅遊帳本
+        if (travelTrips.value.length) {
+          if (!currentTripId.value || !travelTrips.value.some(t => t.id === currentTripId.value)) {
+            currentTripId.value = travelTrips.value[0].id;
           }
           await fetchTripDetails();
         } else {
-          currentTripId.value = null;
-          members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
+          currentTripId.value = null; members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
+        }
+
+        // 2. 載入獨立共同基金帳本 (完全獨立於旅遊帳本)
+        if (fundBooks.value.length) {
+          if (!currentFundId.value || !fundBooks.value.some(t => t.id === currentFundId.value)) {
+            currentFundId.value = fundBooks.value[0].id;
+          }
+          await fetchFundDetails();
+        } else {
+          currentFundId.value = null; fundMembers.value = []; fundExpenses.value = []; fundCategories.value = [];
         }
       };
 
@@ -1514,14 +1668,10 @@
         if (!currentTripId.value) return;
         try {
           const cached = localStorage.getItem(`travel_cache_${currentTripId.value}`);
-          if (cached && expenses.value.length === 0) {
-            const parsed = JSON.parse(cached);
-            members.value = parsed.members || [];
-            categories.value = parsed.categories || [];
-            expenses.value = parsed.expenses || [];
+          if (cached && !expenses.value.length) {
+            const p = JSON.parse(cached); members.value = p.members || []; categories.value = p.categories || []; expenses.value = p.expenses || [];
           }
         } catch (e) {}
-
         if (!isOnline.value) return;
 
         const [memRes, catRes, expRes, logRes] = await Promise.all([
@@ -1533,366 +1683,417 @@
         members.value = memRes.data || [];
         categories.value = catRes.data || [];
 
-        let pendingOffline = [];
+        let pending = [];
         try {
-          const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]');
-          pendingOffline = q.filter(x => x.action === 'insert' && x.payload?.trip_id === currentTripId.value)
+          pending = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]')
+            .filter(x => x.action === 'insert' && x.payload?.trip_id === currentTripId.value)
             .map(x => ({ ...x.payload, id: x.tempId, is_offline: true }));
         } catch (e) {}
-
-        expenses.value = [...pendingOffline, ...(expRes.data || [])];
+        expenses.value = [...pending, ...(expRes.data || [])];
         activityLogs.value = logRes.data || [];
 
         const myBound = members.value.find(m => m.user_id === session.value?.user?.id);
-        if (myBound) {
-          currentMemberId.value = myBound.id;
-        } else if (isTripCreator.value && members.value.length > 0) {
+        if (myBound) currentMemberId.value = myBound.id;
+        else if (isTripCreator.value && members.value.length) {
           currentMemberId.value = members.value[0].id;
           if (!members.value[0].user_id) {
             await supabaseClient.from('members').update({ user_id: session.value.user.id }).eq('id', members.value[0].id);
             members.value[0].user_id = session.value.user.id;
           }
+        } else { currentMemberId.value = null; if (!fundMode.value) openClaimModal(false); }
+      };
+
+      // 獨立讀取共同基金資料 (完全隔離旅遊帳簿成員)
+      const fetchFundDetails = async () => {
+        if (!currentFundId.value) return;
+        try {
+          const cached = localStorage.getItem(`travel_cache_${currentFundId.value}`);
+          if (cached && !fundExpenses.value.length) {
+            const p = JSON.parse(cached); fundMembers.value = p.members || []; fundCategories.value = p.categories || []; fundExpenses.value = p.expenses || [];
+          }
+        } catch (e) {}
+        if (!isOnline.value) return;
+
+        const [memRes, catRes, expRes] = await Promise.all([
+          supabaseClient.from('members').select('*').eq('trip_id', currentFundId.value),
+          supabaseClient.from('categories').select('*').eq('trip_id', currentFundId.value),
+          supabaseClient.from('expenses').select('*').eq('trip_id', currentFundId.value).order('date', { ascending: false }).order('created_at', { ascending: false })
+        ]);
+        fundMembers.value = memRes.data || [];
+        fundCategories.value = catRes.data || [];
+
+        let pending = [];
+        try {
+          pending = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]')
+            .filter(x => x.action === 'insert' && x.payload?.trip_id === currentFundId.value)
+            .map(x => ({ ...x.payload, id: x.tempId, is_offline: true }));
+        } catch (e) {}
+        fundExpenses.value = [...pending, ...(expRes.data || [])];
+
+        const myBound = fundMembers.value.find(m => m.user_id === session.value?.user?.id);
+        if (myBound) currentFundMemberId.value = myBound.id;
+        else if (isFundCreator.value && fundMembers.value.length) {
+          currentFundMemberId.value = fundMembers.value[0].id;
         } else {
-          currentMemberId.value = null;
-          showClaimModal.value = true;
+          currentFundMemberId.value = null;
+          if (fundMode.value) openClaimModal(true);
         }
       };
 
       const setupRealtimeSubscription = () => {
-        if (realtimeChannel) {
-          supabaseClient.removeChannel(realtimeChannel);
-          realtimeChannel = null;
-        }
-        if (!currentTripId.value) return;
-        const debounced = () => {
-          clearTimeout(realtimeDebounceTimer);
-          realtimeDebounceTimer = setTimeout(fetchTripDetails, 300);
+        if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
+        if (!session.value) return;
+        const onExpChange = (payload) => {
+          const tid = payload?.new?.trip_id || payload?.old?.trip_id;
+          if (tid !== currentTripId.value && tid !== currentFundId.value) return;
+          clearTimeout(realtimeTimer);
+          realtimeTimer = setTimeout(async () => {
+            if (tid === currentTripId.value) await fetchTripDetails();
+            if (tid === currentFundId.value) await fetchFundDetails();
+            if (!isSaving.value && Date.now() - lastLocalMutationAt > 2500) triggerRemoteSyncNotification(payload);
+          }, 300);
         };
-        realtimeChannel = supabaseClient.channel(`trip_${currentTripId.value}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses', filter: `trip_id=eq.${currentTripId.value}` }, debounced)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'members', filter: `trip_id=eq.${currentTripId.value}` }, debounced)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'categories', filter: `trip_id=eq.${currentTripId.value}` }, debounced)
+        const onMetaChange = (payload) => {
+          const tid = payload?.new?.trip_id || payload?.old?.trip_id;
+          if (tid !== currentTripId.value && tid !== currentFundId.value) return;
+          clearTimeout(realtimeTimer);
+          realtimeTimer = setTimeout(async () => {
+            if (tid === currentTripId.value) await fetchTripDetails();
+            if (tid === currentFundId.value) await fetchFundDetails();
+          }, 300);
+        };
+        realtimeChannel = supabaseClient.channel(`user_sync_${session.value.user.id}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, onExpChange)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, onMetaChange)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, onMetaChange)
           .subscribe();
       };
 
       const onTripSwitch = async () => {
-        searchQuery.value = '';
-        expenses.value = []; members.value = []; categories.value = [];
-        setupRealtimeSubscription();
+        searchQuery.value = ''; expenses.value = []; members.value = []; categories.value = [];
         await fetchTripDetails();
       };
 
-      const canEditMemberName = (m) => !!(session.value?.user && (m.user_id === session.value.user.id || (isTripCreator.value && !m.user_id)));
-
-      const openEditMemberNameModal = (member) => {
-        if (!canEditMemberName(member)) return showToast("您只能編輯自己的名稱！", "error");
-        editingMemberTarget.value = member;
-        editMemberNameInput.value = member.name;
-        showEditNameModal.value = true;
+      const canEditMemberName = (m, isFund = false) => {
+        if (!session.value?.user) return false;
+        const creator = isFund ? isFundCreator.value : isTripCreator.value;
+        return m.user_id === session.value.user.id || (creator && !m.user_id);
+      };
+      const openEditMemberNameModal = (member, isFund = false) => {
+        if (!canEditMemberName(member, isFund)) return showToast("您只能編輯自己的名稱！", "error");
+        editingMemberTarget.value = member; editingMemberIsFund.value = isFund;
+        editMemberNameInput.value = member.name; showEditNameModal.value = true;
       };
 
       const saveMemberName = async () => {
         if (isSaving.value) return;
-        const newName = editMemberNameInput.value.trim();
+        const newName = sanitizeText(editMemberNameInput.value, 30);
         if (!newName) return showToast("名稱不能為空！", "error");
-        if (!editingMemberTarget.value) return;
+        if (!editingMemberTarget.value || editingMemberTarget.value.name === newName) { showEditNameModal.value = false; return; }
         const oldName = editingMemberTarget.value.name;
-        if (oldName === newName) { showEditNameModal.value = false; return; }
-
-        isSaving.value = true;
+        isSaving.value = true; lastLocalMutationAt = Date.now();
         try {
           const { error } = await supabaseClient.from('members').update({ name: newName }).eq('id', editingMemberTarget.value.id);
           if (error) return showToast("更新失敗：" + error.message, "error");
-          editingMemberTarget.value.name = newName;
-          showEditNameModal.value = false;
-          showToast("顯示名稱已更新！");
-          await addLog(`將成員「${oldName}」更名為「${newName}」`);
-          await fetchTripDetails();
-        } finally {
-          isSaving.value = false;
-        }
+          editingMemberTarget.value.name = newName; showEditNameModal.value = false; showToast("顯示名稱已更新！");
+          if (editingMemberIsFund.value) await fetchFundDetails();
+          else { await addLog(`將成員「${oldName}」更名為「${newName}」`); await fetchTripDetails(); }
+        } finally { isSaving.value = false; }
       };
 
+      const openClaimModal = (isFund = false) => { claimModal.isFund = isFund; claimModal.show = true; };
+
       const claimMemberRole = (memberId) => {
-        openConfirmDialog("確認綁定角色", "綁定後將鎖定此身分於本機，確保個人私密消費不會被他人看見。", async () => {
+        openConfirmDialog("確認綁定角色", "綁定後將鎖定此身分於本機，確保雙方同步記帳。", async () => {
+          lastLocalMutationAt = Date.now();
           const { error } = await supabaseClient.from('members').update({ user_id: session.value.user.id }).eq('id', memberId).is('user_id', null);
           if (error) showToast("綁定失敗，該角色可能已被認領！", "error");
           else {
-            showToast("身分綁定成功！現在可以開始記帳了");
-            showClaimModal.value = false;
-            await fetchTripDetails();
+            showToast("身分綁定成功！"); claimModal.show = false;
+            claimModal.isFund ? await fetchFundDetails() : await fetchTripDetails();
           }
         });
       };
 
-      const joinTripByCode = async (overrideCode) => {
-        const targetCode = (overrideCode || joinCodeInput.value || '').trim().toUpperCase();
-        if (!targetCode) return showToast("請輸入 6 位數邀請碼", "error");
+      // 建立完全獨立的共同基金帳本 (自動加上 [FUND] 隔離前綴)
+      const createIndependentFund = async () => {
+        if (isSaving.value) return;
+        const partnerName = sanitizeText(newFundPartnerName.value, 20) || '伴侶';
         isSaving.value = true;
         try {
-          const { data, error } = await supabaseClient.rpc('join_trip_by_code', { code: targetCode });
+          const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+          const { data: fundBook, error } = await supabaseClient.from('trips').insert([
+            { name: `${FUND_PREFIX}日常共同基金`, base_currency: newFundCurrency.value, user_id: session.value.user.id, invite_code: code }
+          ]).select().single();
+          if (error) return showToast(error.message, "error");
+          if (fundBook) {
+            await supabaseClient.from('members').insert([
+              { trip_id: fundBook.id, name: '我', user_id: session.value.user.id, is_default_me: true },
+              { trip_id: fundBook.id, name: partnerName }
+            ]);
+            await supabaseClient.from('categories').insert(['餐飲', '約會', '出遊', '娛樂', '購物', '交通'].map(cat => ({ trip_id: fundBook.id, name: cat })));
+            newFundPartnerName.value = ''; currentFundId.value = fundBook.id;
+            await fetchTrips(); setupRealtimeSubscription();
+            showToast("專屬共同基金已建立！快把邀請碼分享給伴侶");
+          }
+        } finally { isSaving.value = false; }
+      };
+
+      const joinTripByCode = async (overrideCode, fromFundView = false) => {
+        const code = (overrideCode || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (!code) return showToast("請輸入 6 位數邀請碼", "error");
+        isSaving.value = true;
+        try {
+          const { data, error } = await supabaseClient.rpc('join_trip_by_code', { code });
           if (error) return showToast(error.message, "error");
           if (data.success) {
-            showToast(`已成功加入「${data.trip_name}」！`);
-            joinCodeInput.value = '';
-            currentTripId.value = data.trip_id;
-            await fetchTrips();
-            setupRealtimeSubscription();
-            await addLog(`加入了此記帳本`);
-            activeTab.value = 'expenses';
-          } else {
-            showToast(data.message, "error");
-          }
-        } finally {
-          isSaving.value = false;
-        }
+            const isFundBook = (data.trip_name || '').startsWith(FUND_PREFIX);
+            const cleanName = isFundBook ? data.trip_name.replace(FUND_PREFIX, '') : data.trip_name;
+            showToast(`已成功加入「${cleanName}」！`);
+            joinCodeInput.value = ''; joinFundCodeInput.value = '';
+            if (isFundBook || fromFundView) {
+              currentFundId.value = data.trip_id;
+              fundMode.value = true;
+            } else {
+              currentTripId.value = data.trip_id;
+              activeTab.value = 'expenses';
+            }
+            await fetchTrips(); setupRealtimeSubscription();
+            if (!isFundBook) await addLog(`加入了此記帳本`, data.trip_id);
+          } else showToast(data.message, "error");
+        } finally { isSaving.value = false; }
       };
 
-      const copyInviteCode = () => {
-        if (!currentTrip.value?.invite_code) return;
-        copyTextSafe(currentTrip.value.invite_code, `邀請碼【${currentTrip.value.invite_code}】已複製！`);
-      };
-
+      const copyInviteCode = () => { if (currentTrip.value?.invite_code) copyTextSafe(currentTrip.value.invite_code, `邀請碼【${currentTrip.value.invite_code}】已複製！`); };
       const copyInviteLink = () => {
         if (!currentTrip.value?.invite_code) return;
-        const shareUrl = `${window.location.origin}${window.location.pathname}?code=${currentTrip.value.invite_code}`;
-        const shareText = `✈️ 邀請你加入【${currentTrip.value.name}】旅遊分帳！\n點擊下方連結免註冊直接綁定手機記帳：\n${shareUrl}\n（或手動輸入邀請碼：${currentTrip.value.invite_code}）`;
-        copyTextSafe(shareText, "免註冊邀請連結已複製！快貼到 LINE 群組");
+        const url = `${window.location.origin}${window.location.pathname}?code=${currentTrip.value.invite_code}`;
+        copyTextSafe(`✈️ 邀請你加入【${currentTrip.value.name}】旅遊分帳！\n點擊下方連結免註冊直接綁定手機記帳：\n${url}\n（或手動輸入邀請碼：${currentTrip.value.invite_code}）`, "免註冊邀請連結已複製！快貼到 LINE");
+      };
+      const copyFundInviteLink = () => {
+        if (!currentFund.value?.invite_code) return;
+        const url = `${window.location.origin}${window.location.pathname}?code=${currentFund.value.invite_code}`;
+        copyTextSafe(`💑 邀請你加入我們的【日常共同基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "伴侶基金邀請連結已複製！快傳給對方");
       };
 
-      const canEditOrDeleteExpense = (item) => isTripCreator.value || item.payer_id === currentMemberId.value;
+      // 統一抽屜開啟 / 編輯 / 儲存 / 刪除
+      const canEditOrDeleteItem = (item) =>
+        item.expense_type === 'fund_in' || item.expense_type === 'fund_out' || isTripCreator.value || item.payer_id === currentMemberId.value;
 
-      const openNewExpenseModal = () => {
-        if (!currentTripId.value) return showToast("請先建立或加入一個旅程帳本！", "error");
-        if (!currentMemberId.value) {
-          showToast("請先認領您的成員身分！", "error");
-          showClaimModal.value = true;
-          return;
-        }
-        isEditingExpense.value = false;
-        editingExpenseId.value = null;
-        Object.assign(form, {
-          title: '',
-          currency: currentTripBaseCurrency.value,
-          exchange_rate: 1,
-          amountExpr: '',
-          category_id: categories.value[0]?.id || null,
-          payer_id: currentMemberId.value,
-          expense_type: 'group',
-          split_members: members.value.map(m => m.id),
-          date: getTodayDateStr(),
-          notes: ''
+      const switchFundDrawerType = (type) => {
+        drawer.type = type;
+        if (type === 'fund_in') {
+          drawer.currency = currentFundBaseCurrency.value; drawer.exchange_rate = 1;
+          if (!drawer.title) drawer.title = '共同基金儲值';
+        } else if (drawer.title === '共同基金儲值') drawer.title = '';
+      };
+
+      const openDrawer = (type = 'group') => {
+        const isFund = type.startsWith('fund_');
+        const targetBookId = isFund ? currentFundId.value : currentTripId.value;
+        if (!targetBookId) return showToast(isFund ? "請先建立或加入共同基金！" : "請先建立或加入旅遊帳本！", "error");
+
+        const activePayer = isFund
+          ? (currentFundMemberId.value || fundMembers.value[0]?.id)
+          : currentMemberId.value;
+
+        if (!activePayer) { showToast("請先認領您的成員身分！", "error"); openClaimModal(isFund); return; }
+        const defaultDate = isFund && selectedFundMonth.value !== currentYearMonth.value ? `${selectedFundMonth.value}-01` : getTodayDateStr();
+        const catList = isFund ? fundCategories.value : categories.value;
+
+        Object.assign(drawer, {
+          open: true, isEdit: false, editId: null, type,
+          title: type === 'fund_in' ? '共同基金儲值' : '',
+          currency: isFund ? currentFundBaseCurrency.value : currentTripBaseCurrency.value,
+          exchange_rate: 1, amountExpr: '',
+          category_id: catList[0]?.id || null, payer_id: activePayer,
+          split_members: isFund ? fundMembers.value.map(m => m.id) : members.value.map(m => m.id),
+          date: defaultDate, notes: ''
         });
-        showModal.value = true;
       };
 
-      const openEditExpenseModal = (item) => {
-        if (!canEditOrDeleteExpense(item)) return showToast("您無權限修改此筆帳目！", "error");
-        isEditingExpense.value = true;
-        editingExpenseId.value = item.id;
-        Object.assign(form, {
-          title: item.title,
-          currency: item.currency || currentTripBaseCurrency.value,
+      const openEditDrawer = (item) => {
+        if (!canEditOrDeleteItem(item)) return showToast("您無權限修改此筆帳目！", "error");
+        const isFund = item.expense_type === 'fund_in' || item.expense_type === 'fund_out';
+        const catList = isFund ? fundCategories.value : categories.value;
+        Object.assign(drawer, {
+          open: true, isEdit: true, editId: item.id, type: item.expense_type || 'group',
+          title: item.title, currency: item.currency || (isFund ? currentFundBaseCurrency.value : currentTripBaseCurrency.value),
           exchange_rate: Number(item.exchange_rate) || 1,
           amountExpr: String(item.original_amount ?? item.amount ?? ''),
-          category_id: item.category_id || null,
+          category_id: item.category_id || catList[0]?.id || null,
           payer_id: item.payer_id,
-          expense_type: item.expense_type,
           split_members: Array.isArray(item.split_members) ? [...item.split_members] : [],
-          date: item.date || getTodayDateStr(),
-          notes: item.notes || ''
+          date: item.date || getTodayDateStr(), notes: item.notes || ''
         });
-        showModal.value = true;
       };
 
       const toggleMemberSplit = (id) => {
-        const idx = form.split_members.indexOf(id);
-        if (idx > -1) form.split_members.splice(idx, 1);
-        else form.split_members.push(id);
+        const idx = drawer.split_members.indexOf(id);
+        idx > -1 ? drawer.split_members.splice(idx, 1) : drawer.split_members.push(id);
       };
-
       const toggleSelectAllMembers = () => {
-        form.split_members = form.split_members.length === members.value.length ? [] : members.value.map(m => m.id);
+        drawer.split_members = drawer.split_members.length === members.value.length ? [] : members.value.map(m => m.id);
       };
 
-      const refreshOfflineCount = () => {
-        try {
-          const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]');
-          offlineQueueCount.value = Array.isArray(q) ? q.length : 0;
-        } catch (e) { offlineQueueCount.value = 0; }
-      };
-
-      const saveExpense = async () => {
+      const saveDrawer = async () => {
         if (isSaving.value) return;
-        if (!form.title.trim()) return showToast("請輸入消費項目名稱", "error");
-        const origAmt = evaluatedOriginalAmount.value;
-        if (!origAmt || origAmt <= 0) return showToast("請輸入大於 0 的有效金額", "error");
-        if (!form.exchange_rate || Number(form.exchange_rate) <= 0) return showToast("匯率必須大於 0", "error");
-        if (form.expense_type === 'group' && form.split_members.length === 0) return showToast("團體平攤請至少勾選一位成員！", "error");
+        const origAmt = drawerOrigAmount.value;
+        if (!origAmt || origAmt <= 0 || origAmt > 100000000) return showToast("請輸入有效金額", "error");
+        if (!drawer.exchange_rate || Number(drawer.exchange_rate) <= 0) return showToast("匯率必須大於 0", "error");
+        if (drawer.type === 'group' && !drawer.split_members.length) return showToast("團體平攤請至少勾選一位成員！", "error");
 
-        const convertedAmount = calculatedConvertedAmount.value;
+        const cleanTitle = sanitizeText(drawer.title, 60) || (drawer.type === 'fund_in' ? '共同基金儲值' : '');
+        if (!cleanTitle) return showToast("請輸入項目名稱", "error");
+
+        const isFund = isFundDrawer.value;
+        const isFundIn = drawer.type === 'fund_in';
+        const targetBookId = isFund ? currentFundId.value : currentTripId.value;
+        const targetBaseCurr = isFund ? currentFundBaseCurrency.value : currentTripBaseCurrency.value;
+        const targetListRef = isFund ? fundExpenses : expenses;
+        const converted = drawerConvertedAmount.value;
+
         const payload = {
-          trip_id: currentTripId.value,
-          title: form.title.trim(),
-          amount: convertedAmount,
-          currency: form.currency,
-          exchange_rate: Number(form.exchange_rate),
+          trip_id: targetBookId,
+          title: cleanTitle,
+          amount: converted,
+          currency: isFundIn ? targetBaseCurr : drawer.currency,
+          exchange_rate: isFundIn ? 1 : Number(drawer.exchange_rate),
           original_amount: origAmt,
-          category_id: form.category_id || null,
-          payer_id: form.payer_id,
-          expense_type: form.expense_type,
-          split_members: form.expense_type === 'group' ? form.split_members : [form.payer_id],
-          date: form.date || getTodayDateStr(),
-          notes: form.notes ? form.notes.trim() : null
+          category_id: isFundIn ? null : (drawer.category_id || null),
+          payer_id: drawer.payer_id,
+          expense_type: drawer.type,
+          split_members: drawer.type === 'personal' ? [drawer.payer_id] : (drawer.type === 'group' ? drawer.split_members : activeDrawerMembers.value.map(m => m.id)),
+          date: drawer.date || getTodayDateStr(),
+          notes: drawer.notes ? sanitizeText(drawer.notes, 100) : null
         };
 
-        if (!isOnline.value || String(editingExpenseId.value || '').startsWith('temp_')) {
+        lastLocalMutationAt = Date.now();
+        if (!isOnline.value || String(drawer.editId || '').startsWith('temp_')) {
           try {
-            const queue = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]');
-            if (isEditingExpense.value) {
-              const isTemp = String(editingExpenseId.value).startsWith('temp_');
-              if (isTemp) {
-                const qIdx = queue.findIndex(q => q.tempId === editingExpenseId.value);
-                if (qIdx > -1) queue[qIdx].payload = payload;
-              } else {
-                queue.push({ action: 'update', payload, id: editingExpenseId.value });
-              }
-              const expIdx = expenses.value.findIndex(e => e.id === editingExpenseId.value);
-              if (expIdx > -1) expenses.value[expIdx] = { ...payload, id: editingExpenseId.value, is_offline: true };
+            const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]');
+            if (drawer.isEdit) {
+              if (String(drawer.editId).startsWith('temp_')) {
+                const idx = q.findIndex(x => x.tempId === drawer.editId);
+                if (idx > -1) q[idx].payload = payload;
+              } else q.push({ action: 'update', payload, id: drawer.editId });
+              const eIdx = targetListRef.value.findIndex(e => e.id === drawer.editId);
+              if (eIdx > -1) targetListRef.value[eIdx] = { ...payload, id: drawer.editId, is_offline: true };
             } else {
               const tempId = 'temp_' + Date.now();
-              queue.push({ action: 'insert', payload, tempId });
-              expenses.value.unshift({ ...payload, id: tempId, is_offline: true });
+              q.push({ action: 'insert', payload, tempId });
+              targetListRef.value.unshift({ ...payload, id: tempId, is_offline: true });
             }
-            localStorage.setItem('travel_offline_queue', JSON.stringify(queue));
-            offlineQueueCount.value = queue.length;
+            localStorage.setItem('travel_offline_queue', JSON.stringify(q));
+            offlineQueueCount.value = q.length;
           } catch (e) {}
-
-          showModal.value = false;
-          showToast("已暫存於手機本機，連網後自動同步！");
+          drawer.open = false; showToast("已暫存於手機本機，連網後自動同步！");
           if (isOnline.value) flushOfflineQueue();
           return;
         }
 
         isSaving.value = true;
         try {
-          if (isEditingExpense.value) {
-            const { error } = await supabaseClient.from('expenses').update(payload).eq('id', editingExpenseId.value);
-            if (error) return showToast("更新失敗：" + error.message, "error");
-            showModal.value = false;
-            showToast("花費紀錄已更新！");
-            await addLog(`修改了花費：${payload.title} ($${formatMoney(convertedAmount)})`);
+          const { error } = drawer.isEdit
+            ? await supabaseClient.from('expenses').update(payload).eq('id', drawer.editId)
+            : await supabaseClient.from('expenses').insert([payload]);
+          if (error) return showToast("儲存失敗：" + error.message, "error");
+          drawer.open = false;
+          showToast(drawer.isEdit ? "已儲存修改並同步！" : "已記帳並同步至雙方手機！");
+          if (isFund) {
+            await fetchFundDetails();
           } else {
-            const { error } = await supabaseClient.from('expenses').insert([payload]);
-            if (error) return showToast("儲存失敗：" + error.message, "error");
-            showModal.value = false;
-            showToast("記帳完成！");
-            await addLog(`新增了花費：${payload.title} ($${formatMoney(convertedAmount)})`);
+            const verb = drawer.isEdit ? '修改了' : '新增了';
+            await addLog(`${verb}花費：${payload.title} ($${formatMoney(converted)})`, targetBookId);
+            await fetchTripDetails();
           }
-          await fetchTripDetails();
-        } finally {
-          isSaving.value = false;
-        }
+        } finally { isSaving.value = false; }
+      };
+
+      const triggerDeleteItem = (item, isFund = false) => {
+        if (!canEditOrDeleteItem(item)) return showToast("您無權限刪除此帳目！", "error");
+        const targetListRef = isFund ? fundExpenses : expenses;
+        openConfirmDialog("刪除紀錄", `確定要刪除「${item.title}」($${formatMoney(item.amount)}) 嗎？`, async () => {
+          lastLocalMutationAt = Date.now();
+          if (String(item.id).startsWith('temp_')) {
+            targetListRef.value = targetListRef.value.filter(e => e.id !== item.id);
+            try {
+              const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]').filter(x => x.tempId !== item.id);
+              localStorage.setItem('travel_offline_queue', JSON.stringify(q)); offlineQueueCount.value = q.length;
+            } catch (e) {}
+            return showToast("已自離線暫存移除");
+          }
+          isSaving.value = true;
+          try {
+            const { error } = await supabaseClient.from('expenses').delete().eq('id', item.id);
+            if (error) return showToast("刪除失敗：" + error.message, "error");
+            showToast("已刪除該筆紀錄");
+            if (isFund) await fetchFundDetails();
+            else { await addLog(`刪除了紀錄：${item.title} ($${formatMoney(item.amount)})`); await fetchTripDetails(); }
+          } finally { isSaving.value = false; }
+        });
+      };
+
+      const refreshOfflineCount = () => {
+        try { const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]'); offlineQueueCount.value = Array.isArray(q) ? q.length : 0; }
+        catch (e) { offlineQueueCount.value = 0; }
       };
 
       const flushOfflineQueue = async () => {
         if (!isOnline.value || isSyncingOffline.value) return;
-        let queue = [];
-        try { queue = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]'); } catch (e) {}
-        if (queue.length === 0) return;
-
-        isSyncingOffline.value = true;
-        offlineQueueCount.value = queue.length;
-        const remaining = [];
-        let synced = 0;
-
+        let q = []; try { q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]'); } catch (e) {}
+        if (!q.length) return;
+        isSyncingOffline.value = true; offlineQueueCount.value = q.length;
+        const rem = []; let synced = 0; lastLocalMutationAt = Date.now();
         try {
-          for (const item of queue) {
+          for (const item of q) {
             if (item.action === 'insert') {
               const { error } = await supabaseClient.from('expenses').insert([item.payload]);
-              error ? remaining.push(item) : synced++;
+              error ? rem.push(item) : synced++;
             } else if (item.action === 'update' && item.id && !String(item.id).startsWith('temp_')) {
               const { error } = await supabaseClient.from('expenses').update(item.payload).eq('id', item.id);
-              error ? remaining.push(item) : synced++;
+              error ? rem.push(item) : synced++;
             }
           }
-          if (remaining.length > 0) localStorage.setItem('travel_offline_queue', JSON.stringify(remaining));
-          else localStorage.removeItem('travel_offline_queue');
-          offlineQueueCount.value = remaining.length;
-
-          if (synced > 0) {
-            showToast(`已將 ${synced} 筆離線資料同步至雲端！`);
-            await fetchTripDetails();
-          }
-        } finally {
-          isSyncingOffline.value = false;
-        }
-      };
-
-      const triggerDeleteExpense = (item) => {
-        if (!canEditOrDeleteExpense(item)) return showToast("您無權限刪除此帳目！", "error");
-        openConfirmDialog("刪除花費紀錄", `確定要刪除「${item.title}」($${formatMoney(item.amount)}) 嗎？`, async () => {
-          if (String(item.id).startsWith('temp_')) {
-            expenses.value = expenses.value.filter(e => e.id !== item.id);
-            try {
-              const q = JSON.parse(localStorage.getItem('travel_offline_queue') || '[]').filter(x => x.tempId !== item.id);
-              localStorage.setItem('travel_offline_queue', JSON.stringify(q));
-              offlineQueueCount.value = q.length;
-            } catch (e) {}
-            return showToast("已自離線暫存移除");
-          }
-          const { error } = await supabaseClient.from('expenses').delete().eq('id', item.id);
-          if (error) return showToast("刪除失敗：" + error.message, "error");
-          showToast("已刪除該筆消費");
-          await addLog(`刪除了花費：${item.title} ($${formatMoney(item.amount)})`);
-          await fetchTripDetails();
-        });
+          rem.length ? localStorage.setItem('travel_offline_queue', JSON.stringify(rem)) : localStorage.removeItem('travel_offline_queue');
+          offlineQueueCount.value = rem.length;
+          if (synced) { showToast(`已將 ${synced} 筆離線資料同步至雲端！`); await fetchTripDetails(); await fetchFundDetails(); }
+        } finally { isSyncingOffline.value = false; }
       };
 
       const copyLineSettlement = () => {
-        let msg = `✈️【${currentTrip.value?.name || '旅遊'}】公帳結算清單\n-------------------------\n`;
-        msg += `💰 團體公帳總額：$${formatMoney(totalGroupExpense.value)} ${currentTripBaseCurrency.value}\n\n📊 成員公帳收支：\n`;
-        memberSummaries.value.forEach(m => {
-          msg += `・${m.name}：${m.net >= 0 ? `應收回 $${formatMoney(m.net)}` : `需補付 $${formatMoney(Math.abs(m.net))}`}\n`;
-        });
+        let msg = `✈️【${currentTrip.value?.name || '旅遊'}】公帳結算清單\n-------------------------\n💰 團體公帳總額：$${formatMoney(totalGroupExpense.value)} ${currentTripBaseCurrency.value}\n\n📊 成員公帳收支：\n`;
+        memberSummaries.value.forEach(m => { msg += `・${m.name}：${m.net >= 0 ? `應收回 $${formatMoney(m.net)}` : `需補付 $${formatMoney(Math.abs(m.net))}`}\n`; });
         msg += `\n🤝 建議還款途徑：\n`;
-        if (settlementDebts.value.length === 0) msg += `（目前所有人公帳已結清）\n`;
+        if (!settlementDebts.value.length) msg += `（目前所有人公帳已結清）\n`;
         else settlementDebts.value.forEach((d, i) => { msg += `${i + 1}. ${d.from} ➜ 轉給 ${d.to}：$${formatMoney(d.amount)} ${currentTripBaseCurrency.value}\n`; });
         msg += `-------------------------\n私人物品請各自對帳，此清單僅列公款平攤！`;
         copyTextSafe(msg, "結算明細已複製，可直接貼上 LINE！");
       };
 
       const downloadBlob = (blob, filename) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url; link.download = filename;
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const url = URL.createObjectURL(blob), a = document.createElement("a");
+        a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
       };
 
       const exportToCSV = () => {
-        if (visibleExpenses.value.length === 0) return showToast("尚無可匯出的記帳紀錄！", "error");
-        const headers = ["日期", "項目", "類別", "付款人", "原始金額", "幣別", `主幣別金額(${currentTripBaseCurrency.value})`, "費用類型", "分攤成員", "備註"];
-        const rows = visibleExpenses.value.map(e => [
-          e.date,
-          `"${(e.title || '').replace(/"/g, '""')}"`,
-          `"${getCategoryName(e.category_id)}"`,
-          `"${getMemberName(e.payer_id)}"`,
-          e.original_amount || e.amount,
-          e.currency || currentTripBaseCurrency.value,
-          e.amount,
+        const list = visibleExpenses.value;
+        if (!list.length) return showToast("尚無可匯出的記帳紀錄！", "error");
+        const headers = ["日期", "項目", "類別", "付款人", "原始金額", "幣別", `主幣別金額(${currentTripBaseCurrency.value})`, "帳務類型", "分攤成員", "備註"];
+        const rows = list.map(e => [
+          e.date, `"${(e.title || '').replace(/"/g, '""')}"`, `"${getCategoryName(e.category_id)}"`, `"${getMemberName(e.payer_id)}"`,
+          e.original_amount || e.amount, e.currency || currentTripBaseCurrency.value, e.amount,
           e.expense_type === 'personal' ? '個人私物' : '團體平攤',
           `"${Array.isArray(e.split_members) ? e.split_members.map(getMemberName).join(', ') : ''}"`,
           `"${(e.notes || '').replace(/"/g, '""')}"`
         ]);
-        const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
-        downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `${currentTrip.value?.name || '旅遊'}_分帳明細.csv`);
+        downloadBlob(new Blob(["\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n")], { type: 'text/csv;charset=utf-8;' }), `${currentTrip.value?.name || '旅遊'}_明細匯出.csv`);
         showToast("CSV 明細表下載成功！");
       };
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 3.2, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.6, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
@@ -1900,92 +2101,69 @@
       const importFromJSON = (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
-        if (!currentTripId.value || !currentMemberId.value) {
-          event.target.value = '';
-          return showToast("請先選擇並綁定一個目標帳本再匯入！", "error");
-        }
+        if (!currentTripId.value || !currentMemberId.value) { event.target.value = ''; return showToast("請先選擇並綁定一個目標帳本再匯入！", "error"); }
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
             const parsed = JSON.parse(e.target.result);
-            if (!Array.isArray(parsed?.expenses) || parsed.expenses.length === 0) return showToast("備份檔無有效消費紀錄！", "error");
-            openConfirmDialog("確認還原 JSON 備份", `即將匯入 ${parsed.expenses.length} 筆消費至「${currentTrip.value?.name}」，確定執行嗎？`, async () => {
-              const defaultCat = categories.value[0]?.id || null;
-              const allIds = members.value.map(m => m.id);
+            if (!Array.isArray(parsed?.expenses) || !parsed.expenses.length) return showToast("備份檔無有效消費紀錄！", "error");
+            openConfirmDialog("確認還原 JSON 備份", `即將匯入 ${parsed.expenses.length} 筆紀錄至「${currentTrip.value?.name}」，確定執行嗎？`, async () => {
+              const defCat = categories.value[0]?.id || null, allIds = members.value.map(m => m.id);
               const rows = parsed.expenses.map(item => ({
-                trip_id: currentTripId.value,
-                title: String(item.title || '匯入項目'),
-                amount: Number(item.amount) || 0,
-                currency: item.currency || currentTripBaseCurrency.value,
-                exchange_rate: Number(item.exchange_rate) || 1,
-                original_amount: Number(item.original_amount || item.amount) || 0,
-                category_id: categories.value.some(c => c.id === item.category_id) ? item.category_id : defaultCat,
+                trip_id: currentTripId.value, title: sanitizeText(item.title || '匯入項目', 60),
+                amount: Number(item.amount) || 0, currency: item.currency || currentTripBaseCurrency.value,
+                exchange_rate: Number(item.exchange_rate) || 1, original_amount: Number(item.original_amount || item.amount) || 0,
+                category_id: categories.value.some(c => c.id === item.category_id) ? item.category_id : defCat,
                 payer_id: members.value.some(m => m.id === item.payer_id) ? item.payer_id : currentMemberId.value,
                 expense_type: item.expense_type === 'personal' ? 'personal' : 'group',
                 split_members: item.expense_type === 'personal' ? [currentMemberId.value] : allIds,
-                date: item.date || getTodayDateStr(),
-                notes: item.notes || null
+                date: item.date || getTodayDateStr(), notes: item.notes ? sanitizeText(item.notes, 100) : null
               }));
+              lastLocalMutationAt = Date.now();
               const { error } = await supabaseClient.from('expenses').insert(rows);
               if (error) return showToast("還原失敗：" + error.message, "error");
-              showToast(`成功還原 ${rows.length} 筆消費紀錄！`);
-              await addLog(`從 JSON 備份還原了 ${rows.length} 筆花費`);
-              await fetchTripDetails();
+              showToast(`成功還原 ${rows.length} 筆紀錄！`); await addLog(`從 JSON 備份還原了 ${rows.length} 筆紀錄`); await fetchTripDetails();
             });
-          } catch (err) {
-            showToast("JSON 解析失敗，檔案可能已損毀", "error");
-          } finally {
-            event.target.value = '';
-          }
+          } catch (err) { showToast("JSON 解析失敗，檔案可能已損毀", "error"); }
+          finally { event.target.value = ''; }
         };
         reader.readAsText(file);
       };
 
       const addCategory = async () => {
         if (isSaving.value || !isTripCreator.value) return;
-        const name = newCategoryName.value.trim();
-        if (!name) return;
-        isSaving.value = true;
+        const name = sanitizeText(newCategoryName.value, 20); if (!name) return;
+        isSaving.value = true; lastLocalMutationAt = Date.now();
         try {
           const { error } = await supabaseClient.from('categories').insert([{ trip_id: currentTripId.value, name }]);
           if (error) return showToast(error.message, "error");
-          await addLog(`新增了類別：${name}`);
-          newCategoryName.value = '';
-          showToast("新類別已加入！");
-          await fetchTripDetails();
+          await addLog(`新增了類別：${name}`); newCategoryName.value = ''; showToast("新類別已加入！"); await fetchTripDetails();
         } finally { isSaving.value = false; }
       };
 
       const triggerDeleteCategory = (c) => {
         if (!isTripCreator.value) return;
         openConfirmDialog("移除消費類別", `確定要刪除「${c.name}」類別嗎？`, async () => {
+          lastLocalMutationAt = Date.now();
           await supabaseClient.from('categories').delete().eq('id', c.id);
-          await addLog(`刪除了類別：${c.name}`);
-          showToast("類別已移除");
-          await fetchTripDetails();
+          await addLog(`刪除了類別：${c.name}`); showToast("類別已移除"); await fetchTripDetails();
         });
       };
 
       const createTrip = async () => {
         if (isSaving.value) return;
-        if (!newTripName.value.trim()) return showToast("請輸入新旅程名稱", "error");
+        const name = sanitizeText(newTripName.value, 40); if (!name) return showToast("請輸入新帳本名稱", "error");
         isSaving.value = true;
         try {
           const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-          const { data: trip, error } = await supabaseClient.from('trips').insert([
-            { name: newTripName.value.trim(), base_currency: newTripCurrency.value, user_id: session.value.user.id, invite_code: code }
-          ]).select().single();
+          const { data: trip, error } = await supabaseClient.from('trips').insert([{ name, base_currency: newTripCurrency.value, user_id: session.value.user.id, invite_code: code }]).select().single();
           if (error) return showToast(error.message, "error");
           if (trip) {
-            await supabaseClient.from('members').insert([{ trip_id: trip.id, name: '主揪(我)', user_id: session.value.user.id, is_default_me: true }]);
-            await supabaseClient.from('categories').insert(['餐飲', '交通', '住宿', '娛樂', '購物', '油錢', '停車'].map(name => ({ trip_id: trip.id, name })));
-            newTripName.value = '';
-            currentTripId.value = trip.id;
-            await fetchTrips();
-            setupRealtimeSubscription();
-            await addLog(`建立了這本旅遊帳本`);
-            showToast(`旅程「${trip.name}」建立完成！`);
-            activeTab.value = 'expenses';
+            await supabaseClient.from('members').insert([{ trip_id: trip.id, name: '我', user_id: session.value.user.id, is_default_me: true }]);
+            await supabaseClient.from('categories').insert(['餐飲', '交通', '住宿', '娛樂', '購物', '油錢', '停車'].map(cat => ({ trip_id: trip.id, name: cat })));
+            newTripName.value = ''; currentTripId.value = trip.id;
+            await fetchTrips(); setupRealtimeSubscription(); await addLog(`建立了這本旅遊帳本`);
+            showToast(`帳本「${trip.name}」建立完成！`); activeTab.value = 'expenses';
           }
         } finally { isSaving.value = false; }
       };
@@ -1995,9 +2173,7 @@
           const { error } = await supabaseClient.from('trips').delete().eq('id', trip.id);
           if (error) return showToast("刪除失敗：" + error.message, "error");
           try { localStorage.removeItem(`travel_cache_${trip.id}`); } catch (e) {}
-          showToast(`已刪除帳本「${trip.name}」`);
-          currentTripId.value = null;
-          await fetchTrips();
+          showToast(`已刪除帳本「${trip.name}」`); currentTripId.value = null; await fetchTrips();
         });
       };
 
@@ -2006,102 +2182,84 @@
           await supabaseClient.from('trip_collaborators').delete().eq('trip_id', trip.id).eq('user_id', session.value.user.id);
           await supabaseClient.from('members').update({ user_id: null }).eq('trip_id', trip.id).eq('user_id', session.value.user.id);
           try { localStorage.removeItem(`travel_cache_${trip.id}`); } catch (e) {}
-          showToast(`已退出「${trip.name}」`);
-          currentTripId.value = null;
-          await fetchTrips();
+          showToast(`已退出「${trip.name}」`); currentTripId.value = null; await fetchTrips();
         });
       };
 
       const addMember = async () => {
         if (isSaving.value || !isTripCreator.value) return;
-        const name = newMemberName.value.trim();
-        if (!name) return;
-        isSaving.value = true;
+        const name = sanitizeText(newMemberName.value, 30); if (!name) return;
+        isSaving.value = true; lastLocalMutationAt = Date.now();
         try {
           const { error } = await supabaseClient.from('members').insert([{ trip_id: currentTripId.value, name }]);
           if (error) return showToast(error.message, "error");
-          await addLog(`加入了新成員：${name}`);
-          newMemberName.value = '';
-          showToast("已新增同行夥伴！");
-          await fetchTripDetails();
+          await addLog(`加入了新成員：${name}`); newMemberName.value = ''; showToast("已新增成員！"); await fetchTripDetails();
         } finally { isSaving.value = false; }
       };
 
       const triggerDeleteMember = (m) => {
         if (!isTripCreator.value) return;
-        const hasExpenses = expenses.value.some(e => e.payer_id === m.id || (Array.isArray(e.split_members) && e.split_members.includes(m.id)));
-        if (hasExpenses) return showToast(`無法移除「${m.name}」，該成員已有相關帳目！`, "error");
+        const hasExp = expenses.value.some(e => e.payer_id === m.id || (Array.isArray(e.split_members) && e.split_members.includes(m.id)));
+        if (hasExp) return showToast(`無法移除「${m.name}」，該成員已有相關帳目！`, "error");
         openConfirmDialog("移除成員", `確定要從名單中移除「${m.name}」嗎？`, async () => {
+          lastLocalMutationAt = Date.now();
           await supabaseClient.from('members').delete().eq('id', m.id);
-          await addLog(`移除了成員：${m.name}`);
-          showToast("已移除該成員");
-          await fetchTripDetails();
+          await addLog(`移除了成員：${m.name}`); showToast("已移除該成員"); await fetchTripDetails();
         });
       };
 
-      onMounted(async () => {
+      onMounted(() => {
         window.addEventListener('online', () => { isOnline.value = true; flushOfflineQueue(); });
         window.addEventListener('offline', () => { isOnline.value = false; });
+        refreshOfflineCount(); checkSavedGuestDevice();
 
-        refreshOfflineCount();
-        checkSavedGuestDevice();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlCode = (urlParams.get('code') || urlParams.get('invite') || '').trim().toUpperCase();
+        const params = new URLSearchParams(window.location.search);
+        const urlCode = (params.get('code') || params.get('invite') || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
         if (urlCode) {
-          pendingInviteCode.value = urlCode;
-          guestCodeInput.value = urlCode;
-          authMode.value = 'guest';
+          pendingInviteCode.value = urlCode; guestCodeInput.value = urlCode; authMode.value = 'guest';
           try { window.history.replaceState({}, document.title, window.location.pathname); } catch (e) {}
         }
 
+        let bootedUserId = null;
         supabaseClient.auth.onAuthStateChange(async (_event, newSession) => {
-          const prevId = session.value?.user?.id;
           session.value = newSession;
           if (newSession) {
-            if (prevId !== newSession.user.id || trips.value.length === 0) {
-              await fetchTrips();
-              setupRealtimeSubscription();
-              flushOfflineQueue();
+            if (bootedUserId !== newSession.user.id) {
+              bootedUserId = newSession.user.id;
+              await fetchTrips(); setupRealtimeSubscription(); flushOfflineQueue();
             }
             if (pendingInviteCode.value) {
-              const code = pendingInviteCode.value;
-              pendingInviteCode.value = '';
-              await joinTripByCode(code);
+              const code = pendingInviteCode.value; pendingInviteCode.value = ''; await joinTripByCode(code, false);
             }
           } else {
-            trips.value = []; members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
+            bootedUserId = null; allBooks.value = []; members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
+            fundMembers.value = []; fundExpenses.value = []; fundCategories.value = [];
             if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
           }
         });
-
-        const { data } = await supabaseClient.auth.getSession();
-        session.value = data.session;
-        if (session.value) {
-          await fetchTrips();
-          setupRealtimeSubscription();
-          flushOfflineQueue();
-          if (pendingInviteCode.value) {
-            const code = pendingInviteCode.value;
-            pendingInviteCode.value = '';
-            await joinTripByCode(code);
-          }
-        }
       });
 
       return {
         appVersion, session, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
-        authLoading, isSaving, appIconSrc, isOnline, offlineQueueCount, toast, confirmDialog, activeTab, filterType, searchQuery, scrollContainer,
-        trips, currentTripId, members, currentMemberId, categories, expenses, activityLogs,
-        showLogModal, showClaimModal, showEditNameModal, editMemberNameInput, joinCodeInput, newTripName, newTripCurrency, newMemberName, newCategoryName,
-        showModal, isEditingExpense, form, memberColors,
-        isGuestSession, currentTrip, currentTripBaseCurrency, isTripCreator, currentMember, currentMemberName, isCurrentMemberBound, unassignedMembers,
-        isExpressionInput, evaluatedOriginalAmount, calculatedConvertedAmount, visibleExpenses, filteredExpenses, groupedExpenses,
+        authLoading, isSaving, appIconSrc, isOnline, offlineQueueCount, notificationPermission, notificationStatusText,
+        toast, confirmDialog, activeTab, fundMode, filterType, searchQuery, scrollContainer,
+        currentYearMonth, selectedFundMonth, prevFundMonth,
+        travelTrips, currentTripId, members, currentMemberId, categories, expenses, activityLogs,
+        currentFund, currentFundBaseCurrency, fundMembers, currentFundMember, isCurrentFundMemberBound,
+        newFundPartnerName, newFundCurrency, joinFundCodeInput,
+        showLogModal, claimModal, showEditNameModal, editMemberNameInput, joinCodeInput, newTripName, newTripCurrency, newMemberName, newCategoryName,
+        drawer, isFundDrawer, activeDrawerBaseCurrency, activeDrawerMembers, activeDrawerCategories, activeUnassignedMembers,
+        drawerTitle, isDrawerExpr, drawerOrigAmount, drawerConvertedAmount, memberColors,
+        isGuestSession, currentTrip, currentTripBaseCurrency, isTripCreator, currentMember, currentMemberName, isCurrentMemberBound,
+        currentMonthFundBalance, selectedMonthFundTransactions, selectedMonthFundIn, selectedMonthFundOut, selectedMonthFundBalance,
+        prevMonthFundBalance, selectedMonthRemainPercent, fundStatusTheme,
+        visibleExpenses, filteredExpenses, groupedExpenses,
         totalGroupExpense, categoryStats, currentMemberTotalCost, myPersonalCost, myPaidGroupCost, myNetBalance, memberSummaries, myRelatedDebts,
-        executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser, getCategoryName, getCategoryEmoji, getMemberName,
-        onCurrencyChange, handleGuestQuickJoin, resumeGuestDeviceSession, handleLogin, handleRegister, triggerSignOut,
-        onTripSwitch, canEditMemberName, openEditMemberNameModal, saveMemberName, claimMemberRole, joinTripByCode, copyInviteCode, copyInviteLink,
-        canEditOrDeleteExpense, openNewExpenseModal, openEditExpenseModal, toggleMemberSplit, toggleSelectAllMembers, saveExpense, triggerDeleteExpense,
+        openFundView, shiftFundMonth, formatYearMonthLabel, requestNotificationPermission, executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser,
+        getCategoryName, getCategoryEmoji, getCategoryEmojiByList, getMemberName, getFundCategoryEmoji, getFundMemberName,
+        onDrawerCurrencyChange, switchFundDrawerType, openDrawer, openEditDrawer, toggleMemberSplit, toggleSelectAllMembers, saveDrawer, triggerDeleteItem, canEditOrDeleteItem,
+        handleGuestQuickJoin, resumeGuestDeviceSession, handleLogin, handleRegister, triggerSignOut,
+        onTripSwitch, canEditMemberName, openEditMemberNameModal, saveMemberName, openClaimModal, claimMemberRole, createIndependentFund, joinTripByCode, copyInviteCode, copyInviteLink, copyFundInviteLink,
         copyLineSettlement, exportToCSV, exportToJSON, importFromJSON, addCategory, triggerDeleteCategory, createTrip, triggerDeleteTrip, triggerLeaveTrip, addMember, triggerDeleteMember
       };
     }
