@@ -9,13 +9,13 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
-  <title>雲端多人旅遊分帳 v3.6.1</title>
+  <title>生活基金 & 旅遊分帳 v3.7</title>
 
   <!-- PWA & iOS / Android 原生沉浸式設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="旅遊分帳">
+  <meta name="apple-mobile-web-app-title" content="分帳與基金">
   <meta name="theme-color" content="#FFFFFF">
 
   <link id="apple-icon" rel="apple-touch-icon" sizes="180x180">
@@ -75,7 +75,7 @@
       const link = document.createElement('link');
       link.rel = 'manifest';
       link.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify({
-        name: "雲端多人旅遊分帳", short_name: "旅遊分帳", start_url: "./index.html",
+        name: "生活基金 & 旅遊分帳", short_name: "分帳與基金", start_url: "./index.html",
         display: "standalone", background_color: "#F8FAFC", theme_color: "#FFFFFF",
         icons: [{ src: url, sizes: "180x180", type: "image/png" }]
       }));
@@ -92,7 +92,7 @@
     *, *::before, *::after { box-sizing: border-box; }
     :root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
     html, body {
-      background-color: #EEF2F6; color: #0F172A; overscroll-behavior-y: none;
+      background-color: #FFFFFF; color: #0F172A; overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     }
@@ -119,14 +119,14 @@
 <body class="selection:bg-indigo-500 selection:text-white">
 <div id="app" v-cloak class="w-full max-w-md mx-auto h-[100dvh] bg-[#F8FAFC] relative flex flex-col overflow-hidden shadow-[0_0_60px_-15px_rgba(15,23,42,0.12)] sm:border-x sm:border-slate-200/80 select-none">
 
-  <!-- 專屬主題動態色彩光暈層 -->
+  <!-- 專屬主題動態色彩光暈層 (已下移避開頂部狀態列，保持上方純淨銳利) -->
   <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
-    <div class="absolute -top-24 -right-20 w-72 h-72 rounded-full blur-3xl transition-colors duration-700"
-      :class="fundMode ? 'bg-rose-200/45' : 'bg-indigo-200/45'"></div>
-    <div class="absolute top-1/3 -left-24 w-64 h-64 rounded-full blur-3xl transition-colors duration-700"
-      :class="fundMode ? 'bg-amber-100/50' : 'bg-sky-200/40'"></div>
+    <div class="absolute top-24 -right-20 w-64 h-64 rounded-full blur-3xl transition-colors duration-700"
+      :class="activeThemeGlow.topRight"></div>
+    <div class="absolute top-1/2 -left-24 w-64 h-64 rounded-full blur-3xl transition-colors duration-700"
+      :class="activeThemeGlow.midLeft"></div>
     <div class="absolute -bottom-24 right-4 w-72 h-72 rounded-full blur-3xl transition-colors duration-700"
-      :class="fundMode ? 'bg-emerald-100/45' : 'bg-violet-200/35'"></div>
+      :class="activeThemeGlow.bottomRight"></div>
   </div>
 
   <!-- 動態島級 Toast 懸浮通知 -->
@@ -149,69 +149,91 @@
     <span>正在同步 {{ offlineQueueCount }} 筆離線紀錄...</span>
   </div>
 
-  <!-- ================= 入口 / 登入畫面 (保留加入手機桌面捷徑教學) ================= -->
-  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-6 bg-white/85 backdrop-blur-xl relative z-10 safe-pt safe-pb">
-    <div class="my-auto py-2">
-      <div class="text-center mb-5">
-        <div class="w-20 h-20 rounded-[26px] mx-auto flex items-center justify-center shadow-xl shadow-indigo-200/80 mb-3 border border-indigo-100 overflow-hidden bg-indigo-50">
-          <img :src="appIconSrc" alt="旅遊分帳" class="w-full h-full object-cover">
+  <!-- ================= 入口 / 登入畫面 (含「生活共用基金 / 雲端旅遊分帳」獨立入口切換) ================= -->
+  <div v-if="!session" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col justify-between px-5 sm:px-7 py-5 bg-white relative z-10 safe-pt safe-pb">
+    <div class="my-auto py-1">
+      <div class="text-center mb-4">
+        <div class="w-16 h-16 rounded-[22px] mx-auto flex items-center justify-center shadow-lg shadow-indigo-200/70 mb-2.5 border border-indigo-100 overflow-hidden bg-indigo-50">
+          <img :src="appIconSrc" alt="分帳與基金" class="w-full h-full object-cover">
         </div>
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50/90 border border-indigo-100 text-[10px] font-mono font-black text-indigo-600 mb-1">
-          <span>LATEST</span><span>{{ appVersion }}</span>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-mono font-black text-slate-500 mb-1">
+          <span>{{ appVersion }}</span>
         </div>
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">雲端多人旅遊分帳</h1>
-        <p class="text-xs font-medium text-slate-400 mt-1">多人出遊分帳・獨立日常共同基金・離線記帳</p>
+        <h1 class="text-xl font-black text-slate-900 tracking-tight">
+          {{ entryTarget === 'fund' ? '💑 生活共用基金' : '✈️ 雲端旅遊分帳' }}
+        </h1>
+        <p class="text-xs font-medium text-slate-400 mt-0.5">
+          {{ entryTarget === 'fund' ? '伴侶每月吃飯・約會・出遊儲值錢包' : '多人出遊公帳平攤・私物隔離・即時結算' }}
+        </p>
+      </div>
+
+      <!-- 登入前獨立系統選擇器 (生活共用基金 vs 雲端旅遊分帳) -->
+      <div class="mb-4 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/60 grid grid-cols-2 gap-1.5">
+        <button type="button" @click="selectEntryTarget('fund')"
+          :class="entryTarget === 'fund' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-md shadow-rose-200/80 font-black' : 'text-slate-600 font-bold hover:bg-white/60'"
+          class="py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition active:scale-95 min-h-[42px]">
+          <span>💑</span><span>生活共用基金</span>
+        </button>
+        <button type="button" @click="selectEntryTarget('travel')"
+          :class="entryTarget === 'travel' ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-200/80 font-black' : 'text-slate-600 font-bold hover:bg-white/60'"
+          class="py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition active:scale-95 min-h-[42px]">
+          <span>✈️</span><span>雲端旅遊分帳</span>
+        </button>
       </div>
 
       <!-- 網址直達邀請橫幅 -->
-      <div v-if="pendingInviteCode" class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
+      <div v-if="pendingInviteCode" class="mb-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 space-y-2.5 animate-pop-in">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-indigo-100">🎉 收到雲端帳本／基金邀請</span>
+          <span class="text-[11px] font-bold text-indigo-100">🎉 收到雲端邀請碼</span>
           <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-lg tracking-widest">{{ pendingInviteCode }}</span>
         </div>
         <button type="button" :disabled="authLoading" @click="handleGuestQuickJoin(pendingInviteCode)" class="w-full py-3 bg-white text-indigo-700 font-black text-xs rounded-xl shadow-sm active:scale-[0.98] transition min-h-[44px] disabled:opacity-60">
-          {{ authLoading ? '正在綁定手機並進入...' : '免註冊，一鍵綁定手機直接記帳 ➜' }}
+          {{ authLoading ? '正在綁定手機並進入...' : '免註冊，一鍵綁定手機直接進入 ➜' }}
         </button>
       </div>
 
-      <!-- Segmented Control -->
-      <div class="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-3 mb-5 border border-slate-200/50">
-        <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">免註冊加入</button>
-        <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">帳號登入</button>
-        <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-indigo-600 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2.5 text-xs rounded-xl transition min-h-[42px]">註冊主揪</button>
+      <!-- 登入方式切換 -->
+      <div class="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-3 mb-4 border border-slate-200/50">
+        <button type="button" @click="authMode = 'guest'" :class="authMode === 'guest' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">免註冊加入</button>
+        <button type="button" @click="authMode = 'login'" :class="authMode === 'login' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">帳號登入</button>
+        <button type="button" @click="authMode = 'register'" :class="authMode === 'register' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-500 font-bold'" class="py-2 text-xs rounded-xl transition min-h-[38px]">註冊主揪</button>
       </div>
 
       <!-- 1. 免註冊訪客 -->
-      <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-4">
-        <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
+      <form v-if="authMode === 'guest'" @submit.prevent="handleGuestQuickJoin(guestCodeInput)" class="space-y-3.5">
+        <div class="p-4 rounded-2xl border space-y-2.5" :class="entryTarget === 'fund' ? 'bg-rose-50/70 border-rose-100' : 'bg-indigo-50/70 border-indigo-100'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-indigo-950">同行旅伴 / 伴侶免註冊通道</span>
-            <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md">綁定本機</span>
+            <span class="text-xs font-black" :class="entryTarget === 'fund' ? 'text-rose-950' : 'text-indigo-950'">
+              {{ entryTarget === 'fund' ? '伴侶免註冊加入基金' : '旅伴免註冊加入分帳' }}
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md" :class="entryTarget === 'fund' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700'">綁定本機</span>
           </div>
-          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入帳本或共同基金。</p>
-          <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-white border border-indigo-200 text-base font-mono font-black uppercase tracking-widest text-center text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+          <p class="text-[11px] text-slate-500 leading-relaxed">無需信箱或密碼，輸入 6 位數邀請碼即可自動綁定手機進入{{ entryTarget === 'fund' ? '生活共用基金' : '旅遊分帳本' }}。</p>
+          <input v-model="guestCodeInput" type="text" maxlength="6" required placeholder="輸入 6 碼邀請碼" class="w-full min-w-0 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-base font-mono font-black uppercase tracking-widest text-center text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
         </div>
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-          {{ authLoading ? '正在綁定設備進入...' : '免註冊，綁定此手機進入' }}
+        <button type="submit" :disabled="authLoading"
+          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
+          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
+          {{ authLoading ? '正在綁定設備進入...' : `免註冊，進入${entryTarget === 'fund' ? '生活共用基金' : '雲端旅遊分帳'}` }}
         </button>
-        <div v-if="hasSavedGuestDevice" class="pt-1 text-center">
-          <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-2">
+        <div v-if="hasSavedGuestDevice" class="text-center">
+          <button type="button" :disabled="authLoading" @click="resumeGuestDeviceSession" class="text-xs font-black text-indigo-600 hover:underline py-1.5">
             ↻ 恢復此手機先前的訪客紀錄
           </button>
         </div>
       </form>
 
       <!-- 2. 帳號登入 -->
-      <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-4">
+      <form v-else-if="authMode === 'login'" @submit.prevent="handleLogin" class="space-y-3.5">
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
-        <div class="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-3">
+        <div class="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 space-y-2.5">
           <span class="text-[11px] font-black text-indigo-600 uppercase tracking-wide block">雙軌安全驗證（二擇一）</span>
           <div>
             <label class="text-[11px] font-bold text-slate-600">方式 A：登入密碼</label>
-            <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="輸入原設定密碼" class="w-full min-w-0 mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
           <div class="relative flex py-0.5 items-center">
             <div class="flex-grow border-t border-slate-200"></div>
@@ -220,36 +242,40 @@
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-600">方式 B：註冊手機後 5 碼</label>
-            <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input v-model="authPhoneLast5" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="例如：12345" class="w-full min-w-0 mt-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-          {{ authLoading ? '正在驗證身分...' : '立即登入' }}
+        <button type="submit" :disabled="authLoading"
+          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
+          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
+          {{ authLoading ? '正在驗證身分...' : `登入並前往${entryTarget === 'fund' ? '生活共用基金' : '雲端旅遊分帳'}` }}
         </button>
       </form>
 
       <!-- 3. 註冊主揪 -->
-      <form v-else @submit.prevent="handleRegister" class="space-y-4">
+      <form v-else @submit.prevent="handleRegister" class="space-y-3.5">
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">電子郵件 <span class="text-rose-500">*</span></label>
-          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authEmail" type="email" autocomplete="email" required placeholder="your@email.com" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">設定密碼 <span class="text-rose-500">*</span></label>
-          <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="至少 6 位英數字" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">手機號碼 <span class="text-rose-500">* 忘記密碼快速登入用</span></label>
-          <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1.5 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          <input v-model="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="例如：0912345678" class="w-full min-w-0 mt-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
         </div>
-        <button type="submit" :disabled="authLoading" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-indigo-200/80 transition disabled:opacity-50 min-h-[50px]">
-          {{ authLoading ? '建立雲端帳號中...' : '完成註冊並登入' }}
+        <button type="submit" :disabled="authLoading"
+          :class="entryTarget === 'fund' ? 'from-rose-500 to-pink-600 shadow-rose-200/80' : 'from-indigo-600 to-violet-600 shadow-indigo-200/80'"
+          class="w-full py-3.5 bg-gradient-to-r hover:opacity-95 active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg transition disabled:opacity-50 min-h-[48px]">
+          {{ authLoading ? '建立雲端帳號中...' : '完成註冊並進入' }}
         </button>
       </form>
     </div>
 
     <!-- 僅在登入入口頁顯示：加到手機桌面捷徑教學 -->
-    <div class="mt-6 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5">
+    <div class="mt-5 p-3 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1">
       <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5"><span>📲</span><span>加到手機桌面（免下載 App・一鍵開啟）</span></p>
       <div class="space-y-0.5 text-[11px] text-slate-500 leading-snug">
         <p><span class="font-bold text-slate-700">🍎 iPhone：</span>點下方「分享」➜「加入主畫面」</p>
@@ -260,24 +286,51 @@
 
   <!-- ================= 主應用畫面 ================= -->
   <template v-else>
-    <!-- 固定頂部毛玻璃導航列 -->
-    <header class="px-3.5 sm:px-4 pb-2.5 bg-white/85 backdrop-blur-xl shrink-0 z-30 border-b border-slate-200/60 flex items-center justify-between gap-2 safe-pt">
-      <!-- 模式 A：日常共同基金專屬頂欄 (不顯示旅遊帳本名稱) -->
-      <template v-if="fundMode">
-        <button type="button" @click="fundMode = false" class="h-9 px-3 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-black text-xs flex items-center gap-1 active:scale-95 transition shrink-0">
-          <span>←</span><span>返回分帳</span>
+    <!-- 固定純淨白底頂部導航列 -->
+    <header class="px-3.5 sm:px-4 pb-2.5 bg-white shrink-0 z-30 border-b border-slate-200/70 flex items-center justify-between gap-2 safe-pt">
+      
+      <!-- 頂欄模式 1：雙系統選擇大廳 (Hub) -->
+      <template v-if="viewMode === 'hub'">
+        <div class="flex items-center gap-2 min-w-0">
+          <img :src="appIconSrc" alt="Icon" class="w-8 h-8 rounded-xl shadow-sm shrink-0">
+          <div class="min-w-0">
+            <h1 class="text-sm font-black text-slate-900 truncate">選擇使用空間</h1>
+            <p class="text-[10px] text-slate-400 truncate">{{ isGuestSession ? '免註冊本機綁定' : session.user.email }}</p>
+          </div>
+        </div>
+        <button type="button" @click="triggerSignOut" class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-black text-xs transition active:scale-95 shrink-0">
+          {{ isGuestSession ? '切換帳號' : '登出' }}
         </button>
-        <span class="text-sm font-black text-slate-900 truncate">💑 日常共同基金</span>
-        <button v-if="currentFundMember" type="button" @click="openEditMemberNameModal(currentFundMember, true)" class="text-xs font-black rounded-full px-2.5 h-9 bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center gap-1 max-w-[96px] shrink-0 active:scale-95 transition">
-          <span class="truncate">{{ currentFundMember.name }}</span>
-        </button>
-        <div v-else class="w-10"></div>
       </template>
 
-      <!-- 模式 B：一般旅遊分帳頂欄 -->
+      <!-- 頂欄模式 2：生活共用基金 (完全獨立，右上可一鍵切換到旅遊分帳) -->
+      <template v-else-if="viewMode === 'fund'">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回雙系統選擇大廳">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          </button>
+          <span class="text-sm font-black text-slate-900 truncate">💑 生活共用基金</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <!-- 頂部列直接切換到旅遊分帳 -->
+          <button type="button" @click="switchViewMode('travel')" class="h-9 px-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0" title="切換至雲端旅遊分帳">
+            <span>✈️</span><span>旅遊分帳</span>
+          </button>
+          <button v-if="currentFundMember" type="button" @click="openEditMemberNameModal(currentFundMember, true)" class="text-xs font-black rounded-full px-2.5 h-9 bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center gap-1 max-w-[88px] shrink-0 active:scale-95 transition">
+            <span class="truncate">{{ currentFundMember.name }}</span>
+          </button>
+        </div>
+      </template>
+
+      <!-- 頂欄模式 3：雲端旅遊分帳 (右上可一鍵切換到共用基金) -->
       <template v-else>
+        <button type="button" @click="switchViewMode('hub')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-95 transition shrink-0" title="返回雙系統選擇大廳">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        </button>
+
         <div class="relative flex-1 min-w-0">
-          <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/80 hover:bg-slate-100 px-3 py-1.5 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[40px]">
+          <select v-model="currentTripId" @change="onTripSwitch" class="w-full min-w-0 appearance-none font-black text-base text-slate-900 bg-slate-100/90 hover:bg-slate-100 px-3 py-1.5 pr-7 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 truncate transition h-[40px]">
             <option v-for="t in travelTrips" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_currency || 'TWD' }})</option>
             <option v-if="travelTrips.length === 0" :value="null">✨ 尚無旅遊帳本</option>
           </select>
@@ -285,18 +338,18 @@
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <!-- 獨立小分頁入口：共同基金 -->
-          <button type="button" @click="openFundView" class="h-9 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="日常共同出遊吃飯基金">
+          <!-- 頂部列直接切換到共用基金 -->
+          <button type="button" @click="switchViewMode('fund')" class="h-9 px-2.5 bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 border border-rose-200/80 rounded-full transition active:scale-95 flex items-center gap-1 text-xs font-black shrink-0 shadow-sm shadow-rose-100/60" title="切換至生活共用基金">
             <span>💑</span><span>基金</span>
             <span v-if="currentMonthFundBalance < 0" class="w-2 h-2 rounded-full bg-rose-500"></span>
           </button>
 
-          <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-9 h-9 bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
+          <button v-if="currentTrip" type="button" @click="showLogModal = true" class="w-9 h-9 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full transition active:scale-95 flex items-center justify-center shrink-0" title="操作歷程">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </button>
           
           <button v-if="currentMember" type="button" @click="openEditMemberNameModal(currentMember, false)"
-            class="text-xs font-black rounded-full px-2.5 h-9 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[92px] sm:max-w-[116px]"
+            class="text-xs font-black rounded-full px-2.5 h-9 flex items-center gap-1 transition active:scale-95 shadow-sm max-w-[84px] sm:max-w-[110px]"
             :class="isTripCreator ? 'bg-amber-50 text-amber-800 border border-amber-200/90' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'">
             <span v-if="isTripCreator" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
             <span class="truncate">{{ currentMemberName }}</span>
@@ -309,20 +362,76 @@
     </header>
 
     <!-- 中央獨立滾動視口 -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="fundMode ? 'pb-12' : 'pb-24'">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10" :class="viewMode === 'travel' ? 'pb-24' : 'pb-10'">
       
-      <!-- ================= 獨立視圖：日常共同儲值基金 ================= -->
-      <main v-if="fundMode" class="p-4 space-y-4 animate-fade-in">
-        
-        <!-- 情況 A：尚未建立或加入獨立共同基金 -->
-        <div v-if="!currentFund" class="space-y-4 pt-2">
-          <div class="bg-gradient-to-br from-rose-50 via-white to-amber-50/80 border border-rose-200/70 p-6 rounded-[28px] shadow-sm space-y-2.5">
-            <span class="text-2xl">💑</span>
-            <h2 class="text-lg font-black text-slate-900">建立或加入專屬共同基金</h2>
-            <p class="text-xs text-slate-500 leading-relaxed">此基金完全獨立於多人旅遊帳簿，專屬於您與伴侶每月的吃飯、約會與出遊儲值金。</p>
+      <!-- ================= 視圖 0：登入後雙系統獨立選擇大廳 (Hub) ================= -->
+      <main v-if="viewMode === 'hub'" class="p-4 sm:p-5 space-y-4 animate-fade-in">
+        <div class="px-1 pt-1">
+          <h2 class="text-lg font-black text-slate-900">請問今天要記錄哪一項？</h2>
+          <p class="text-xs text-slate-400 mt-0.5">兩個系統資料完全獨立，進入後也可從頂部列一鍵切換</p>
+        </div>
+
+        <!-- 卡片 1：生活共用基金 -->
+        <div @click="switchViewMode('fund')" class="bg-gradient-to-br from-white via-rose-50/40 to-amber-50/40 border border-rose-200/80 p-5 rounded-[28px] shadow-[0_10px_30px_-12px_rgba(244,63,94,0.16)] cursor-pointer active:scale-[0.98] transition space-y-3.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center text-2xl shadow-md shadow-rose-200">
+                💑
+              </div>
+              <div>
+                <h3 class="text-base font-black text-slate-900">生活共用基金</h3>
+                <p class="text-[11px] text-slate-500 font-medium">每月定期儲值・吃飯約會扣款</p>
+              </div>
+            </div>
+            <span class="text-xs font-black text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200/70">進入 ➜</span>
           </div>
 
-          <div class="bg-white/90 p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3">
+          <div class="pt-3 border-t border-rose-100/80 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-bold">{{ currentFund ? `${formatYearMonthLabel(currentYearMonth)}剩餘額度` : '尚未建立伴侶基金' }}</span>
+            <span v-if="currentFund" class="font-mono font-black text-base" :class="currentMonthFundBalance < 0 ? 'text-rose-600' : 'text-emerald-600'">
+              {{ currentMonthFundBalance < 0 ? `-$${formatMoney(Math.abs(currentMonthFundBalance))}` : `$${formatMoney(currentMonthFundBalance)}` }}
+            </span>
+            <span v-else class="text-rose-600 font-bold">點擊立即建立 / 加入</span>
+          </div>
+        </div>
+
+        <!-- 卡片 2：雲端旅遊分帳 -->
+        <div @click="switchViewMode('travel')" class="bg-gradient-to-br from-white via-indigo-50/40 to-sky-50/40 border border-indigo-200/80 p-5 rounded-[28px] shadow-[0_10px_30px_-12px_rgba(79,70,229,0.16)] cursor-pointer active:scale-[0.98] transition space-y-3.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-200">
+                ✈️
+              </div>
+              <div>
+                <h3 class="text-base font-black text-slate-900">雲端旅遊分帳</h3>
+                <p class="text-[11px] text-slate-500 font-medium">多人公帳平攤・私物隔離・結算</p>
+              </div>
+            </div>
+            <span class="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-200/70">進入 ➜</span>
+          </div>
+
+          <div class="pt-3 border-t border-indigo-100/80 flex items-center justify-between text-xs gap-2">
+            <span class="text-slate-400 font-bold truncate">{{ currentTrip ? `目前帳本：${currentTrip.name}` : '尚未建立旅遊帳本' }}</span>
+            <span v-if="currentTrip" class="font-mono font-black text-base text-slate-900 shrink-0">
+              ${{ formatMoney(totalGroupExpense) }}
+            </span>
+            <span v-else class="text-indigo-600 font-bold shrink-0">點擊立即建立 / 加入</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- ================= 視圖 1：生活共用基金 (完全獨立空間) ================= -->
+      <main v-else-if="viewMode === 'fund'" class="p-4 space-y-4 animate-fade-in">
+        
+        <!-- 情況 A：尚未建立或加入獨立共同基金 -->
+        <div v-if="!currentFund" class="space-y-4 pt-1">
+          <div class="bg-gradient-to-br from-rose-50 via-white to-amber-50/80 border border-rose-200/70 p-6 rounded-[28px] shadow-sm space-y-2">
+            <span class="text-2xl">💑</span>
+            <h2 class="text-lg font-black text-slate-900">建立或加入專屬生活共用基金</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">此基金完全獨立於旅遊帳簿，專屬於您與伴侶每月的吃飯、約會與出遊儲值金，每月自動歸零重算。</p>
+          </div>
+
+          <div class="bg-white/95 p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3">
             <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新的共同基金</h3>
             <p class="text-[11px] text-slate-400">建立後會產生專屬 6 碼邀請碼，傳給另一半即可雙方共同記帳。</p>
             <div class="flex items-center gap-2 w-full">
@@ -362,7 +471,7 @@
           </div>
 
           <!-- 伴侶專屬邀請碼列 -->
-          <div class="px-3.5 py-2.5 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+          <div class="px-3.5 py-2.5 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
             <div class="flex items-center gap-1.5 min-w-0">
               <span class="text-[11px] font-bold text-slate-400 shrink-0">伴侶代碼</span>
               <span class="font-mono font-black text-rose-600 tracking-wider text-sm bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 truncate">{{ currentFund.invite_code || '------' }}</span>
@@ -375,7 +484,7 @@
           </div>
 
           <!-- 月份切換器 -->
-          <div class="bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl p-2 flex items-center justify-between shadow-sm">
+          <div class="bg-white/95 border border-slate-200/70 rounded-2xl p-2 flex items-center justify-between shadow-sm">
             <button type="button" @click="shiftFundMonth(-1)" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-black flex items-center justify-center active:scale-95 transition">‹</button>
             <div class="text-center">
               <span class="text-sm font-black text-slate-900 font-mono">{{ formatYearMonthLabel(selectedFundMonth) }}</span>
@@ -385,7 +494,7 @@
           </div>
 
           <!-- 淺色晨光系・當月基金餘額卡片 -->
-          <div class="bg-gradient-to-br from-white via-rose-50/35 to-amber-50/40 backdrop-blur-xl border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
+          <div class="bg-gradient-to-br from-white via-rose-50/35 to-amber-50/40 border border-slate-200/80 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(15,23,42,0.07)] relative overflow-hidden">
             <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full blur-2xl opacity-35 transition-colors duration-500" :class="fundStatusTheme.glowBg"></div>
             
             <div class="flex items-center justify-between gap-2 relative">
@@ -440,7 +549,7 @@
           </div>
 
           <!-- 雙方即時記帳通知列 -->
-          <div class="px-4 py-3 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+          <div class="px-4 py-3 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
             <div class="min-w-0">
               <p class="text-xs font-black text-slate-800 truncate">🔔 雙方即時記帳同步通知</p>
               <p class="text-[11px] text-slate-400 font-medium truncate">{{ notificationStatusText }}</p>
@@ -460,7 +569,7 @@
               <span class="text-[11px] font-bold text-slate-400">共 {{ selectedMonthFundTransactions.length }} 筆</span>
             </div>
 
-            <div v-for="item in selectedMonthFundTransactions" :key="item.id" @click="openEditDrawer(item)" class="bg-white/90 backdrop-blur-sm p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
+            <div v-for="item in selectedMonthFundTransactions" :key="item.id" @click="openEditDrawer(item)" class="bg-white/95 p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
               <div class="flex items-center gap-3 min-w-0 flex-1">
                 <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" :class="item.expense_type === 'fund_in' ? 'bg-emerald-50 border border-emerald-200/70' : 'bg-rose-50/80 border border-rose-100'">
                   {{ item.expense_type === 'fund_in' ? '💰' : getFundCategoryEmoji(item.category_id) }}
@@ -490,383 +599,410 @@
               </div>
             </div>
 
-            <div v-if="selectedMonthFundTransactions.length === 0" class="text-center py-12 px-4 bg-white/85 rounded-[24px] border border-dashed border-slate-200">
+            <div v-if="selectedMonthFundTransactions.length === 0" class="text-center py-10 px-4 bg-white/90 rounded-[24px] border border-dashed border-slate-200">
               <p class="text-3xl mb-2">💑</p>
               <p class="text-xs font-black text-slate-600">{{ formatYearMonthLabel(selectedFundMonth) }}尚無基金紀錄</p>
               <p class="text-[11px] text-slate-400 mt-1">點擊上方「＋ 儲值基金」存入本月出遊吃飯金吧！</p>
             </div>
           </div>
+
+          <!-- 獨立基金成員與設定區 (無需依賴旅遊分帳頁面即可自理) -->
+          <div class="bg-white/95 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-black text-slate-700 tracking-wider uppercase">💑 基金成員名單 (點筆改名)</h3>
+              <button v-if="isFundCreator" type="button" @click="triggerDeleteTrip(currentFund, true)" class="text-[11px] font-bold text-rose-500 hover:underline">刪除基金</button>
+              <button v-else type="button" @click="triggerLeaveTrip(currentFund, true)" class="text-[11px] font-bold text-rose-500 hover:underline">退出基金</button>
+            </div>
+            <div class="space-y-2">
+              <div v-for="(m, idx) in fundMembers" :key="m.id" class="p-2.5 bg-slate-50/90 border border-slate-100 rounded-xl flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
+                    {{ m.name.slice(0, 1) }}
+                  </div>
+                  <span class="font-black text-xs text-slate-800 truncate">{{ m.name }}</span>
+                  <span v-if="m.user_id === session.user.id" class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-bold shrink-0">您</span>
+                  <span v-else-if="m.user_id" class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold shrink-0">已綁定</span>
+                  <span v-else class="text-[10px] bg-slate-200/80 text-slate-600 px-1.5 py-0.5 rounded font-bold shrink-0">待伴侶認領</span>
+                </div>
+                <button v-if="canEditMemberName(m, true)" type="button" @click="openEditMemberNameModal(m, true)" class="p-1.5 text-slate-400 hover:text-indigo-600 active:scale-90 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </template>
       </main>
 
-      <!-- ================= 0 旅遊帳本新手引導畫面 (已移除安裝教學) ================= -->
-      <div v-else-if="travelTrips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
-        <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white p-6 rounded-[28px] shadow-xl shadow-indigo-200/80 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-2xl">✈️</span>
-            <span class="text-[10px] font-mono font-bold bg-white/15 px-2.5 py-0.5 rounded-full">{{ appVersion }} 最新版</span>
-          </div>
-          <h2 class="text-xl font-black tracking-tight">開始您的第一趟旅程分帳</h2>
-          <p class="text-xs text-indigo-100 leading-relaxed">建立新旅遊帳本並設定同行夥伴，或直接輸入朋友分享的 6 位數邀請碼加入。</p>
-        </div>
-
-        <div class="bg-white/90 p-4 sm:p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3 overflow-hidden">
-          <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
-          <div class="flex items-center gap-2 w-full">
-            <input v-model="newTripName" @keyup.enter="createTrip" placeholder="例如：2026 東京賞楓" class="flex-1 min-w-0 w-full h-[48px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-            <div class="relative shrink-0 w-[92px]">
-              <select v-model="newTripCurrency" class="w-full h-[48px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
-                <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
-              </select>
-              <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+      <!-- ================= 視圖 2：雲端旅遊分帳 ================= -->
+      <template v-else-if="viewMode === 'travel'">
+        <!-- 0 旅遊帳本新手引導畫面 -->
+        <div v-if="travelTrips.length === 0 && activeTab !== 'settings'" class="p-4 sm:p-5 space-y-4">
+          <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white p-6 rounded-[28px] shadow-xl shadow-indigo-200/80 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">✈️</span>
+              <span class="text-[10px] font-mono font-bold bg-white/15 px-2.5 py-0.5 rounded-full">{{ appVersion }} 最新版</span>
             </div>
-          </div>
-          <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[48px]">
-            ＋ 建立旅程並開始記帳
-          </button>
-        </div>
-
-        <div class="bg-indigo-50/80 border border-indigo-100 p-4 sm:p-5 rounded-[24px] space-y-3 overflow-hidden">
-          <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入朋友的帳本</h3>
-          <div class="flex items-center gap-2 w-full">
-            <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-            <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ================= 一般旅遊分帳主視圖 ================= -->
-      <template v-else>
-        <!-- 未認領角色提示 -->
-        <div v-if="currentTrip && !isCurrentMemberBound" class="mx-4 mt-3 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
-          <div class="min-w-0 flex-1">
-            <p class="text-xs font-black text-amber-900">尚未綁定您的分帳角色</p>
-            <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">點選您的名字即可記帳並隔離私密帳務</p>
-          </div>
-          <button type="button" @click="openClaimModal(false)" class="text-xs font-black text-white bg-amber-600 hover:bg-amber-700 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
-            立即認領
-          </button>
-        </div>
-
-        <!-- 邀請碼與分享橫幅 -->
-        <div v-if="currentTrip && activeTab === 'expenses'" class="mx-4 mt-3 px-3.5 py-2.5 bg-white/85 backdrop-blur-md border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)]">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span class="text-[11px] font-bold text-slate-400 shrink-0">代碼</span>
-            <span class="font-mono font-black text-indigo-600 tracking-wider text-sm bg-indigo-50/80 px-2 py-0.5 rounded-lg border border-indigo-100 truncate">{{ currentTrip.invite_code || '------' }}</span>
-          </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" @click="copyInviteCode" class="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">複製碼</button>
-            <button type="button" @click="copyInviteLink" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">分享免註冊連結</button>
-          </div>
-        </div>
-
-        <!-- Tab 1: 支出明細 (已移除安裝教學卡片) -->
-        <main v-if="activeTab === 'expenses'" class="p-4 space-y-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden min-w-0">
-              <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/15 rounded-full blur-xl"></div>
-              <p class="text-[11px] font-bold text-indigo-100 tracking-wide">團體公帳總額</p>
-              <p class="text-lg sm:text-xl font-black mt-1.5 font-mono tabular-nums tracking-tight truncate">
-                <span class="text-[11px] font-bold opacity-80 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(totalGroupExpense) }}
-              </p>
-            </div>
-            <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)] min-w-0">
-              <p class="text-[11px] font-bold text-slate-400 tracking-wide">您的個人總開銷</p>
-              <p class="text-lg sm:text-xl font-black text-slate-900 mt-1.5 font-mono tabular-nums tracking-tight truncate">
-                <span class="text-[11px] font-bold text-slate-400 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(currentMemberTotalCost) }}
-              </p>
-            </div>
+            <h2 class="text-xl font-black tracking-tight">開始您的第一趟旅程分帳</h2>
+            <p class="text-xs text-indigo-100 leading-relaxed">建立新旅遊帳本並設定同行夥伴，或直接輸入朋友分享的 6 位數邀請碼加入。</p>
           </div>
 
-          <!-- 類別佔比進度條 -->
-          <div v-if="categoryStats.length > 0" class="p-4 bg-white/90 backdrop-blur-md border border-slate-200/70 rounded-[24px] shadow-[0_2px_12px_-4px_rgba(15,23,42,0.03)] space-y-2.5">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-black text-slate-800">可見消費分佈</span>
-              <span class="text-[11px] font-bold text-slate-400">共 {{ visibleExpenses.length }} 筆</span>
-            </div>
-            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex gap-0.5">
-              <div v-for="cat in categoryStats" :key="cat.name" :style="{ width: cat.percent + '%', backgroundColor: cat.color }" class="h-full first:rounded-l-full last:rounded-r-full transition-all duration-300"></div>
-            </div>
-            <div class="flex flex-wrap gap-x-3 gap-y-1.5 pt-0.5 text-[11px]">
-              <div v-for="cat in categoryStats" :key="cat.name" class="flex items-center gap-1.5 text-slate-600 font-bold">
-                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: cat.color }"></span>
-                <span>{{ cat.name }} {{ cat.percent }}%</span>
+          <div class="bg-white/95 p-4 sm:p-5 rounded-[24px] border border-slate-200/80 shadow-sm space-y-3 overflow-hidden">
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="newTripName" @keyup.enter="createTrip" placeholder="例如：2026 東京賞楓" class="flex-1 min-w-0 w-full h-[48px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+              <div class="relative shrink-0 w-[92px]">
+                <select v-model="newTripCurrency" class="w-full h-[48px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
+                  <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
+                </select>
+                <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </div>
             </div>
-          </div>
-
-          <!-- 篩選列 + 搜尋 -->
-          <div class="space-y-2.5">
-            <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
-              <button type="button" @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-900 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">全部可見 ({{ visibleExpenses.length }})</button>
-              <button type="button" @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">團體平攤</button>
-              <button type="button" @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-amber-500 text-white font-black shadow-sm' : 'bg-white/90 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">我的私物</button>
-            </div>
-
-            <div v-if="visibleExpenses.length >= 4" class="relative">
-              <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full min-w-0 pl-9 pr-4 py-2.5 rounded-2xl bg-white/90 border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
-              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            </div>
-          </div>
-
-          <!-- 按日期分組的明細卡片 -->
-          <div class="space-y-4">
-            <div v-for="group in groupedExpenses" :key="group.date" class="space-y-2">
-              <div class="flex items-center justify-between px-1">
-                <span class="text-[11px] font-black text-slate-400 tracking-wide">{{ formatDateHeader(group.date) }}</span>
-                <span class="text-[11px] font-mono font-bold text-slate-400">小計 ${{ formatMoney(group.dayTotal) }}</span>
-              </div>
-
-              <div v-for="item in group.items" :key="item.id" @click="openEditDrawer(item)" class="bg-white/90 backdrop-blur-sm p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
-                <div class="flex items-center gap-3 min-w-0 flex-1">
-                  <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" :class="item.expense_type === 'personal' ? 'bg-amber-50 border border-amber-200/60' : 'bg-indigo-50/80 border border-indigo-100'">
-                    {{ getCategoryEmoji(item.category_id) }}
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-1.5">
-                      <span class="font-black text-slate-800 text-sm truncate">{{ item.title }}</span>
-                      <span class="text-[10px] px-1.5 py-0.5 rounded-md font-black shrink-0" :class="item.expense_type === 'personal' ? 'bg-amber-100/80 text-amber-800' : 'bg-indigo-50 text-indigo-600'">
-                        {{ item.expense_type === 'personal' ? '私物' : '公帳' }}
-                      </span>
-                      <span v-if="item.is_offline" class="text-[9px] bg-slate-100 text-slate-500 font-bold px-1.5 py-0.5 rounded shrink-0">待同步</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400 mt-1 font-medium truncate">
-                      <span class="text-slate-600 font-bold">{{ getMemberName(item.payer_id) }}</span> 付款
-                      <span v-if="item.expense_type === 'group' && Array.isArray(item.split_members)">・{{ item.split_members.length }}人分</span>
-                      <span v-if="item.currency && item.currency !== currentTripBaseCurrency" class="text-indigo-600 font-mono font-bold ml-1">({{ item.currency }} {{ formatMoney(item.original_amount) }})</span>
-                    </p>
-                    <p v-if="item.notes" class="text-[10px] text-slate-400 mt-0.5 truncate">📝 {{ item.notes }}</p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  <span class="font-black text-slate-900 font-mono tabular-nums text-base">${{ formatMoney(item.amount) }}</span>
-                  <button v-if="canEditOrDeleteItem(item)" type="button" @click.stop="triggerDeleteItem(item, false)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center" title="刪除">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="filteredExpenses.length === 0" class="text-center py-12 px-4 bg-white/85 rounded-[24px] border border-dashed border-slate-200">
-              <p class="text-3xl mb-2">🧾</p>
-              <p class="text-xs font-black text-slate-600">{{ searchQuery ? '找不到符合關鍵字的消費' : '尚無可見的消費紀錄' }}</p>
-              <p class="text-[11px] text-slate-400 mt-1">{{ searchQuery ? '請嘗試其他關鍵字或清除篩選' : '點擊右下角「＋」開始記下第一筆花費' }}</p>
-            </div>
-          </div>
-        </main>
-
-        <!-- Tab 2: 即時結算頁 -->
-        <main v-if="activeTab === 'settle'" class="p-4 space-y-5">
-          <div class="bg-gradient-to-br from-indigo-50/95 via-white to-sky-50/90 backdrop-blur-xl border border-indigo-200/70 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(79,70,229,0.12)] relative overflow-hidden">
-            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-indigo-200/40 rounded-full blur-2xl"></div>
-            <div class="flex items-center justify-between gap-2 relative">
-              <span class="text-xs font-bold text-slate-500 truncate">當前身分：{{ currentMemberName }}</span>
-              <span class="text-[10px] font-mono font-black bg-indigo-100/80 text-indigo-700 px-2.5 py-1 rounded-full shrink-0">{{ currentTripBaseCurrency }} 結算</span>
-            </div>
-            <p class="text-2xl sm:text-3xl font-black mt-3 tracking-tight font-mono tabular-nums relative" :class="myNetBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'">
-              {{ myNetBalance >= 0 ? `應收回 $${formatMoney(myNetBalance)}` : `需補付 $${formatMoney(Math.abs(myNetBalance))}` }}
-            </p>
-            <div class="mt-5 pt-4 border-t border-indigo-100/80 grid grid-cols-2 text-xs gap-4 relative">
-              <div>
-                <span class="text-slate-400 font-bold text-[11px]">個人私物花費</span>
-                <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPersonalCost) }}</p>
-              </div>
-              <div>
-                <span class="text-slate-400 font-bold text-[11px]">團體代墊款項</span>
-                <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPaidGroupCost) }}</p>
-              </div>
-            </div>
-          </div>
-
-          <button v-if="isTripCreator" type="button" @click="copyLineSettlement" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 text-xs transition active:scale-[0.98] shadow-lg shadow-emerald-200/70 min-h-[48px]">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-            一鍵複製公帳結算清單到 LINE
-          </button>
-
-          <div>
-            <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">最簡轉帳建議</h3>
-            <div class="space-y-2.5">
-              <div v-for="(debt, idx) in myRelatedDebts" :key="idx" class="p-4 bg-white/90 border border-slate-200/80 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
-                <div class="flex items-center gap-1.5 text-xs font-black min-w-0">
-                  <span class="bg-rose-50 text-rose-700 border border-rose-200/60 px-2.5 py-1 rounded-xl truncate max-w-[85px] sm:max-w-[110px]">{{ debt.from }}</span>
-                  <span class="text-slate-400 font-bold shrink-0">➜</span>
-                  <span class="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-xl truncate max-w-[85px] sm:max-w-[110px]">{{ debt.to }}</span>
-                </div>
-                <div class="text-right shrink-0">
-                  <span class="text-base font-black text-slate-900 font-mono tabular-nums">${{ formatMoney(debt.amount) }}</span>
-                  <span class="text-[10px] text-slate-400 ml-1 font-bold">{{ currentTripBaseCurrency }}</span>
-                </div>
-              </div>
-              <div v-if="myRelatedDebts.length === 0" class="text-center py-6 bg-white/85 rounded-2xl border border-slate-200/60 text-xs text-slate-400 font-bold">
-                🎉 目前款項已結清，無需進行任何轉帳！
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">團員公帳收支總覽 (已隱藏私物)</h3>
-            <div class="space-y-2">
-              <div v-for="(m, idx) in memberSummaries" :key="m.id" class="p-3.5 bg-white/90 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2">
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
-                    {{ m.name.slice(0, 1) }}
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-black text-sm text-slate-800 truncate">
-                      {{ m.name }}
-                      <span v-if="m.id === currentMemberId" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-bold ml-1">您</span>
-                    </p>
-                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium truncate">代墊 ${{ formatMoney(m.paid) }}・應攤 ${{ formatMoney(m.share) }}</p>
-                  </div>
-                </div>
-                <span class="text-xs font-black px-2.5 py-1 rounded-xl font-mono tabular-nums shrink-0" :class="m.net >= 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-rose-50 text-rose-700 border border-rose-200/60'">
-                  {{ m.net >= 0 ? `+${formatMoney(m.net)}` : formatMoney(m.net) }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </main>
-
-        <!-- Tab 3: 類別管理 -->
-        <main v-if="activeTab === 'categories'" class="p-4 space-y-4">
-          <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
-            <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-2xl bg-white/90 border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="button" :disabled="isSaving" @click="addCategory" class="px-5 h-[48px] bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-black shadow-md shadow-indigo-100 transition shrink-0 disabled:opacity-50">新增</button>
-          </div>
-          <div class="grid grid-cols-1 gap-2">
-            <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white/90 border border-slate-200/70 rounded-2xl flex items-center justify-between shadow-sm">
-              <div class="flex items-center gap-3 min-w-0">
-                <span class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-lg shrink-0">{{ getCategoryEmoji(c.id) }}</span>
-                <span class="font-black text-sm text-slate-800 truncate">{{ c.name }}</span>
-              </div>
-              <button v-if="isTripCreator" type="button" @click="triggerDeleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
-            </div>
-          </div>
-        </main>
-
-        <!-- Tab 4: 成員與帳本設定 -->
-        <main v-if="activeTab === 'settings'" class="p-4 space-y-5">
-          <div class="p-3.5 bg-white/90 border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5">
-                <span class="text-[10px] font-bold text-slate-400 uppercase">系統版本</span>
-                <span class="text-[10px] font-mono font-black bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-1.5 py-0.5 rounded">{{ appVersion }}</span>
-              </div>
-              <span class="text-xs font-black text-slate-800 truncate block mt-0.5">
-                {{ isGuestSession ? '📱 免註冊訪客模式（已綁定本機）' : session.user.email }}
-              </span>
-            </div>
-            <button type="button" @click="forceAppReload" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-2 rounded-xl active:scale-95 transition shrink-0 min-h-[38px]">
-              ↻ 強制更新重整
+            <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[48px]">
+              ＋ 建立旅程並開始記帳
             </button>
           </div>
 
-          <div v-if="currentTrip" class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
-            <div class="flex items-center justify-between gap-2">
-              <h3 class="text-xs font-black text-slate-800 tracking-wider uppercase shrink-0">同行成員名單</h3>
-              <span class="text-[10px] text-slate-400 font-bold truncate">點擊鉛筆可修改名稱</span>
+          <div class="bg-indigo-50/80 border border-indigo-100 p-4 sm:p-5 rounded-[24px] space-y-3 overflow-hidden">
+            <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入朋友的帳本</h3>
+            <div class="flex items-center gap-2 w-full">
+              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+              <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[48px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0">加入</button>
+            </div>
+          </div>
+        </div>
+
+        <template v-else>
+          <!-- 未認領角色提示 -->
+          <div v-if="currentTrip && !isCurrentMemberBound" class="mx-4 mt-3 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-black text-amber-900">尚未綁定您的分帳角色</p>
+              <p class="text-[11px] text-amber-700 font-medium mt-0.5 truncate">點選您的名字即可記帳並隔離私密帳務</p>
+            </div>
+            <button type="button" @click="openClaimModal(false)" class="text-xs font-black text-white bg-amber-600 hover:bg-amber-700 px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition shrink-0 min-h-[38px]">
+              立即認領
+            </button>
+          </div>
+
+          <!-- 邀請碼與分享橫幅 -->
+          <div v-if="currentTrip && activeTab === 'expenses'" class="mx-4 mt-3 px-3.5 py-2.5 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)]">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-[11px] font-bold text-slate-400 shrink-0">代碼</span>
+              <span class="font-mono font-black text-indigo-600 tracking-wider text-sm bg-indigo-50/80 px-2 py-0.5 rounded-lg border border-indigo-100 truncate">{{ currentTrip.invite_code || '------' }}</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" @click="copyInviteCode" class="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">複製碼</button>
+              <button type="button" @click="copyInviteLink" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1.5 rounded-xl transition active:scale-95 min-h-[34px]">分享免註冊連結</button>
+            </div>
+          </div>
+
+          <!-- Tab 1: 支出明細 -->
+          <main v-if="activeTab === 'expenses'" class="p-4 space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white p-4 rounded-[24px] shadow-lg shadow-indigo-200/70 relative overflow-hidden min-w-0">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/15 rounded-full blur-xl"></div>
+                <p class="text-[11px] font-bold text-indigo-100 tracking-wide">團體公帳總額</p>
+                <p class="text-lg sm:text-xl font-black mt-1.5 font-mono tabular-nums tracking-tight truncate">
+                  <span class="text-[11px] font-bold opacity-80 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(totalGroupExpense) }}
+                </p>
+              </div>
+              <div class="bg-white/95 border border-slate-200/80 p-4 rounded-[24px] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.05)] min-w-0">
+                <p class="text-[11px] font-bold text-slate-400 tracking-wide">您的個人總開銷</p>
+                <p class="text-lg sm:text-xl font-black text-slate-900 mt-1.5 font-mono tabular-nums tracking-tight truncate">
+                  <span class="text-[11px] font-bold text-slate-400 mr-0.5">{{ currentTripBaseCurrency }}</span>${{ formatMoney(currentMemberTotalCost) }}
+                </p>
+              </div>
             </div>
 
-            <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
-              <input v-model="newMemberName" @keyup.enter="addMember" placeholder="輸入夥伴姓名（如：小明）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-              <button type="button" :disabled="isSaving" @click="addMember" class="px-4 h-[46px] bg-slate-900 text-white rounded-xl text-xs font-black active:scale-95 transition shrink-0 disabled:opacity-50">新增</button>
+            <!-- 類別佔比進度條 -->
+            <div v-if="categoryStats.length > 0" class="p-4 bg-white/95 border border-slate-200/70 rounded-[24px] shadow-[0_2px_12px_-4px_rgba(15,23,42,0.03)] space-y-2.5">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-black text-slate-800">可見消費分佈</span>
+                <span class="text-[11px] font-bold text-slate-400">共 {{ visibleExpenses.length }} 筆</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex gap-0.5">
+                <div v-for="cat in categoryStats" :key="cat.name" :style="{ width: cat.percent + '%', backgroundColor: cat.color }" class="h-full first:rounded-l-full last:rounded-r-full transition-all duration-300"></div>
+              </div>
+              <div class="flex flex-wrap gap-x-3 gap-y-1.5 pt-0.5 text-[11px]">
+                <div v-for="cat in categoryStats" :key="cat.name" class="flex items-center gap-1.5 text-slate-600 font-bold">
+                  <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: cat.color }"></span>
+                  <span>{{ cat.name }} {{ cat.percent }}%</span>
+                </div>
+              </div>
             </div>
 
-            <div class="space-y-2">
-              <div v-for="(m, idx) in members" :key="m.id" class="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
-                    {{ m.name.slice(0, 1) }}
+            <!-- 篩選列 + 搜尋 -->
+            <div class="space-y-2.5">
+              <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-900 text-white font-black shadow-sm' : 'bg-white/95 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">全部可見 ({{ visibleExpenses.length }})</button>
+                <button type="button" @click="filterType = 'group'" :class="filterType === 'group' ? 'bg-indigo-600 text-white font-black shadow-sm' : 'bg-white/95 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">團體平攤</button>
+                <button type="button" @click="filterType = 'personal'" :class="filterType === 'personal' ? 'bg-amber-500 text-white font-black shadow-sm' : 'bg-white/95 text-slate-500 font-bold border border-slate-200/80'" class="px-4 py-2 rounded-full text-xs transition active:scale-95 shrink-0 min-h-[38px]">我的私物</button>
+              </div>
+
+              <div v-if="visibleExpenses.length >= 4" class="relative">
+                <input v-model="searchQuery" type="search" placeholder="搜尋項目名稱、付款人或備註..." class="w-full min-w-0 pl-9 pr-4 py-2.5 rounded-2xl bg-white/95 border border-slate-200/80 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+            </div>
+
+            <!-- 按日期分組的明細卡片 -->
+            <div class="space-y-4">
+              <div v-for="group in groupedExpenses" :key="group.date" class="space-y-2">
+                <div class="flex items-center justify-between px-1">
+                  <span class="text-[11px] font-black text-slate-400 tracking-wide">{{ formatDateHeader(group.date) }}</span>
+                  <span class="text-[11px] font-mono font-bold text-slate-400">小計 ${{ formatMoney(group.dayTotal) }}</span>
+                </div>
+
+                <div v-for="item in group.items" :key="item.id" @click="openEditDrawer(item)" class="bg-white/95 p-3.5 rounded-[22px] border border-slate-200/70 hover:border-indigo-300 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.04)] flex items-center justify-between gap-2.5 cursor-pointer active:scale-[0.98] transition duration-150">
+                  <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" :class="item.expense_type === 'personal' ? 'bg-amber-50 border border-amber-200/60' : 'bg-indigo-50/80 border border-indigo-100'">
+                      {{ getCategoryEmoji(item.category_id) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-black text-slate-800 text-sm truncate">{{ item.title }}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-md font-black shrink-0" :class="item.expense_type === 'personal' ? 'bg-amber-100/80 text-amber-800' : 'bg-indigo-50 text-indigo-600'">
+                          {{ item.expense_type === 'personal' ? '私物' : '公帳' }}
+                        </span>
+                        <span v-if="item.is_offline" class="text-[9px] bg-slate-100 text-slate-500 font-bold px-1.5 py-0.5 rounded shrink-0">待同步</span>
+                      </div>
+                      <p class="text-[11px] text-slate-400 mt-1 font-medium truncate">
+                        <span class="text-slate-600 font-bold">{{ getMemberName(item.payer_id) }}</span> 付款
+                        <span v-if="item.expense_type === 'group' && Array.isArray(item.split_members)">・{{ item.split_members.length }}人分</span>
+                        <span v-if="item.currency && item.currency !== currentTripBaseCurrency" class="text-indigo-600 font-mono font-bold ml-1">({{ item.currency }} {{ formatMoney(item.original_amount) }})</span>
+                      </p>
+                      <p v-if="item.notes" class="text-[10px] text-slate-400 mt-0.5 truncate">📝 {{ item.notes }}</p>
+                    </div>
                   </div>
-                  <span class="font-black text-sm text-slate-800 truncate">{{ m.name }}</span>
-                  <span v-if="m.user_id === session.user.id" class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md font-bold shrink-0">您</span>
-                  <span v-else-if="m.user_id" class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md font-bold shrink-0">已綁定</span>
-                  <span v-else class="text-[10px] bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded-md font-bold shrink-0">待認領</span>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <span class="font-black text-slate-900 font-mono tabular-nums text-base">${{ formatMoney(item.amount) }}</span>
+                    <button v-if="canEditOrDeleteItem(item)" type="button" @click.stop="triggerDeleteItem(item, false)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center" title="刪除">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                  </div>
                 </div>
+              </div>
 
-                <div class="flex items-center gap-1 shrink-0">
-                  <button v-if="canEditMemberName(m, false)" type="button" @click="openEditMemberNameModal(m, false)" class="p-2 text-slate-400 hover:text-indigo-600 transition active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                  </button>
-                  <button v-if="isTripCreator && members.length > 1" type="button" @click="triggerDeleteMember(m)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
+              <div v-if="filteredExpenses.length === 0" class="text-center py-12 px-4 bg-white/90 rounded-[24px] border border-dashed border-slate-200">
+                <p class="text-3xl mb-2">🧾</p>
+                <p class="text-xs font-black text-slate-600">{{ searchQuery ? '找不到符合關鍵字的消費' : '尚無可見的消費紀錄' }}</p>
+                <p class="text-[11px] text-slate-400 mt-1">{{ searchQuery ? '請嘗試其他關鍵字或清除篩選' : '點擊右下角「＋」開始記下第一筆花費' }}</p>
+              </div>
+            </div>
+          </main>
+
+          <!-- Tab 2: 即時結算頁 -->
+          <main v-if="activeTab === 'settle'" class="p-4 space-y-5">
+            <div class="bg-gradient-to-br from-indigo-50/95 via-white to-sky-50/90 border border-indigo-200/70 text-slate-900 p-6 rounded-[28px] shadow-[0_10px_30px_-10px_rgba(79,70,229,0.12)] relative overflow-hidden">
+              <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-indigo-200/40 rounded-full blur-2xl"></div>
+              <div class="flex items-center justify-between gap-2 relative">
+                <span class="text-xs font-bold text-slate-500 truncate">當前身分：{{ currentMemberName }}</span>
+                <span class="text-[10px] font-mono font-black bg-indigo-100/80 text-indigo-700 px-2.5 py-1 rounded-full shrink-0">{{ currentTripBaseCurrency }} 結算</span>
+              </div>
+              <p class="text-2xl sm:text-3xl font-black mt-3 tracking-tight font-mono tabular-nums relative" :class="myNetBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'">
+                {{ myNetBalance >= 0 ? `應收回 $${formatMoney(myNetBalance)}` : `需補付 $${formatMoney(Math.abs(myNetBalance))}` }}
+              </p>
+              <div class="mt-5 pt-4 border-t border-indigo-100/80 grid grid-cols-2 text-xs gap-4 relative">
+                <div>
+                  <span class="text-slate-400 font-bold text-[11px]">個人私物花費</span>
+                  <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPersonalCost) }}</p>
+                </div>
+                <div>
+                  <span class="text-slate-400 font-bold text-[11px]">團體代墊款項</span>
+                  <p class="text-base font-black text-slate-800 mt-0.5 font-mono tabular-nums">${{ formatMoney(myPaidGroupCost) }}</p>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-[24px] space-y-2.5 overflow-hidden">
+            <button v-if="isTripCreator" type="button" @click="copyLineSettlement" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 text-xs transition active:scale-[0.98] shadow-lg shadow-emerald-200/70 min-h-[48px]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+              一鍵複製公帳結算清單到 LINE
+            </button>
+
             <div>
-              <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入同行帳本</h3>
-              <p class="text-[11px] text-indigo-600 font-medium mt-0.5">輸入對方分享的 6 位數邀請碼</p>
-            </div>
-            <div class="flex items-center gap-2 w-full">
-              <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
-              <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0 disabled:opacity-50">加入</button>
-            </div>
-          </div>
-
-          <div class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
-            <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
-            <div class="flex items-center gap-2 w-full">
-              <input v-model="newTripName" @keyup.enter="createTrip" placeholder="旅程名稱（如：東京五日）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
-              <div class="relative shrink-0 w-[88px]">
-                <select v-model="newTripCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
-                  <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
-                </select>
-                <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-              </div>
-            </div>
-            <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[46px] disabled:opacity-50">建立新旅程</button>
-
-            <div v-if="travelTrips.length > 0" class="pt-2 space-y-2 border-t border-slate-100">
-              <div v-for="t in travelTrips" :key="t.id" class="p-3 bg-slate-50 rounded-xl flex items-center justify-between gap-2">
-                <div class="min-w-0 flex-1">
-                  <span class="text-xs font-black text-slate-800 truncate block">{{ t.name }} ({{ t.base_currency || 'TWD' }})</span>
-                  <span class="text-[10px] text-slate-400 font-bold">{{ t.user_id === session.user.id ? '我建立的帳本' : '受邀協作帳本' }}</span>
+              <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">最簡轉帳建議</h3>
+              <div class="space-y-2.5">
+                <div v-for="(debt, idx) in myRelatedDebts" :key="idx" class="p-4 bg-white/95 border border-slate-200/80 rounded-2xl flex items-center justify-between gap-2 shadow-sm">
+                  <div class="flex items-center gap-1.5 text-xs font-black min-w-0">
+                    <span class="bg-rose-50 text-rose-700 border border-rose-200/60 px-2.5 py-1 rounded-xl truncate max-w-[85px] sm:max-w-[110px]">{{ debt.from }}</span>
+                    <span class="text-slate-400 font-bold shrink-0">➜</span>
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-xl truncate max-w-[85px] sm:max-w-[110px]">{{ debt.to }}</span>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="text-base font-black text-slate-900 font-mono tabular-nums">${{ formatMoney(debt.amount) }}</span>
+                    <span class="text-[10px] text-slate-400 ml-1 font-bold">{{ currentTripBaseCurrency }}</span>
+                  </div>
                 </div>
-                <div class="shrink-0">
-                  <button v-if="t.user_id === session.user.id" type="button" @click="triggerDeleteTrip(t)" class="text-slate-400 hover:text-rose-500 transition p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                  <button v-else type="button" @click="triggerLeaveTrip(t)" class="text-xs text-rose-600 font-black px-3 py-1.5 bg-rose-50 rounded-lg min-h-[36px]">退出</button>
+                <div v-if="myRelatedDebts.length === 0" class="text-center py-6 bg-white/90 rounded-2xl border border-slate-200/60 text-xs text-slate-400 font-bold">
+                  🎉 目前款項已結清，無需進行任何轉帳！
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="bg-white/90 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
             <div>
-              <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">帳務匯出與 JSON 備份還原</h3>
-              <p class="text-[11px] text-slate-400 font-medium mt-0.5">支援 Excel/CSV 報帳、完整備份與還原匯入</p>
+              <h3 class="text-xs font-black text-slate-500 mb-2.5 tracking-wider uppercase px-1">團員公帳收支總覽 (已隱藏私物)</h3>
+              <div class="space-y-2">
+                <div v-for="(m, idx) in memberSummaries" :key="m.id" class="p-3.5 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
+                      {{ m.name.slice(0, 1) }}
+                    </div>
+                    <div class="min-w-0">
+                      <p class="font-black text-sm text-slate-800 truncate">
+                        {{ m.name }}
+                        <span v-if="m.id === currentMemberId" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-bold ml-1">您</span>
+                      </p>
+                      <p class="text-[11px] text-slate-400 mt-0.5 font-medium truncate">代墊 ${{ formatMoney(m.paid) }}・應攤 ${{ formatMoney(m.share) }}</p>
+                    </div>
+                  </div>
+                  <span class="text-xs font-black px-2.5 py-1 rounded-xl font-mono tabular-nums shrink-0" :class="m.net >= 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-rose-50 text-rose-700 border border-rose-200/60'">
+                    {{ m.net >= 0 ? `+${formatMoney(m.net)}` : formatMoney(m.net) }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="grid grid-cols-3 gap-2">
-              <button type="button" @click="exportToCSV" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">匯出 CSV</button>
-              <button type="button" @click="exportToJSON" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">備份 JSON</button>
-              <label class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black rounded-xl text-xs flex items-center justify-center active:scale-95 transition min-h-[44px] cursor-pointer text-center">
-                <span>還原 JSON</span>
-                <input type="file" accept=".json,application/json" @change="importFromJSON" class="hidden">
-              </label>
-            </div>
-          </div>
+          </main>
 
-          <button type="button" @click="triggerSignOut" class="w-full py-3.5 bg-rose-50 border border-rose-200/80 text-rose-600 font-black text-xs rounded-2xl hover:bg-rose-100 active:scale-[0.98] transition min-h-[48px]">
-            {{ isGuestSession ? '切換帳號 / 離開訪客模式' : '登出目前帳號' }}
-          </button>
-        </main>
+          <!-- Tab 3: 類別管理 -->
+          <main v-if="activeTab === 'categories'" class="p-4 space-y-4">
+            <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
+              <input v-model="newCategoryName" @keyup.enter="addCategory" placeholder="新增自訂類別（如：伴手禮）" class="flex-1 min-w-0 w-full h-[48px] px-4 rounded-2xl bg-white/95 border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button type="button" :disabled="isSaving" @click="addCategory" class="px-5 h-[48px] bg-indigo-600 active:scale-95 text-white rounded-2xl text-xs font-black shadow-md shadow-indigo-100 transition shrink-0 disabled:opacity-50">新增</button>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+              <div v-for="c in categories" :key="c.id" class="p-3.5 bg-white/95 border border-slate-200/70 rounded-2xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-lg shrink-0">{{ getCategoryEmoji(c.id) }}</span>
+                  <span class="font-black text-sm text-slate-800 truncate">{{ c.name }}</span>
+                </div>
+                <button v-if="isTripCreator" type="button" @click="triggerDeleteCategory(c)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+          </main>
+
+          <!-- Tab 4: 成員與帳本設定 -->
+          <main v-if="activeTab === 'settings'" class="p-4 space-y-5">
+            <div class="p-3.5 bg-white/95 border border-slate-200/70 rounded-[22px] flex items-center justify-between gap-2 overflow-hidden">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">系統版本</span>
+                  <span class="text-[10px] font-mono font-black bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-1.5 py-0.5 rounded">{{ appVersion }}</span>
+                </div>
+                <span class="text-xs font-black text-slate-800 truncate block mt-0.5">
+                  {{ isGuestSession ? '📱 免註冊訪客模式（已綁定本機）' : session.user.email }}
+                </span>
+              </div>
+              <button type="button" @click="forceAppReload" class="text-[11px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-2 rounded-xl active:scale-95 transition shrink-0 min-h-[38px]">
+                ↻ 強制更新重整
+              </button>
+            </div>
+
+            <div v-if="currentTrip" class="bg-white/95 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-xs font-black text-slate-800 tracking-wider uppercase shrink-0">同行成員名單</h3>
+                <span class="text-[10px] text-slate-400 font-bold truncate">點擊鉛筆可修改名稱</span>
+              </div>
+
+              <div v-if="isTripCreator" class="flex items-center gap-2 w-full">
+                <input v-model="newMemberName" @keyup.enter="addMember" placeholder="輸入夥伴姓名（如：小明）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+                <button type="button" :disabled="isSaving" @click="addMember" class="px-4 h-[46px] bg-slate-900 text-white rounded-xl text-xs font-black active:scale-95 transition shrink-0 disabled:opacity-50">新增</button>
+              </div>
+
+              <div class="space-y-2">
+                <div v-for="(m, idx) in members" :key="m.id" class="p-3 bg-slate-50/80 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0" :style="{ backgroundColor: memberColors[idx % memberColors.length] }">
+                      {{ m.name.slice(0, 1) }}
+                    </div>
+                    <span class="font-black text-sm text-slate-800 truncate">{{ m.name }}</span>
+                    <span v-if="m.user_id === session.user.id" class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md font-bold shrink-0">您</span>
+                    <span v-else-if="m.user_id" class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md font-bold shrink-0">已綁定</span>
+                    <span v-else class="text-[10px] bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded-md font-bold shrink-0">待認領</span>
+                  </div>
+
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button v-if="canEditMemberName(m, false)" type="button" @click="openEditMemberNameModal(m, false)" class="p-2 text-slate-400 hover:text-indigo-600 transition active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    </button>
+                    <button v-if="isTripCreator && members.length > 1" type="button" @click="triggerDeleteMember(m)" class="text-slate-300 hover:text-rose-500 transition p-2 active:scale-90 min-h-[40px] min-w-[40px] flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-[24px] space-y-2.5 overflow-hidden">
+              <div>
+                <h3 class="text-xs font-black text-indigo-950 uppercase tracking-wider">加入同行帳本</h3>
+                <p class="text-[11px] text-indigo-600 font-medium mt-0.5">輸入對方分享的 6 位數邀請碼</p>
+              </div>
+              <div class="flex items-center gap-2 w-full">
+                <input v-model="joinCodeInput" @keyup.enter="joinTripByCode(joinCodeInput, false)" maxlength="6" placeholder="輸入 6 碼邀請碼" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-white border border-indigo-200 text-base font-mono uppercase tracking-widest focus:outline-none">
+                <button type="button" :disabled="isSaving" @click="joinTripByCode(joinCodeInput, false)" class="px-5 h-[46px] bg-indigo-600 text-white rounded-xl text-xs font-black shadow-sm active:scale-95 transition shrink-0 disabled:opacity-50">加入</button>
+              </div>
+            </div>
+
+            <div class="bg-white/95 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+              <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">建立新旅程帳本</h3>
+              <div class="flex items-center gap-2 w-full">
+                <input v-model="newTripName" @keyup.enter="createTrip" placeholder="旅程名稱（如：東京五日）" class="flex-1 min-w-0 w-full h-[46px] px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base focus:outline-none focus:bg-white">
+                <div class="relative shrink-0 w-[88px]">
+                  <select v-model="newTripCurrency" class="w-full h-[46px] pl-3 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-base font-bold text-slate-800 focus:outline-none">
+                    <option value="TWD">TWD</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="USD">USD</option><option value="EUR">EUR</option>
+                  </select>
+                  <svg class="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+              <button type="button" :disabled="isSaving" @click="createTrip" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black active:scale-[0.98] transition min-h-[46px] disabled:opacity-50">建立新旅程</button>
+
+              <div v-if="travelTrips.length > 0" class="pt-2 space-y-2 border-t border-slate-100">
+                <div v-for="t in travelTrips" :key="t.id" class="p-3 bg-slate-50 rounded-xl flex items-center justify-between gap-2">
+                  <div class="min-w-0 flex-1">
+                    <span class="text-xs font-black text-slate-800 truncate block">{{ t.name }} ({{ t.base_currency || 'TWD' }})</span>
+                    <span class="text-[10px] text-slate-400 font-bold">{{ t.user_id === session.user.id ? '我建立的帳本' : '受邀協作帳本' }}</span>
+                  </div>
+                  <div class="shrink-0">
+                    <button v-if="t.user_id === session.user.id" type="button" @click="triggerDeleteTrip(t, false)" class="text-slate-400 hover:text-rose-500 transition p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                    <button v-else type="button" @click="triggerLeaveTrip(t, false)" class="text-xs text-rose-600 font-black px-3 py-1.5 bg-rose-50 rounded-lg min-h-[36px]">退出</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white/95 p-4 rounded-[24px] border border-slate-200/70 shadow-sm space-y-3 overflow-hidden">
+              <div>
+                <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">帳務匯出與 JSON 備份還原</h3>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5">支援 Excel/CSV 報帳、完整備份與還原匯入</p>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" @click="exportToCSV" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">匯出 CSV</button>
+                <button type="button" @click="exportToJSON" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-sm flex items-center justify-center active:scale-95 transition min-h-[44px]">備份 JSON</button>
+                <label class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black rounded-xl text-xs flex items-center justify-center active:scale-95 transition min-h-[44px] cursor-pointer text-center">
+                  <span>還原 JSON</span>
+                  <input type="file" accept=".json,application/json" @change="importFromJSON" class="hidden">
+                </label>
+              </div>
+            </div>
+
+            <button type="button" @click="triggerSignOut" class="w-full py-3.5 bg-rose-50 border border-rose-200/80 text-rose-600 font-black text-xs rounded-2xl hover:bg-rose-100 active:scale-[0.98] transition min-h-[48px]">
+              {{ isGuestSession ? '切換帳號 / 離開訪客模式' : '登出目前帳號' }}
+            </button>
+          </main>
+        </template>
       </template>
     </div>
 
     <!-- 懸浮記帳按鈕 (+) -->
-    <button v-if="!fundMode && activeTab === 'expenses' && currentTrip" type="button" @click="openDrawer('group')" class="fixed right-5 safe-fab-bottom w-13 h-13 w-[52px] h-[52px] bg-gradient-to-tr from-indigo-600 to-violet-600 hover:opacity-95 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
+    <button v-if="viewMode === 'travel' && activeTab === 'expenses' && currentTrip" type="button" @click="openDrawer('group')" class="fixed right-5 safe-fab-bottom w-[52px] h-[52px] bg-gradient-to-tr from-indigo-600 to-violet-600 hover:opacity-95 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-400/50 active:scale-90 transition transform z-40">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
     </button>
 
-    <!-- 精巧鎖定版底部 4 分頁導航欄 (適配 iPhone & Android 各種尺寸) -->
-    <nav v-if="!fundMode" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-xl border-t border-slate-200/70 pt-1.5 px-3 grid grid-cols-4 z-30 safe-tab-pb">
+    <!-- 精巧鎖定版底部 4 分頁導航欄 (僅在旅遊分帳模式下顯示) -->
+    <nav v-if="viewMode === 'travel'" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-slate-200/70 pt-1.5 px-3 grid grid-cols-4 z-30 safe-tab-pb">
       <button type="button" @click="switchTab('expenses')" :class="activeTab === 'expenses' ? 'text-indigo-600 font-black' : 'text-slate-400 font-bold'" class="flex flex-col items-center gap-0.5 text-[10px] leading-tight transition active:scale-95 min-h-[38px] min-w-0 justify-center">
         <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
         <span class="truncate">明細</span>
@@ -918,7 +1054,7 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 3: 認領身分 (支援旅遊與基金獨立名單) ================= -->
+  <!-- ================= 彈窗 3: 認領身分 ================= -->
   <div v-if="claimModal.show" @click.self="claimModal.show = false" class="fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-[80] flex items-center justify-center p-5 animate-fade-in">
     <div class="bg-white w-full max-w-xs rounded-[28px] p-6 space-y-4 shadow-2xl border border-slate-100 animate-pop-in">
       <div>
@@ -1086,8 +1222,12 @@
 
   createApp({
     setup() {
-      const appVersion = ref('v3.6.1');
+      const appVersion = ref('v3.7.0');
       const session = ref(null);
+      const entryTarget = ref('fund'); // 登入前預設選擇：'fund' (生活共用基金) 或 'travel' (雲端旅遊分帳)
+      const viewMode = ref('hub');     // 登入後視圖：'hub' (選擇大廳)、'fund' (共用基金)、'travel' (旅遊分帳)
+      const hasExplicitEntryIntent = ref(false);
+
       const authMode = ref('guest');
       const authEmail = ref('');
       const authPassword = ref('');
@@ -1114,7 +1254,6 @@
       const confirmDialog = reactive({ show: false, title: '', message: '', onConfirm: null });
 
       const activeTab = ref('expenses');
-      const fundMode = ref(false);
       const filterType = ref('all');
       const searchQuery = ref('');
       const scrollContainer = ref(null);
@@ -1161,7 +1300,7 @@
 
       const toTwdRates = { TWD: 1.0, JPY: 0.21, KRW: 0.024, USD: 32.5, EUR: 35.2, THB: 0.95 };
       const memberColors = ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#06B6D4', '#8B5CF6', '#F43F5E', '#14B8A6'];
-      const categoryEmojiMap = { '餐飲': '🍜', '交通': '🚗', '住宿': '🏨', '娛樂': '🎟️', '購物': '🛍️', '油錢': '⛽', '停車': '🅿️' };
+      const categoryEmojiMap = { '餐飲': '🍜', '交通': '🚗', '住宿': '🏨', '娛樂': '🎟️', '購物': '🛍️', '油錢': '⛽', '停車': '🅿️', '約會': '🥂', '出遊': '🏞️' };
       const categoryColorMap = { '餐飲': '#FB7185', '交通': '#38BDF8', '住宿': '#818CF8', '娛樂': '#FBBF24', '購物': '#34D399', '油錢': '#F97316', '停車': '#A78BFA' };
 
       const sanitizeText = (str, maxLen = 80) => String(str || '').replace(/[\u0000-\u001F\u007F<>]/g, '').trim().slice(0, maxLen);
@@ -1195,6 +1334,13 @@
         const res = parseExpr();
         return i === s.length && Number.isFinite(res) && res > 0 ? Math.round(res * 100) / 100 : 0;
       };
+
+      const activeThemeGlow = computed(() => {
+        const isFund = !session.value ? entryTarget.value === 'fund' : viewMode.value === 'fund';
+        return isFund
+          ? { topRight: 'bg-rose-200/35', midLeft: 'bg-amber-100/40', bottomRight: 'bg-emerald-100/35' }
+          : { topRight: 'bg-indigo-200/35', midLeft: 'bg-sky-200/35', bottomRight: 'bg-violet-200/30' };
+      });
 
       const notificationStatusText = computed(() => {
         if (notificationPermission.value === 'granted') return '對方新增或修改紀錄時，手機將自動同步提醒';
@@ -1415,9 +1561,26 @@
         toastTimer = setTimeout(() => { toast.show = false; }, 3500);
       };
 
-      const openFundView = () => {
-        currentYearMonth.value = getYearMonthStr(); selectedFundMonth.value = currentYearMonth.value;
-        fundMode.value = true; if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
+      const selectEntryTarget = (target) => {
+        entryTarget.value = target;
+        hasExplicitEntryIntent.value = true;
+        try { localStorage.setItem('travel_last_entry_target', target); } catch (e) {}
+      };
+
+      const switchViewMode = (mode) => {
+        viewMode.value = mode;
+        if (mode === 'fund') {
+          currentYearMonth.value = getYearMonthStr();
+          selectedFundMonth.value = currentYearMonth.value;
+          if (currentFundId.value && !isCurrentFundMemberBound.value && activeUnassignedMembers.value.length > 0) {
+            openClaimModal(true);
+          }
+        } else if (mode === 'travel') {
+          if (currentTripId.value && !isCurrentMemberBound.value && members.value.some(m => !m.user_id)) {
+            openClaimModal(false);
+          }
+        }
+        if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
       };
 
       const shiftFundMonth = (delta) => {
@@ -1463,7 +1626,7 @@
         setTimeout(() => window.location.replace(`${window.location.origin}${window.location.pathname}?v=${Date.now()}`), 400);
       };
 
-      const switchTab = (tab) => { fundMode.value = false; activeTab.value = tab; if (scrollContainer.value) scrollContainer.value.scrollTop = 0; };
+      const switchTab = (tab) => { activeTab.value = tab; if (scrollContainer.value) scrollContainer.value.scrollTop = 0; };
       const getTodayDateStr = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`; };
       const formatDateHeader = (d) => {
         if (!d) return '';
@@ -1532,7 +1695,7 @@
         try {
           if (!(await ensureGuestDeviceSession())) return;
           pendingInviteCode.value = ''; guestCodeInput.value = '';
-          await joinTripByCode(code, false);
+          await joinTripByCode(code, entryTarget.value === 'fund');
         } finally { authLoading.value = false; }
       };
 
@@ -1540,7 +1703,11 @@
         if (authLoading.value) return;
         authLoading.value = true;
         try {
-          if (await ensureGuestDeviceSession()) { showToast("已恢復此手機的訪客紀錄！"); await fetchTrips(); setupRealtimeSubscription(); }
+          if (await ensureGuestDeviceSession()) {
+            showToast("已恢復此手機的訪客紀錄！");
+            await fetchTrips(); setupRealtimeSubscription();
+            switchViewMode(entryTarget.value);
+          }
         } finally { authLoading.value = false; }
       };
 
@@ -1549,6 +1716,7 @@
         if (!email) return showToast("請輸入電子郵件", "error");
         if (!password && !last5) return showToast("請填寫密碼或手機後 5 碼", "error");
         authLoading.value = true;
+        hasExplicitEntryIntent.value = true;
         try {
           if (password) {
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -1573,6 +1741,7 @@
         if (phone.length < 5) return showToast("請輸入正確手機號碼", "error");
         const phoneLast5 = phone.slice(-5);
         authLoading.value = true;
+        hasExplicitEntryIntent.value = true;
         try {
           const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { phone, phone_last5: phoneLast5 } } });
           if (error) return showToast("註冊失敗：" + error.message, "error");
@@ -1584,7 +1753,8 @@
       const triggerSignOut = () => {
         const msg = isGuestSession.value ? "切換後可登入正式帳號或輸入其他邀請碼；本機訪客紀錄仍會保留於此手機。" : "確定要登出目前帳號並返回登入畫面嗎？";
         openConfirmDialog("切換 / 登出", msg, async () => {
-          fundMode.value = false; await supabaseClient.auth.signOut(); checkSavedGuestDevice(); showToast("已返回入口畫面");
+          viewMode.value = 'hub'; hasExplicitEntryIntent.value = false;
+          await supabaseClient.auth.signOut(); checkSavedGuestDevice(); showToast("已返回入口畫面");
         });
       };
 
@@ -1666,7 +1836,7 @@
             await supabaseClient.from('members').update({ user_id: session.value.user.id }).eq('id', members.value[0].id);
             members.value[0].user_id = session.value.user.id;
           }
-        } else { currentMemberId.value = null; if (!fundMode.value) openClaimModal(false); }
+        } else { currentMemberId.value = null; if (viewMode.value === 'travel') openClaimModal(false); }
       };
 
       const fetchFundDetails = async () => {
@@ -1701,7 +1871,7 @@
           currentFundMemberId.value = fundMembers.value[0].id;
         } else {
           currentFundMemberId.value = null;
-          if (fundMode.value) openClaimModal(true);
+          if (viewMode.value === 'fund') openClaimModal(true);
         }
       };
 
@@ -1787,7 +1957,7 @@
         try {
           const code = Math.random().toString(36).substring(2, 8).toUpperCase();
           const { data: fundBook, error } = await supabaseClient.from('trips').insert([
-            { name: `${FUND_PREFIX}日常共同基金`, base_currency: newFundCurrency.value, user_id: session.value.user.id, invite_code: code }
+            { name: `${FUND_PREFIX}生活共用基金`, base_currency: newFundCurrency.value, user_id: session.value.user.id, invite_code: code }
           ]).select().single();
           if (error) return showToast(error.message, "error");
           if (fundBook) {
@@ -1798,7 +1968,7 @@
             await supabaseClient.from('categories').insert(['餐飲', '約會', '出遊', '娛樂', '購物', '交通'].map(cat => ({ trip_id: fundBook.id, name: cat })));
             newFundPartnerName.value = ''; currentFundId.value = fundBook.id;
             await fetchTrips(); setupRealtimeSubscription();
-            showToast("專屬共同基金已建立！快把邀請碼分享給伴侶");
+            showToast("專屬生活共用基金已建立！快把邀請碼分享給伴侶");
           }
         } finally { isSaving.value = false; }
       };
@@ -1817,9 +1987,10 @@
             joinCodeInput.value = ''; joinFundCodeInput.value = '';
             if (isFundBook || fromFundView) {
               currentFundId.value = data.trip_id;
-              fundMode.value = true;
+              viewMode.value = 'fund';
             } else {
               currentTripId.value = data.trip_id;
+              viewMode.value = 'travel';
               activeTab.value = 'expenses';
             }
             await fetchTrips(); setupRealtimeSubscription();
@@ -1837,7 +2008,7 @@
       const copyFundInviteLink = () => {
         if (!currentFund.value?.invite_code) return;
         const url = `${window.location.origin}${window.location.pathname}?code=${currentFund.value.invite_code}`;
-        copyTextSafe(`💑 邀請你加入我們的【日常共同基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "伴侶基金邀請連結已複製！快傳給對方");
+        copyTextSafe(`💑 邀請你加入我們的【生活共用基金】！\n點擊下方連結免註冊直接綁定手機同步記帳：\n${url}\n（或輸入基金邀請碼：${currentFund.value.invite_code}）`, "伴侶基金邀請連結已複製！快傳給對方");
       };
 
       const canEditOrDeleteItem = (item) =>
@@ -2056,7 +2227,7 @@
 
       const exportToJSON = () => {
         if (!currentTrip.value) return showToast("尚無可備份的帳本！", "error");
-        const data = { version: 3.61, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
+        const data = { version: 3.7, trip: currentTrip.value, members: members.value, categories: categories.value, expenses: expenses.value, exported_at: new Date().toISOString() };
         downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), `app-backup-${getTodayDateStr().replace(/-/g, '')}.json`);
         showToast("JSON 完整備份下載成功！");
       };
@@ -2131,21 +2302,29 @@
         } finally { isSaving.value = false; }
       };
 
-      const triggerDeleteTrip = (trip) => {
-        openConfirmDialog("⚠️ 永久刪除帳本", `確定要徹底刪除「${trip.name}」嗎？所有明細與成員將無法復原！`, async () => {
+      const triggerDeleteTrip = (trip, isFund = false) => {
+        const displayName = (trip.name || '').replace(FUND_PREFIX, '');
+        openConfirmDialog("⚠️ 永久刪除", `確定要徹底刪除「${displayName}」嗎？所有明細與成員將無法復原！`, async () => {
           const { error } = await supabaseClient.from('trips').delete().eq('id', trip.id);
           if (error) return showToast("刪除失敗：" + error.message, "error");
           try { localStorage.removeItem(`travel_cache_${trip.id}`); } catch (e) {}
-          showToast(`已刪除帳本「${trip.name}」`); currentTripId.value = null; await fetchTrips();
+          showToast(`已刪除「${displayName}」`);
+          if (isFund) currentFundId.value = null;
+          else currentTripId.value = null;
+          await fetchTrips();
         });
       };
 
-      const triggerLeaveTrip = (trip) => {
-        openConfirmDialog("退出協作帳本", `確定要退出「${trip.name}」嗎？退出後將不再顯示於您的清單中。`, async () => {
+      const triggerLeaveTrip = (trip, isFund = false) => {
+        const displayName = (trip.name || '').replace(FUND_PREFIX, '');
+        openConfirmDialog("退出協作", `確定要退出「${displayName}」嗎？退出後將不再顯示於您的清單中。`, async () => {
           await supabaseClient.from('trip_collaborators').delete().eq('trip_id', trip.id).eq('user_id', session.value.user.id);
           await supabaseClient.from('members').update({ user_id: null }).eq('trip_id', trip.id).eq('user_id', session.value.user.id);
           try { localStorage.removeItem(`travel_cache_${trip.id}`); } catch (e) {}
-          showToast(`已退出「${trip.name}」`); currentTripId.value = null; await fetchTrips();
+          showToast(`已退出「${displayName}」`);
+          if (isFund) currentFundId.value = null;
+          else currentTripId.value = null;
+          await fetchTrips();
         });
       };
 
@@ -2176,6 +2355,11 @@
         window.addEventListener('offline', () => { isOnline.value = false; });
         refreshOfflineCount(); checkSavedGuestDevice();
 
+        try {
+          const savedTarget = localStorage.getItem('travel_last_entry_target');
+          if (savedTarget === 'fund' || savedTarget === 'travel') entryTarget.value = savedTarget;
+        } catch (e) {}
+
         const params = new URLSearchParams(window.location.search);
         const urlCode = (params.get('code') || params.get('invite') || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
         if (urlCode) {
@@ -2190,9 +2374,18 @@
             if (bootedUserId !== newSession.user.id) {
               bootedUserId = newSession.user.id;
               await fetchTrips(); setupRealtimeSubscription(); flushOfflineQueue();
-            }
-            if (pendingInviteCode.value) {
-              const code = pendingInviteCode.value; pendingInviteCode.value = ''; await joinTripByCode(code, false);
+              if (pendingInviteCode.value) {
+                const code = pendingInviteCode.value; pendingInviteCode.value = '';
+                await joinTripByCode(code, false);
+              } else if (hasExplicitEntryIntent.value) {
+                switchViewMode(entryTarget.value);
+              } else {
+                // 已登入直接開啟 App 時，進入雙系統選擇大廳讓使用者自由選擇
+                viewMode.value = 'hub';
+              }
+            } else if (pendingInviteCode.value) {
+              const code = pendingInviteCode.value; pendingInviteCode.value = '';
+              await joinTripByCode(code, false);
             }
           } else {
             bootedUserId = null; allBooks.value = []; members.value = []; expenses.value = []; categories.value = []; activityLogs.value = [];
@@ -2203,12 +2396,12 @@
       });
 
       return {
-        appVersion, session, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
+        appVersion, session, entryTarget, viewMode, activeThemeGlow, authMode, authEmail, authPassword, authPhone, authPhoneLast5, guestCodeInput, pendingInviteCode, hasSavedGuestDevice,
         authLoading, isSaving, appIconSrc, isOnline, offlineQueueCount, notificationPermission, notificationStatusText,
-        toast, confirmDialog, activeTab, fundMode, filterType, searchQuery, scrollContainer,
+        toast, confirmDialog, activeTab, filterType, searchQuery, scrollContainer,
         currentYearMonth, selectedFundMonth, prevFundMonth,
         travelTrips, currentTripId, members, currentMemberId, categories, expenses, activityLogs,
-        currentFund, currentFundBaseCurrency, fundMembers, currentFundMember, isCurrentFundMemberBound,
+        currentFund, currentFundBaseCurrency, isFundCreator, fundMembers, currentFundMember, isCurrentFundMemberBound,
         newFundPartnerName, newFundCurrency, joinFundCodeInput,
         showLogModal, claimModal, showEditNameModal, editMemberNameInput, joinCodeInput, newTripName, newTripCurrency, newMemberName, newCategoryName,
         drawer, isFundDrawer, activeDrawerBaseCurrency, activeDrawerMembers, activeDrawerCategories, activeUnassignedMembers,
@@ -2218,7 +2411,7 @@
         prevMonthFundBalance, selectedMonthRemainPercent, fundStatusTheme,
         visibleExpenses, filteredExpenses, groupedExpenses,
         totalGroupExpense, categoryStats, currentMemberTotalCost, myPersonalCost, myPaidGroupCost, myNetBalance, memberSummaries, myRelatedDebts,
-        openFundView, shiftFundMonth, formatYearMonthLabel, requestNotificationPermission, executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser,
+        selectEntryTarget, switchViewMode, shiftFundMonth, formatYearMonthLabel, requestNotificationPermission, executeConfirmAction, forceAppReload, switchTab, formatDateHeader, formatMoney, formatTime, formatLogUser,
         getCategoryName, getCategoryEmoji, getCategoryEmojiByList, getMemberName, getFundCategoryEmoji, getFundMemberName,
         onDrawerCurrencyChange, switchFundDrawerType, openDrawer, openEditDrawer, toggleMemberSplit, toggleSelectAllMembers, saveDrawer, triggerDeleteItem, canEditOrDeleteItem,
         handleGuestQuickJoin, resumeGuestDeviceSession, handleLogin, handleRegister, triggerSignOut,
