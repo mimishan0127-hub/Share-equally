@@ -12,21 +12,19 @@ jobs:
     steps:
       - name: 1. 喚醒【生活基金 & 旅遊分帳】資料庫
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          STATUS=$(curl -s -o /tmp/res.txt -w "%{http_code}" \
             -H "apikey: sb_publishable_nd4tk7NvjvEUPXUDcfDz5A_c8spPJU_" \
-            -H "Authorization: Bearer sb_publishable_nd4tk7NvjvEUPXUDcfDz5A_c8spPJU_" \
-            "https://gydznvocncuqhjofeyzc.supabase.co/rest/v1/")
+            "https://gydznvocncuqhjofeyzc.supabase.co/rest/v1/trips?select=id&limit=1")
           echo "專案 1 回應狀態碼: $STATUS"
-          if [ "$STATUS" -ge 400 ]; then exit 1; fi
+          if [ "$STATUS" -ge 400 ]; then cat /tmp/res.txt; exit 1; fi
 
       # ==========================================
       # 若有第 2 個 Supabase App，把下方 7 行的 # 刪掉並填入網址與 Key 即可
       # ==========================================
       # - name: 2. 喚醒【我的第二個 App】資料庫
       #   run: |
-      #     STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-      #       -H "apikey: 填入第二個專案的_anon_或_publishable_key" \
-      #       -H "Authorization: Bearer 填入第二個專案的_anon_或_publishable_key" \
+      #     STATUS=$(curl -s -o /tmp/res2.txt -w "%{http_code}" \
+      #       -H "apikey: 填入第二個專案的_publishable_或_anon_key" \
       #       "https://填入第二個專案的ID.supabase.co/rest/v1/")
       #     echo "專案 2 回應狀態碼: $STATUS"
-      #     if [ "$STATUS" -ge 400 ]; then exit 1; fi
+      #     if [ "$STATUS" -ge 400 ]; then cat /tmp/res2.txt; exit 1; fi
